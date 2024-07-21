@@ -16,13 +16,31 @@ const Login = () => {
           <br></br>
           <Form className="loginform">
             <Form.Group className="mb-3" controlId="formGroupEmail">
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Label htmlFor="email">Email address</Form.Label>
+              <Form.Control
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter email"
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formGroupPassword">
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Label htmlFor="password">Password</Form.Label>
+              <Form.Control
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+              />
             </Form.Group>
+            <button type="submit">Submit</button>
           </Form>
-          <h6>Don't have an account? <Link to="/signup" className="createAccount">Sign up</Link></h6>
+          <h6>
+            Don't have an account?{" "}
+            <Link to="/signup" className="createAccount">
+              Sign up
+            </Link>
+          </h6>
         </div>
       </div>
     </>
