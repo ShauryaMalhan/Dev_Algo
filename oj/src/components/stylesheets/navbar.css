@@ -1,0 +1,12 @@
+.loginbtn {
+    padding-inline: 15%;
+    margin-right: 10%;
+}
+
+.loginsignup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-flow: row;
+}
