@@ -15,6 +15,8 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
+  const isValid = email.length > 5 & password.length > 5;
+
   return (
     <>
       <div className="flex">
@@ -47,7 +49,7 @@ const Login = () => {
                 onChange={handlePasswordChange}
               />
             </Form.Group>
-            <button type="submit" className={`loginformbtn  ${email.length > 5 & password.length > 5 ? "btn-green" : ""}`} >Submit</button>
+            <button type="submit" className={`loginformbtn  ${isValid ? "btn-green" : ""}`} disabled={!isValid} >Submit</button>
           </Form>
           <br></br>
           <h6>
