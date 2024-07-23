@@ -1,4 +1,4 @@
-.login {
+.authimg {
     width: 50%;
     margin-top: 8%;
     margin-left: -15%;
@@ -54,8 +54,6 @@ h1 {
   text-decoration: none;
   touch-action: manipulation;
   transition: box-shadow .2s,-ms-transform .1s,-webkit-transform .1s,transform .1s;
-  user-select: none;
-  -webkit-user-select: none;
   width: auto;
 }
 
@@ -78,14 +76,23 @@ h1 {
 }
 
 .btn-green {
-    background-color: green;
-    color: white;
-  }
+  background-color: green;
+  color: white;
+}
 
-  .emaillabel {
-    display: none;
-  }
+.emaillabel {
+  display: none;
+}
 
-  .passwordlabel {
-    display: none;
-  }
+.passwordlabel {
+  display: none;
+}
+
+.signupimg {
+  margin-left: -4%;
+  margin-right: 13%;
+}
+
+.registerbox {
+  margin-left: -10%;
+}

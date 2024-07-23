@@ -1,12 +1,14 @@
-import "../stylesheets/login.css";
 import { Link } from "react-router-dom";
+import "../stylesheets/login.css";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullname, setFullname] = useState("");
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -16,21 +18,64 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  const isValid = (email.length > 5) & (password.length > 5);
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleFullnameChange = (e) => {
+    setFullname(e.target.value);
+  };
+
+  const isValid =
+    (email.length > 5) &
+    (password.length > 5) &
+    (username.length > 5) &
+    (fullname.length > 5);
 
   return (
     <>
       <div className="flex">
-        <img src="./login.png" className="authimg" alt="login" />
-        <div className="loginbox">
+        <img
+          src="./register.png"
+          className="authimg signupimg"
+          alt="register"
+        />
+        <div className="loginbox registerbox">
           <div className="loginhead">
             <h1>
-              Log in to continue your <br></br> coding journey
+              Register<br></br>Start your journey!!
             </h1>
           </div>
           <br></br>
-
           <Form className="loginform">
+            <Form.Group className="mb-3" controlId="formGroupname">
+              <Form.Label htmlFor="name" className="emaillabel">
+                name
+              </Form.Label>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1">Full Name</InputGroup.Text>
+                <Form.Control
+                  id="name"
+                  name="name"
+                  type="name"
+                  onChange={handleFullnameChange}
+                />
+              </InputGroup>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupUsername">
+              <Form.Label htmlFor="username" className="emaillabel">
+                username
+              </Form.Label>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1">Username</InputGroup.Text>
+                <Form.Control
+                  id="username"
+                  name="username"
+                  type="username"
+                  onChange={handleUsernameChange}
+                />
+              </InputGroup>
+            </Form.Group>
             <Form.Group className="mb-3" controlId="formGroupEmail">
               <Form.Label htmlFor="email" className="emaillabel">
                 Email address
@@ -69,9 +114,9 @@ const Login = () => {
           </Form>
           <br></br>
           <h6>
-            Don&#39;t have an account?{" "}
-            <Link to="/signup" className="createAccount">
-              Sign up
+            Already have an account?{" "}
+            <Link to="/login" className="createAccount">
+              Log in
             </Link>
           </h6>
         </div>
@@ -80,4 +125,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
