@@ -8,7 +8,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [fullname, setFullname] = useState("");
+  const [name, setFullname] = useState("");
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -22,7 +22,7 @@ const Register = () => {
     setUsername(e.target.value);
   };
 
-  const handleFullnameChange = (e) => {
+  const handleNameChange = (e) => {
     setFullname(e.target.value);
   };
 
@@ -30,7 +30,33 @@ const Register = () => {
     (email.length > 5) &
     (password.length > 5) &
     (username.length > 5) &
-    (fullname.length > 5);
+    (name.length > 5);
+
+  const handleSubmit = async (e)=>{
+    e.preventDefault();
+    try {
+      const REGISTER_URL = import.meta.env.VITE_REGISTER_PATH;
+      const respose = await fetch(REGISTER_URL, {
+        method: 'POST',
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+        })
+      })
+      const result = await respose.json();
+      if(!respose.ok){
+        throw new Error(result.error);
+      }
+      console.log(result);
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
 
   return (
     <>
@@ -47,8 +73,8 @@ const Register = () => {
             </h1>
           </div>
           <br></br>
-          <Form className="loginform">
-            <Form.Group className="mb-3" controlId="formGroupname">
+          <Form className="loginform" onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
               <Form.Label htmlFor="name" className="emaillabel">
                 name
               </Form.Label>
@@ -58,11 +84,11 @@ const Register = () => {
                   id="name"
                   name="name"
                   type="name"
-                  onChange={handleFullnameChange}
+                  onChange={handleNameChange}
                 />
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupUsername">
+            <Form.Group className="mb-3">
               <Form.Label htmlFor="username" className="emaillabel">
                 username
               </Form.Label>
@@ -76,7 +102,7 @@ const Register = () => {
                 />
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupEmail">
+            <Form.Group className="mb-3">
               <Form.Label htmlFor="email" className="emaillabel">
                 Email address
               </Form.Label>
@@ -90,7 +116,7 @@ const Register = () => {
                 />
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupPassword">
+            <Form.Group className="mb-3">
               <Form.Label className="passwordlabel" htmlFor="password">
                 Password
               </Form.Label>

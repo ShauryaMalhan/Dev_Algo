@@ -9,7 +9,7 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-router.post('/createuser', [
+router.post('/register', [
     body('name', 'Enter a Valid Name').isLength({min: 5}),
     body('email', 'Enter a Valid Email').isEmail(),
     body('password', 'Password must be atleast 5 characters').isLength({min: 5}),
