@@ -18,6 +18,28 @@ const Login = () => {
 
   const isValid = (email.length > 5) & (password.length > 5);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const LOGIN_URL = import.meta.env.VITE_LOGIN_PATH;
+      const response = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+      if(!response.ok) {
+        throw new Error(result.error);
+      }
+      console.log(result);
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
   return (
     <>
       <div className="flex">
@@ -30,8 +52,8 @@ const Login = () => {
           </div>
           <br></br>
 
-          <Form className="loginform">
-            <Form.Group className="mb-3" controlId="formGroupEmail">
+          <Form className="loginform" onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
               <Form.Label htmlFor="email" className="emaillabel">
                 Email address
               </Form.Label>
@@ -45,7 +67,7 @@ const Login = () => {
                 />
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupPassword">
+            <Form.Group className="mb-3">
               <Form.Label className="passwordlabel" htmlFor="password">
                 Password
               </Form.Label>

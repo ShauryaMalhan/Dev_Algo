@@ -5,6 +5,7 @@ import Login from "./components/common/login.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Footer from './components/user/footer.jsx';
 import Signup from './components/common/signup.jsx';
+import Problem from "./components/user/problems.jsx";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               </div>
             }
           />
+          <Route path="/problems" element={<Problem/>}></Route>
         </Routes>
       </div>
       <Footer />

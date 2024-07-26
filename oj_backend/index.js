@@ -11,10 +11,6 @@ DBConnection();
 
 app.use('/api/auth', authRoutes);
 
-app.get('/api/auth/register', (req, res) => {
-    res.send("Welcome");
-})
-
 app.listen(8000, (req, res) => {
     console.log('listening on port 8000');
 });
