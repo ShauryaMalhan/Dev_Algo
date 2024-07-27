@@ -1,53 +1,49 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const TestcaseSchema = new mongoose.Schema({
-    inputs: {
-        type: [mongoose.Schema.Types.Mixed],
-        required: true,
-    },
-    output: {
-        type: mongoose.Schema.Types.Mixed,
-        required: true,
-    }
-}) 
+  inputs: {
+    type: [String], // Array of strings to store multiple inputs
+    required: true,
+  },
+  output: {
+    type: String,
+    required: true,
+  },
+  explanation: {
+    type: String,
+    required: false,
+  },
+});
 
 const ProblemSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    statement: {
-        type: String,
-        required: true,
-    },
-    inputDescription: {
-        type: [String],
-        required: true,
-    },
-    testcases: [TestcaseSchema],
-    constraint: {
-        type: String,
-        required: true,
-    },
-    time: {
-        type: String,
-        required: true,
-    },
-    space: {
-        type: String,
-        required: true,
-    },
-    createdBy: {
-        type: String,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        required: Date.now,
-    }
-})
+  title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  statement: {
+    type: String,
+    required: true,
+  },
+  inputDescription: {
+    type: [String],
+    required: true,
+  },
+  testcases: [TestcaseSchema],
+  constraints: {
+    type: String,
+    required: true,
+  },
+  createdBy: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const Problem = mongoose.model('problem', ProblemSchema);
+const Problem = mongoose.model("problem", ProblemSchema);
 
 export default Problem;
