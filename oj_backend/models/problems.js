@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
 
+const InputsSchema = new mongoose.Schema({
+  input: {
+    type: 'string',
+    required: true
+  }  
+})
+
 const TestcaseSchema = new mongoose.Schema({
   inputs: {
-    type: [String], // Array of strings to store multiple inputs
+    type: [InputsSchema],
     required: true,
   },
   output: {
@@ -15,6 +22,27 @@ const TestcaseSchema = new mongoose.Schema({
   },
 });
 
+const InputDescriptionsSchema = new mongoose.Schema({
+  description: {
+    type: String,
+    required: true,
+  }
+})
+
+const OutputDescriptionsSchema = new mongoose.Schema({
+  description: {
+    type: String,
+    required: true,
+  }
+})
+
+const ConstraintSchema = new mongoose.Schema({
+  constraint: {
+    type: String,
+    required: true,
+  }
+})
+
 const ProblemSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -26,12 +54,16 @@ const ProblemSchema = new mongoose.Schema({
     required: true,
   },
   inputDescription: {
-    type: [String],
+    type: [InputDescriptionsSchema],
+    required: true,
+  },
+  outputDescription: {
+    type: [OutputDescriptionsSchema],
     required: true,
   },
   testcases: [TestcaseSchema],
   constraints: {
-    type: String,
+    type: [ConstraintSchema],
     required: true,
   },
   createdBy: {

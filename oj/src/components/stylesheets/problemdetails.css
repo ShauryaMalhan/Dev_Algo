@@ -1,0 +1,27 @@
+.problem {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.descriptiontitle {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.title {
+    font-family: "Merriweather", serif;
+    font-weight: bold;
+    font-size: xx-large;
+    text-align: center;
+}
+
+.description {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: large;
+}
+
+.input {
+    font-weight: 600;
+    font-size: large;
+}

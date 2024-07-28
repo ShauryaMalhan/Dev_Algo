@@ -1,23 +1,70 @@
 import { useLocation } from "react-router-dom";
+import "../stylesheets/problemdetails.css";
 import Card from 'react-bootstrap/Card';
 
+
 const ProblemDetail = () => {
-    const location = useLocation();
-    const problem = location.state;
-  
-    return (
-      <div className="container mt-4">
-        <Card>
+  const location = useLocation();
+  const problem = location.state;
+
+  return (
+    <div className="container mt-4 mb-4 problem">
+      <br />
+      <br />
+      <div className="title">{problem.title}</div>
+      <br />
+      <div className="descriptiontitle">Problem Statement: </div>
+      <div className="description">{problem.statement}</div>
+      <br />
+      <div className="descriptiontitle">Input:</div>
+      {problem.inputDescription.map((value) => (
+        <div key={value._id} className="description">
+          {value.description}
+        </div>
+      ))}
+      <br />
+      <div className="descriptiontitle">Output:</div>
+      {problem.outputDescription.map((value) => (
+        <div key={value._id} className="description">
+          {value.description}
+        </div>
+      ))}
+      <br />
+      <div className="descriptiontitle">Constraints: </div>
+      {problem.constraints.map((value) => (
+        <ul key={value._id} className="description">
+          <li>{value.constraint}</li>
+        </ul>
+      ))}
+      <br />
+      <div className="descriptiontitle">Created By: </div>
+      <div className="description">{problem.createdBy}</div>
+      <br/>
+      <br/>
+      <div className="descriptiontitle">Test Cases:</div>
+      {problem.testcases.map((value) => (
+        <Card key={value._id}>
           <Card.Body>
-            <Card.Title>{problem.title}</Card.Title>
-            <Card.Text>{problem.statement}</Card.Text>
-            <Card.Text><strong>Input Description:</strong> {problem.inputDescription}</Card.Text>
-            <Card.Text><strong>Constraints:</strong> {problem.constraints}</Card.Text>
-            <Card.Text><strong>Created By:</strong> {problem.createdBy}</Card.Text>
+            <div className="input">Input: </div>
+            <div>
+              {value.inputs.map((value1) => (
+                <div key={value1._id}>
+                  {value1.input}
+                </div>
+              ))}
+            </div>
+            <br/>
+            <div className="input">Output: </div>
+            <div>{value.output}</div>
+            <br/>
+            {value.explanation}
+            <Card.Text>
+            </Card.Text>
           </Card.Body>
         </Card>
-      </div>
-    );
-  };
-  
-  export default ProblemDetail;
+      ))}
+    </div>
+  );
+};
+
+export default ProblemDetail;

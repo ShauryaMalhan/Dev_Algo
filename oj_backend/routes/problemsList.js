@@ -13,6 +13,7 @@ router.post('/newProblem', async (req, res) => {
             title: req.body.title,
             statement: req.body.statement,
             inputDescription: req.body.inputDescription,
+            outputDescription: req.body.outputDescription,
             testcases: req.body.testcases,
             constraints: req.body.constraints,
             createdBy: req.body.createdBy
