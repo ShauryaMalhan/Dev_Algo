@@ -77,7 +77,7 @@ router.post('/login', [
         }
         const authtoken = jwt.sign(data, JWT_SECRET);
 
-        res.json({ authtoken: authtoken});
+        res.json({ authtoken: authtoken, username: user.username});
 
     }  catch (err) {
         console.error(err.message);

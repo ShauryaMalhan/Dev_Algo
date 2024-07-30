@@ -7,31 +7,31 @@ import Footer from "./components/common/footer.jsx";
 import Signup from "./components/common/signup.jsx";
 import Problem from "./components/user/problems.jsx";
 import ProblemDetail from "./components/user/problemdetail.jsx";
+import AuthState from "./contexts/auth/authState.jsx";
+import Dashboard from "./components/common/dashboard.jsx";
 
 function App() {
   return (
-    <Router>
-      <div className="page">
-        <Navbar />
-        <div className="container">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/"
-              element={
-                <div>
-                  <h1>This is My React Application</h1>
-                </div>
-              }
-            />
-            <Route path="/problems" element={<Problem />} />
-            <Route path="/problems/:id" element={<ProblemDetail />} />
-          </Routes>
+    <AuthState>
+      <Router>
+        <div className="page">
+          <Navbar />
+          <div className="container">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route
+                path="/"
+                element={<Dashboard/>}
+              />
+              <Route path="/problems" element={<Problem />} />
+              <Route path="/problems/:id" element={<ProblemDetail />} />
+            </Routes>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </Router>
+      </Router>
+    </AuthState>
   );
 }
 

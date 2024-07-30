@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
+import { useContext } from "react";
+import authContext from "../../contexts/auth/authContext";
 
 const Login = () => {
+  const { setUser } = useContext(authContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,6 +37,7 @@ const Login = () => {
       if(!response.ok) {
         throw new Error(result.error);
       }
+      setUser({username: result.username});
       console.log(result);
     } catch (err) {
       throw new Error(err);
