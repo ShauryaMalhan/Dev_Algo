@@ -1,0 +1,8 @@
+.dash {
+  display: flex;
+  flex-direction: column;
+  margin-top: 21%;
+  margin-bottom: 21%;
+  font-family: 'Playwrite AT', sans-serif;
+}
+

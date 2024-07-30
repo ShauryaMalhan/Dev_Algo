@@ -1,5 +1,10 @@
 .footer {
     background-color: grey;
     height: 50px;
-    text-align: center; 
+}
+
+.symb {
+    padding-left: 6%;
+    padding-top: 1%;
+    color: white;
 }
