@@ -13,7 +13,7 @@ const ProblemDetail = () => {
     if(!loading && user.username === "none"){
       navigate('/login');
     }
-  }, [navigate, user]);
+  }, [navigate, user, loading]);
 
   const location = useLocation();
   const problem = location.state;
