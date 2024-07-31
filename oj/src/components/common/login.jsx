@@ -5,8 +5,10 @@ import { useState } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useContext } from "react";
 import authContext from "../../contexts/auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const { setUser } = useContext(authContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,8 +39,9 @@ const Login = () => {
       if(!response.ok) {
         throw new Error(result.error);
       }
-      setUser({username: result.username});
+      setUser({ username: result.username });
       console.log(result);
+      navigate('/');
     } catch (err) {
       throw new Error(err);
     }

@@ -5,11 +5,23 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import '../stylesheets/navbar.css';
+import "../stylesheets/navbar.css";
+import { useContext } from "react";
+import authContext from "../../contexts/auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 const Usernavbar = () => {
   let location = useLocation();
   useEffect(() => {}, [location]);
+  const { user, setUser } = useContext(authContext);
+  const navigate = useNavigate();
+  const isValid = user.username !== "none";
+
+  const handlelogout = ()=> {
+    setUser({ username: "none" });
+    navigate('/login');
+  }
+
   return (
     <Navbar expand="lg" className="navbar-dark bg-dark">
       <Container>
@@ -27,12 +39,22 @@ const Usernavbar = () => {
               Problem List
             </Nav.Link>
           </Nav>
-          <Button as={Link} to="/login" className="loginbtn">
-            Login
-          </Button>
-          <Button Button as={Link} to="/signup" className="signupbtn">
-            Signup
-          </Button>
+          {!isValid ? (
+            <>
+              <Button as={Link} to="/login" className="loginbtn">
+                Login
+              </Button>
+              <Button Button as={Link} to="/signup" className="signupbtn">
+                Signup
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button as={Link} className="loginbtn" onClick={handlelogout}>
+                Logout
+              </Button>
+            </>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

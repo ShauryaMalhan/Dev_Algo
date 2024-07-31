@@ -9,6 +9,7 @@ import Problem from "./components/user/problems.jsx";
 import ProblemDetail from "./components/user/problemdetail.jsx";
 import AuthState from "./contexts/auth/authState.jsx";
 import Dashboard from "./components/common/dashboard.jsx";
+import ProtectedRoute from "./components/services/protectedRoute.jsx";
 
 function App() {
   return (
@@ -22,10 +23,10 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route
                 path="/"
-                element={<Dashboard/>}
+                element={<ProtectedRoute><Dashboard/></ProtectedRoute>}
               />
-              <Route path="/problems" element={<Problem />} />
-              <Route path="/problems/:id" element={<ProblemDetail />} />
+              <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
+              <Route path="/problems/:id" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
             </Routes>
           </div>
           <Footer />
