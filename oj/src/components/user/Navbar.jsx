@@ -18,6 +18,7 @@ const Usernavbar = () => {
   const isValid = user.username !== "none";
 
   const handlelogout = ()=> {
+    localStorage.removeItem('username');
     setUser({ username: "none" });
     navigate('/login');
   }
@@ -44,7 +45,7 @@ const Usernavbar = () => {
               <Button as={Link} to="/login" className="loginbtn">
                 Login
               </Button>
-              <Button Button as={Link} to="/signup" className="signupbtn">
+              <Button as={Link} to="/signup" className="signupbtn">
                 Signup
               </Button>
             </>

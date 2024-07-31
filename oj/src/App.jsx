@@ -19,14 +19,32 @@ function App() {
           <Navbar />
           <div className="container">
             <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route
-                path="/"
-                element={<ProtectedRoute><Dashboard/></ProtectedRoute>}
+                path="/problems"
+                element={
+                  <ProtectedRoute>
+                    <Problem />
+                  </ProtectedRoute>
+                }
               />
-              <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
-              <Route path="/problems/:id" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
+              <Route
+                path="/problems/:id"
+                element={
+                  <ProtectedRoute>
+                    <ProblemDetail />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </div>
           <Footer />

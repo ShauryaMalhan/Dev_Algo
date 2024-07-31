@@ -20,6 +20,7 @@ const Problem = () => {
     getData();
   }, []);
 
+
   const handleCardClick = (problem) => {
     navigate(`/problems/${problem._id}`, { state: problem });
   };

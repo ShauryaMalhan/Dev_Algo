@@ -4,11 +4,18 @@ import authContext from "../../contexts/auth/authContext";
 
 const ProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
-    const { user } = useContext(authContext);
+    const { user, setUser } = useContext(authContext);
+
+    useEffect(()=> {
+        const storedUser = localStorage.getItem('username');
+        if(storedUser){
+          setUser({username: storedUser});
+        }
+    }, [setUser]);
 
     useEffect(() => {
         if (user.username === "none") {
-            navigate('/login');
+            return navigate('/login');
         }
     }, [user, navigate]);
 

@@ -3,12 +3,14 @@ import "../stylesheets/login.css";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [name, setFullname] = useState("");
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -52,7 +54,7 @@ const Register = () => {
       if(!respose.ok){
         throw new Error(result.error);
       }
-      console.log(result);
+      navigate('/login');
     } catch (err) {
       throw new Error(err);
     }

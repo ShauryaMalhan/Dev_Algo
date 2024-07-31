@@ -1,11 +1,27 @@
 import { useLocation } from "react-router-dom";
 import "../stylesheets/problemdetails.css";
 import Card from 'react-bootstrap/Card';
-
+import authContext from "../../contexts/auth/authContext";
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProblemDetail = () => {
+  const navigate = useNavigate();
+  const { user } = useContext(authContext);
+  
+  useEffect( () => {
+    if(user.username === "none"){
+      navigate('/login');
+    }
+  }, [navigate, user]);
+
   const location = useLocation();
   const problem = location.state;
+
+  if (!problem) {
+    return <div>No problem details available.</div>; 
+  }
+
 
   return (
     <div className="container mt-4 mb-4 problem">
