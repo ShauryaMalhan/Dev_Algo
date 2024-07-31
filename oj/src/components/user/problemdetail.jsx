@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 
 const ProblemDetail = () => {
   const navigate = useNavigate();
-  const { user } = useContext(authContext);
+  const { user, loading } = useContext(authContext);
   
   useEffect( () => {
-    if(user.username === "none"){
+    if(!loading && user.username === "none"){
       navigate('/login');
     }
   }, [navigate, user]);

@@ -2,9 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import authContext from "../../contexts/auth/authContext";
 
+
 const ProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
-    const { user, setUser } = useContext(authContext);
+    const { user, setUser, loading } = useContext(authContext);
 
     useEffect(()=> {
         const storedUser = localStorage.getItem('username');
@@ -14,10 +15,10 @@ const ProtectedRoute = ({ children }) => {
     }, [setUser]);
 
     useEffect(() => {
-        if (user.username === "none") {
+        if (!loading && user.username === "none") {
             return navigate('/login');
         }
-    }, [user, navigate]);
+    }, [user, navigate, loading]);
 
     return children;
 }
