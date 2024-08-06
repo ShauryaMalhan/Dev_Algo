@@ -10,6 +10,7 @@ import ProblemDetail from "./components/user/problemdetail.jsx";
 import AuthState from "./contexts/auth/authState.jsx";
 import Dashboard from "./components/common/dashboard.jsx";
 import ProtectedRoute from "./components/services/protectedRoute.jsx";
+import SubmitProblem from "./components/user/submitProblem.jsx";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/problems/:id/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
             </Routes>
           </div>
           <Footer />

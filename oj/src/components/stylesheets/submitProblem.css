@@ -1,0 +1,22 @@
+.submitSolution {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
+.codeText {
+    width: 500%; 
+    height: 100%;
+}
+
+.codeGroup { 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 80%;
+}
+
+.codeLabel {
+    font-size: xx-large;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}

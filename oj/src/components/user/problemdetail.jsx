@@ -4,6 +4,8 @@ import Card from 'react-bootstrap/Card';
 import authContext from "../../contexts/auth/authContext";
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import { Link } from "react-router-dom";
 
 const ProblemDetail = () => {
   const navigate = useNavigate();
@@ -20,6 +22,11 @@ const ProblemDetail = () => {
 
   if (!problem) {
     return <div>No problem details available.</div>; 
+  }
+
+  const handleProblemSubmit = (e)=> {
+    e.preventDefault();
+    navigate(`/problems/${problem._id}/submit`, {state: problem});
   }
 
 
@@ -79,6 +86,10 @@ const ProblemDetail = () => {
           </Card.Body>
         </Card>
       ))}
+      <br/>
+      <div className="div_problemSubmit">
+        <Button as={Link} className="problemSubmit" onClick={handleProblemSubmit}>Submit Problem</Button>
+      </div>
     </div>
   );
 };

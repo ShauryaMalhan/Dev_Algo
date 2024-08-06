@@ -25,3 +25,13 @@
     font-weight: 600;
     font-size: large;
 }
+
+.problemSubmit {
+    width: 15%;
+}
+
+.div_problemSubmit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
