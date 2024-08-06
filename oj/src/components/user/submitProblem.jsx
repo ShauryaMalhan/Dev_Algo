@@ -21,7 +21,8 @@ const SubmitProblem = () => {
 
   const formatInput = (input) => {
     return input
-      .replace(/[\[\]]/g, "")
+      // eslint-disable-next-line no-useless-escape
+      .replace(/[\[\]"]/g, "")
       .split(",")
       .map((num) => num.trim())
       .join(" ");
@@ -29,21 +30,52 @@ const SubmitProblem = () => {
 
   const handleProblemSubmit = async (e) => {
     e.preventDefault();
+    let Verdict = false;
     for (const testcase of problem.testcases) {
       const formattedInputs = testcase.inputs
         .map(({ input }) => formatInput(input))
         .join(" ");
 
-      console.log(language);
-      console.log(code);
-      console.log(formattedInputs);
       const response = await axios.post(COMPILE_PATH, {
         language: language,
         code: code,
         input: formattedInputs,
       });
+      if (!response) {
+        Verdict = true;
+        break;
+      }
+      const userOutput = response.data.output;
+      const expectedOutput = formatInput(testcase.output);
 
-      console.log(response);
+      const processOutput = (output) => {
+        if (Array.isArray(output)) {
+          const temp =  JSON.stringify(output).toLowerCase().trim();
+          return formatInput(temp);
+        } else if (typeof output === "object") {
+          return JSON.stringify(output).toLowerCase().trim();
+        } else if (typeof output === "string") {
+          return output.toLowerCase().trim();
+        } else if (typeof output === "number") {
+          return output.toString().toLowerCase().trim();
+        }
+        return ""; 
+      };
+
+      const processedUserOutput = processOutput(userOutput);
+      const processedExpectedOutput = processOutput(expectedOutput);
+
+      console.log(processedUserOutput);
+      console.log(processedExpectedOutput);
+
+      if (processedUserOutput !== processedExpectedOutput) {
+        Verdict = true;
+      }
+    }
+    if (!Verdict) {
+      console.log("Accepted");
+    } else {
+      console.log("Failed");
     }
   };
 
@@ -60,11 +92,7 @@ const SubmitProblem = () => {
             <option value="java">Java</option>
           </select>
           <br />
-          <label
-            id="code"
-            htmlFor="code"
-            className="codeLabel"
-          >
+          <label id="code" htmlFor="code" className="codeLabel">
             Code
           </label>
           <textarea

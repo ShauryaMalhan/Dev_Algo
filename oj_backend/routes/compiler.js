@@ -11,15 +11,11 @@ router.post('/run', async (req, res) => {
         return res.status(500).json({ success: false, message: "Empty code body" });
     }
     try {
-        console.log(language);
-        console.log(code);
         const filePath = await generateFile(code, language);
         const input_filePath = await generateInputFile(input);
         const output = await executeCpp(filePath, input_filePath);
         res.json({ filePath, output, input_filePath });
-        console.log(output);
     } catch(err) {
-        console.log(err);
         res.status(500).json({ success: false, message: err.message});
     }
 })
