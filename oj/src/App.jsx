@@ -11,46 +11,55 @@ import AuthState from "./contexts/auth/authState.jsx";
 import Dashboard from "./components/common/dashboard.jsx";
 import ProtectedRoute from "./components/services/protectedRoute.jsx";
 import SubmitProblem from "./components/user/submitProblem.jsx";
+import ScrollTop from "./components/services/scrollTop.jsx";
 
 function App() {
   return (
     <AuthState>
       <Router>
-        <div className="page">
-          <Navbar />
-          <div className="container">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route
-                path="/problems"
-                element={
-                  <ProtectedRoute>
-                    <Problem />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/problems/:id"
-                element={
-                  <ProtectedRoute>
-                    <ProblemDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/problems/:id/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
-            </Routes>
+        <ScrollTop/>
+          <div className="page">
+            <Navbar />
+            <div className="container">
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route
+                  path="/problems"
+                  element={
+                    <ProtectedRoute>
+                      <Problem />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/problems/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ProblemDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/problems/:id/submit"
+                  element={
+                    <ProtectedRoute>
+                      <SubmitProblem />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
       </Router>
     </AuthState>
   );
