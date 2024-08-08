@@ -38,7 +38,6 @@ const Problem = () => {
             >
               <Card.Body>
                 <Card.Title>{problem.title}</Card.Title>
-                <Card.Text>{problem.statement}</Card.Text>
               </Card.Body>
             </Card>
           ))

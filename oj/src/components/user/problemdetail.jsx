@@ -66,7 +66,7 @@ const ProblemDetail = () => {
       <br/>
       <div className="descriptiontitle">Test Cases:</div>
       {problem.testcases.map((value) => (
-        <Card key={value._id}>
+        <Card key={value._id} className="mt-3 mb-3">
           <Card.Body>
             <div className="input">Input: </div>
             <div>

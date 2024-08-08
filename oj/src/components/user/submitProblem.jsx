@@ -106,8 +106,7 @@ int main()
       }
     }
     try {
-        const output = await axios.post(NEW_SUBMISSION_PATH, { user: user.username, verdict: saveVerdict, language: language, problem: problem.title});
-        console.log(output);    
+        await axios.post(NEW_SUBMISSION_PATH, { user: user.username, verdict: saveVerdict, language: language, problem: problem.title});   
     } catch (err) {
         throw new Error(err.message);
     }

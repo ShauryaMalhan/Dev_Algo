@@ -1,12 +1,41 @@
-.submissions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    column-gap: 12%;
+.container {
+  padding: 20px;
 }
 
-.time {
-    display: flex;
-    text-align: center;
-    width: 10%;
+.submissionsHead {
+  padding: 10px 0;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  font-size: x-large;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #333;
+}
+
+.submissions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  border-bottom: 2px solid #ccc;
+}
+
+.submissions > div {
+  width: 18%;
+  text-align: center;
+  padding: 5px;
+}
+
+.submissions div:nth-child(1) {
+  width: 25%;
+}
+
+.submissions div:nth-child(4),
+.submissions div:nth-child(5) {
+  width: 15%;
+}
+
+.no-submission {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
+  color: #888;
 }

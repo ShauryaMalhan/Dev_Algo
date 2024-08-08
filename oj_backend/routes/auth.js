@@ -39,7 +39,6 @@ router.post('/register', [
             }
         }
         const authtoken = jwt.sign(data, JWT_SECRET);
-        // res.json({"success": true})
         res.json({authtoken})
         
     }  catch (err) {
@@ -80,7 +79,6 @@ router.post('/login', [
         res.json({ authtoken: authtoken, username: user.username});
 
     }  catch (err) {
-        console.error(err.message);
         res.status(500).send("Internal Server Error");
     }
 })
@@ -91,7 +89,6 @@ router.post('/getuser', fetchuser, async (req, res) => {
         const user = await User.findById(userId).select("-password");
         res.send(user);
     } catch (err) {
-        console.error(err.message);
         res.status(500).send("Internal Server Error");
         
     }    

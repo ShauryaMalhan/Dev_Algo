@@ -4,24 +4,22 @@ import authContext from "../../contexts/auth/authContext";
 import axios from "axios";
 import "../stylesheets/submissions.css";
 
-const MySubmissions = () => {
+const AllSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const { user } = useContext(authContext);
-  const mySubmissions = import.meta.env.VITE_MY_SUBMISSIONS_PATH;
+  const allSubmissions = import.meta.env.VITE_ALL_SUBMISSIONS_PATH;
 
   useEffect(() => {
     const myHistory = async () => {
       try {
-        const Submissions = await axios.post(mySubmissions, {
-          user: user.username,
-        });
+        const Submissions = await axios.post(allSubmissions);
         setSubmissions(Submissions.data);
       } catch (err) {
         setSubmissions(err);
       }
     };
     myHistory();
-  }, [user.username, mySubmissions]);
+  }, [user.username, allSubmissions]);
 
   return (
     <div className="container">
@@ -53,4 +51,4 @@ const MySubmissions = () => {
   );
 };
 
-export default MySubmissions;
+export default AllSubmissions;

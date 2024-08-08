@@ -1,34 +1,41 @@
 .submitSolution {
-    display: flex;
-    justify-content: center;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
 }
 
 .codeText {
-    width: 500%; 
-    height: 100%;
+  width: 500%;
+  height: 100%;
 }
 
-.codeGroup { 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 80%;
+.codeGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80%;
 }
 
 .codeLabel {
-    font-size: xx-large;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: xx-large;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
 }
 
 .vardict {
-    border-style: solid;
-    font-size: large;
-    border-width: 1%;
-    border-radius: 10%;
-    height: 20%;
-    width: 70%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border-style: solid;
+  font-size: large;
+  border-width: 1%;
+  border-radius: 10%;
+  height: 20%;
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }

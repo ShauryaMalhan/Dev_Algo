@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/services/protectedRoute.jsx";
 import SubmitProblem from "./components/user/submitProblem.jsx";
 import ScrollTop from "./components/services/scrollTop.jsx";
 import MySubmissions from "./components/user/mySubmissions.jsx";
+import AllSubmissions from "./components/user/allSubmissions.jsx";
 
 function App() {
   return (
@@ -62,6 +63,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <MySubmissions/>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/allSubmissions"
+                  element={
+                    <ProtectedRoute>
+                      <AllSubmissions/>
                     </ProtectedRoute>
                   }
                 />
