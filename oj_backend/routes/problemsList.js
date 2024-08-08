@@ -19,7 +19,6 @@ router.post('/newProblem', async (req, res) => {
             createdBy: req.body.createdBy
         })
 
-        console.log(newProblem);
         res.status(200).send(newProblem);
     } catch (err) {
         console.error(err.message);

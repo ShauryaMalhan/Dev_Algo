@@ -39,6 +39,20 @@ const Usernavbar = () => {
             >
               Problem List
             </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/mySubmissions"
+              className={location.pathname === "/mySubmissions" ? "active" : ""}
+            >
+              My Submissions
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/allSubmissions"
+              className={location.pathname === "/allSubmissions" ? "active" : ""}
+            >
+              All Submissions
+            </Nav.Link>
           </Nav>
           {!isValid ? (
             <>

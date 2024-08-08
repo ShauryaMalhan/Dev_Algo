@@ -12,6 +12,7 @@ import Dashboard from "./components/common/dashboard.jsx";
 import ProtectedRoute from "./components/services/protectedRoute.jsx";
 import SubmitProblem from "./components/user/submitProblem.jsx";
 import ScrollTop from "./components/services/scrollTop.jsx";
+import MySubmissions from "./components/user/mySubmissions.jsx";
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <SubmitProblem />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mySubmissions"
+                  element={
+                    <ProtectedRoute>
+                      <MySubmissions/>
                     </ProtectedRoute>
                   }
                 />

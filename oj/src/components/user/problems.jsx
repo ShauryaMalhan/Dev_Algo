@@ -14,7 +14,7 @@ const Problem = () => {
         const problemData = await fetchProblems();
         setProblems(problemData);
       } catch (err) {
-        throw new Error(err);
+        setProblems(err);
       }
     };
     getData();

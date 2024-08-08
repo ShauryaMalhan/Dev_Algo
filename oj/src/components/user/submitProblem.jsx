@@ -3,6 +3,8 @@ import "../stylesheets/submitProblem.css";
 import { useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { useContext } from "react";
+import authContext from "../../contexts/auth/authContext";
 
 const SubmitProblem = () => {
     const cppCode = `#include <bits/stdc++.h>
@@ -21,8 +23,10 @@ int main()
   const problem = location.state;
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState(cppCode);
-  const [vardict, setVardict] = useState("");
+  const [verdict, setVerdict] = useState("Accepted");
+  const { user } = useContext(authContext);
   const COMPILE_PATH = import.meta.env.VITE_COMPILE_PATH;
+  const NEW_SUBMISSION_PATH = import.meta.env.VITE_NEW_SUBMISSION_PATH;
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -42,15 +46,15 @@ int main()
   };
 
   const handleProblemSubmit = async (e) => {
-    setVardict("Running");
+    setVerdict("Running");
     e.preventDefault();
-    let Vardict = false;
+    let Verdict = false;
+    let saveVerdict = "Accepted";
     for (const testcase of problem.testcases) {
       const formattedInputs = testcase.inputs
         .map(({ input }) => formatInput(input))
         .join(" ");
         
-      console.log(Vardict);
 
       try{
         const response = await axios.post(COMPILE_PATH, {
@@ -59,8 +63,9 @@ int main()
             input: formattedInputs,
           });
           if (response.status !== 200) {
-            setVardict("Error");
-            Vardict = true;
+            setVerdict("Error");
+            Verdict = true;
+            saveVerdict = "Error";
             break;
           }
           const userOutput = response.data.output;
@@ -83,23 +88,28 @@ int main()
           const processedUserOutput = processOutput(userOutput);
           const processedExpectedOutput = processOutput(expectedOutput);
     
-          console.log(processedUserOutput);
-          console.log(processedExpectedOutput);
-    
           if (processedUserOutput !== processedExpectedOutput) {
-            setVardict("Wrong Answer");
-            Vardict = true;
+            setVerdict("Wrong Answer");
+            Verdict = true;
+            saveVerdict = "Wrong Answer";
             break;
           }
       } catch (e) {
-        setVardict("Error");
-        Vardict = true;
+        setVerdict("Error");
+        Verdict = true;
+        saveVerdict = "Error";
         break;
       }
-      
+      if(!Verdict) {
+        saveVerdict = "Accepted";
+        setVerdict("Accepted");
+      }
     }
-    if (!Vardict) {
-        setVardict("Accepted");
+    try {
+        const output = await axios.post(NEW_SUBMISSION_PATH, { user: user.username, verdict: saveVerdict, language: language, problem: problem.title});
+        console.log(output);    
+    } catch (err) {
+        throw new Error(err.message);
     }
   };
 
@@ -132,7 +142,7 @@ int main()
           </Button>
           <br/>
           <div className="vardict">
-            {vardict}
+            {verdict}
           </div>
         </div>
       </form>

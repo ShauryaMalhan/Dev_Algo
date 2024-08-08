@@ -1,0 +1,12 @@
+.submissions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 12%;
+}
+
+.time {
+    display: flex;
+    text-align: center;
+    width: 10%;
+}
