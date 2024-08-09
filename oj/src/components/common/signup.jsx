@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useNavigate } from "react-router-dom";
+import Alert from "../services/alert";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,8 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [name, setFullname] = useState("");
   const navigate = useNavigate();
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -52,10 +55,14 @@ const Register = () => {
       })
       const result = await respose.json();
       if(!respose.ok){
+        setAlertMessage('Signup failed, please try again');
+        setShowAlert(true);
         throw new Error(result.error);
       }
       navigate('/login');
     } catch (err) {
+      setShowAlert(true);
+      setAlertMessage('Signup failed, please try again');
       throw new Error(err);
     }
   }
@@ -147,6 +154,12 @@ const Register = () => {
               Log in
             </Link>
           </h6>
+          {showAlert && (
+            <Alert
+              message={alertMessage}
+              onClose={() => setShowAlert(false)} // Close handler
+            />
+          )}
         </div>
       </div>
     </>

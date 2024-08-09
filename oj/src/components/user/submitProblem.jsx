@@ -7,7 +7,7 @@ import { useContext } from "react";
 import authContext from "../../contexts/auth/authContext";
 
 const SubmitProblem = () => {
-    const cppCode = `#include <bits/stdc++.h>
+  const cppCode = `#include <bits/stdc++.h>
 using namespace std;
 
 int main()
@@ -23,7 +23,7 @@ int main()
   const problem = location.state;
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState(cppCode);
-  const [verdict, setVerdict] = useState("Accepted");
+  const [verdict, setVerdict] = useState("");
   const { user } = useContext(authContext);
   const COMPILE_PATH = import.meta.env.VITE_COMPILE_PATH;
   const NEW_SUBMISSION_PATH = import.meta.env.VITE_NEW_SUBMISSION_PATH;
@@ -37,12 +37,14 @@ int main()
   };
 
   const formatInput = (input) => {
-    return input
-      // eslint-disable-next-line no-useless-escape
-      .replace(/[\[\]"]/g, "")
-      .split(",")
-      .map((num) => num.trim())
-      .join(" ");
+    return (
+      input
+        // eslint-disable-next-line no-useless-escape
+        .replace(/[\[\]"]/g, "")
+        .split(",")
+        .map((num) => num.trim())
+        .join(" ")
+    );
   };
 
   const handleProblemSubmit = async (e) => {
@@ -54,61 +56,66 @@ int main()
       const formattedInputs = testcase.inputs
         .map(({ input }) => formatInput(input))
         .join(" ");
-        
 
-      try{
+      try {
         const response = await axios.post(COMPILE_PATH, {
-            language: language,
-            code: code,
-            input: formattedInputs,
-          });
-          if (response.status !== 200) {
-            setVerdict("Error");
-            Verdict = true;
-            saveVerdict = "Error";
-            break;
+          language: language,
+          code: code,
+          input: formattedInputs,
+        });
+        if (response.status !== 200) {
+          setVerdict("Error");
+          Verdict = true;
+          saveVerdict = "Error";
+          break;
+        }
+        const userOutput = response.data.output;
+        const expectedOutput = formatInput(testcase.output);
+
+        const processOutput = (output) => {
+          if (Array.isArray(output)) {
+            const temp = JSON.stringify(output).toLowerCase().trim();
+            return formatInput(temp);
+          } else if (typeof output === "object") {
+            return JSON.stringify(output).toLowerCase().trim();
+          } else if (typeof output === "string") {
+            return output.toLowerCase().trim();
+          } else if (typeof output === "number") {
+            return output.toString().toLowerCase().trim();
           }
-          const userOutput = response.data.output;
-          const expectedOutput = formatInput(testcase.output);
-    
-          const processOutput = (output) => {
-            if (Array.isArray(output)) {
-              const temp =  JSON.stringify(output).toLowerCase().trim();
-              return formatInput(temp);
-            } else if (typeof output === "object") {
-              return JSON.stringify(output).toLowerCase().trim();
-            } else if (typeof output === "string") {
-              return output.toLowerCase().trim();
-            } else if (typeof output === "number") {
-              return output.toString().toLowerCase().trim();
-            }
-            return ""; 
-          };
-    
-          const processedUserOutput = processOutput(userOutput);
-          const processedExpectedOutput = processOutput(expectedOutput);
-    
-          if (processedUserOutput !== processedExpectedOutput) {
-            setVerdict("Wrong Answer");
-            Verdict = true;
-            saveVerdict = "Wrong Answer";
-            break;
-          }
+          return "";
+        };
+
+        const processedUserOutput = processOutput(userOutput);
+        const processedExpectedOutput = processOutput(expectedOutput);
+
+        if (processedUserOutput !== processedExpectedOutput) {
+          setVerdict("Wrong Answer");
+          Verdict = true;
+          saveVerdict = "Wrong Answer";
+          break;
+        }
       } catch (e) {
         setVerdict("Error");
         Verdict = true;
         saveVerdict = "Error";
         break;
       }
-      if(!Verdict) {
+      if (!Verdict) {
         saveVerdict = "Accepted";
         setVerdict("Accepted");
       }
     }
     try {
-        await axios.post(NEW_SUBMISSION_PATH, { user: user.username, verdict: saveVerdict, language: language, problem: problem.title});   
+      await axios.post(NEW_SUBMISSION_PATH, {
+        user: user.username,
+        verdict: saveVerdict,
+        language: language,
+        problem: problem.title,
+        link: location.pathname.slice(0, -7),
+      });
     } catch (err) {
-        throw new Error(err.message);
+      throw new Error(err.message);
     }
   };
 
@@ -139,10 +146,8 @@ int main()
           <Button className="mt-3" type="submit" onClick={handleProblemSubmit}>
             Submit
           </Button>
-          <br/>
-          <div className="vardict">
-            {verdict}
-          </div>
+          <br />
+          <div className="vardict">{verdict}</div>
         </div>
       </form>
     </div>

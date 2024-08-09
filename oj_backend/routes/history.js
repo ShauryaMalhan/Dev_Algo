@@ -9,7 +9,8 @@ router.post('/newHistory', async (req, res)=> {
             user: req.body.user,
             verdict: req.body.verdict,
             problem: req.body.problem,
-            language: req.body.language
+            language: req.body.language,
+            link: req.body.link
         })
         res.status(200).send(newHistory);
     } catch (err) {

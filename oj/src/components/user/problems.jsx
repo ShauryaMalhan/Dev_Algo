@@ -36,8 +36,9 @@ const Problem = () => {
               onClick={() => handleCardClick(problem)} 
               style={{ cursor: "pointer" }}
             >
-              <Card.Body>
+              <Card.Body className="problem-container">
                 <Card.Title>{problem.title}</Card.Title>
+                <Card.Title>Difficulty: {problem.difficulty}</Card.Title>
               </Card.Body>
             </Card>
           ))

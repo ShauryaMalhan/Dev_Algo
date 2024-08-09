@@ -1,0 +1,10 @@
+.alert-container {
+    position: fixed;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1050;
+    width: auto;
+    max-width: 400px;
+  }
+  

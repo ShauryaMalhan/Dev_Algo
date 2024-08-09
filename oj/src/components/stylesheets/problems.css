@@ -1,8 +1,14 @@
 .problems {
     margin-top: 2%;
-    /* display: flex;
-    flex-direction: column;
-    align-items: center;  */
+}
+
+.problem-container {
+    display: flex;
+    justify-content: space-between;    
+}
+
+.problem-container > * {
+    margin: 0 10%; 
 }
 
 .card {

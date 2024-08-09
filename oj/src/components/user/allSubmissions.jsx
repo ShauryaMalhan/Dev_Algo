@@ -23,7 +23,7 @@ const AllSubmissions = () => {
 
   return (
     <div className="container">
-      <div className="submissionsHead">My Submissions</div>
+      <div className="submissionsHead">All Submissions</div>
       <div className="submissionsHead submissions">
         <div>Date</div>
         <div>User</div>

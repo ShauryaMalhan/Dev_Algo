@@ -12,6 +12,7 @@ router.post('/newProblem', async (req, res) => {
         const newProblem = await Problem.create({
             title: req.body.title,
             statement: req.body.statement,
+            difficulty: req.body.difficulty,
             inputDescription: req.body.inputDescription,
             outputDescription: req.body.outputDescription,
             testcases: req.body.testcases,

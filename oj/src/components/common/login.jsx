@@ -6,12 +6,15 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { useContext } from "react";
 import authContext from "../../contexts/auth/authContext";
 import { useNavigate } from "react-router-dom";
+import Alert from "../services/alert";
 
 const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(authContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -37,12 +40,16 @@ const Login = () => {
 
       const result = await response.json();
       if(!response.ok) {
+        setAlertMessage('Login with correct credentials');
+        setShowAlert(true);
         throw new Error(result.error);
       }
       localStorage.setItem('username', result.username);
       setUser({ username: result.username });
       navigate('/');
     } catch (err) {
+      setAlertMessage('Login with correct credentials');
+      setShowAlert(true);
       throw new Error(err);
     }
   };
@@ -103,6 +110,12 @@ const Login = () => {
               Sign up
             </Link>
           </h6>
+        {showAlert && (
+            <Alert
+              message={alertMessage}
+              onClose={() => setShowAlert(false)} // Close handler
+            />
+          )}
         </div>
       </div>
     </>

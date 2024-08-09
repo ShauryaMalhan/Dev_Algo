@@ -3,7 +3,6 @@
 }
 
 .submissionsHead {
-  padding: 10px 0;
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: x-large;
@@ -15,22 +14,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  column-gap: 2%;
+  text-align: center;
   border-bottom: 2px solid #ccc;
 }
 
 .submissions > div {
-  width: 18%;
-  text-align: center;
-  padding: 5px;
-}
-
-.submissions div:nth-child(1) {
-  width: 25%;
-}
-
-.submissions div:nth-child(4),
-.submissions div:nth-child(5) {
   width: 15%;
+  padding: 5px;
 }
 
 .no-submission {
