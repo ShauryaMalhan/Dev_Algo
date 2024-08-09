@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const outputPath = path.join(__dirname, 'outputsCpp');
+const outputPath = path.join(__dirname, 'outputsPython');
 
 if (!fs.existsSync(outputPath)) {
     try {
@@ -16,14 +16,10 @@ if (!fs.existsSync(outputPath)) {
     }
 }
 
-export const executeCpp = async (filepath, inputPath) => {
-    const jobId = path.basename(filepath).split('.')[0];
-    const outputFilename = `${jobId}.exe`;
-    const outPath = path.join(outputPath, outputFilename);
-
+export const executePy = async (filepath, inputPath) => {
     return new Promise((resolve, reject) => {
-        const command = `g++ "${filepath}" -o "${outPath}" && cd "${outputPath}" && .\\${outputFilename} < "${inputPath}"`;
-        
+        const command = `python "${filepath}" < "${inputPath}"`;
+
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 reject({ error, stderr });

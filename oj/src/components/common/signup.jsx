@@ -35,10 +35,18 @@ const Register = () => {
     (email.length > 5) &
     (password.length > 5) &
     (username.length > 5) &
-    (name.length > 5);
+    (name.length > 5)
+    email.endsWith("@gmail.com");
 
   const handleSubmit = async (e)=>{
     e.preventDefault();
+    
+    if (!email.endsWith("@gmail.com")) {
+      setAlertMessage('Please use a verified Gmail account to register.');
+      setShowAlert(true);
+      return; 
+    }
+
     try {
       const REGISTER_URL = import.meta.env.VITE_REGISTER_PATH;
       const respose = await fetch(REGISTER_URL, {

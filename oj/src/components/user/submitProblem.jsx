@@ -55,7 +55,7 @@ int main()
     for (const testcase of problem.testcases) {
       const formattedInputs = testcase.inputs
         .map(({ input }) => formatInput(input))
-        .join(" ");
+        .join("\n");
 
       try {
         const response = await axios.post(COMPILE_PATH, {

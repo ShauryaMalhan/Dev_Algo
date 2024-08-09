@@ -14,6 +14,7 @@ import SubmitProblem from "./components/user/submitProblem.jsx";
 import ScrollTop from "./components/services/scrollTop.jsx";
 import MySubmissions from "./components/user/mySubmissions.jsx";
 import AllSubmissions from "./components/user/allSubmissions.jsx";
+import './App.css';
 
 function App() {
   return (

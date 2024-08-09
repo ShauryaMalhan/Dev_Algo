@@ -6,7 +6,7 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dircodes = path.join(__dirname, 'codesCpp');
+const dircodes = path.join(__dirname, 'codesPy');
 
 if(!fs.existsSync(dircodes)) {
     try {
@@ -16,7 +16,7 @@ if(!fs.existsSync(dircodes)) {
     }
 }
 
-export const generateFile = async (code, language) => {
+export const generatePyFile = async (code, language) => {
     const jobId = uuid();
     const filename = `${jobId}.${language}`;
     const filePath = path.join(dircodes, filename);

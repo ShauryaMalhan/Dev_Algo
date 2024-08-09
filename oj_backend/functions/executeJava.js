@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const outputPath = path.join(__dirname, 'outputsCpp');
+const outputPath = path.join(__dirname, 'outputsjava');
 
 if (!fs.existsSync(outputPath)) {
     try {
@@ -16,20 +16,21 @@ if (!fs.existsSync(outputPath)) {
     }
 }
 
-export const executeCpp = async (filepath, inputPath) => {
+export const executeJava = async (filepath, inputPath) => {
     const jobId = path.basename(filepath).split('.')[0];
-    const outputFilename = `${jobId}.exe`;
-    const outPath = path.join(outputPath, outputFilename);
+    const outPath = outputPath;
 
     return new Promise((resolve, reject) => {
-        const command = `g++ "${filepath}" -o "${outPath}" && cd "${outputPath}" && .\\${outputFilename} < "${inputPath}"`;
-        
+        const command = `javac "${filepath}" -d "${outPath}" && java -cp "${outPath}" ${jobId} < "${inputPath}"`;
+
         exec(command, (error, stdout, stderr) => {
             if (error) {
+                console.log(error);
                 reject({ error, stderr });
                 return; 
             }
             if (stderr) {
+                console.log(stderr);
                 reject(stderr);
                 return;
             }
