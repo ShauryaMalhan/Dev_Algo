@@ -25,12 +25,12 @@ export const executeJava = async (filepath, inputPath) => {
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
-                console.log(error);
+                console.error('Execution Error:', error);
                 reject({ error, stderr });
                 return; 
             }
             if (stderr) {
-                console.log(stderr);
+                console.error('Standard Error:', stderr);
                 reject(stderr);
                 return;
             }

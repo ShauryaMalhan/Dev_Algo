@@ -18,18 +18,20 @@ if (!fs.existsSync(outputPath)) {
 
 export const executeCpp = async (filepath, inputPath) => {
     const jobId = path.basename(filepath).split('.')[0];
-    const outputFilename = `${jobId}.exe`;
+    const outputFilename = `${jobId}.out`; 
     const outPath = path.join(outputPath, outputFilename);
 
     return new Promise((resolve, reject) => {
-        const command = `g++ "${filepath}" -o "${outPath}" && cd "${outputPath}" && .\\${outputFilename} < "${inputPath}"`;
+        const command = `g++ "${filepath}" -o "${outPath}" && cd "${outputPath}" && ./${outputFilename} < "${inputPath}"`;
         
         exec(command, (error, stdout, stderr) => {
             if (error) {
+                console.error('Execution Error:', error);
                 reject({ error, stderr });
                 return; 
             }
             if (stderr) {
+                console.error('Standard Error:', stderr);
                 reject(stderr);
                 return;
             }

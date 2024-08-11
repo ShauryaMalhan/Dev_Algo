@@ -18,14 +18,16 @@ if (!fs.existsSync(outputPath)) {
 
 export const executePy = async (filepath, inputPath) => {
     return new Promise((resolve, reject) => {
-        const command = `python "${filepath}" < "${inputPath}"`;
+        const command = `python3 "${filepath}" < "${inputPath}"`;
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
+                console.error('Execution Error:', error);
                 reject({ error, stderr });
                 return; 
             }
             if (stderr) {
+                console.error('Standard Error:', stderr);
                 reject(stderr);
                 return;
             }
