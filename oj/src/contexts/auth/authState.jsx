@@ -5,8 +5,7 @@ import AuthContext from "./authContext";
 const AuthState = (props)=> {
     const [user, setUser] = useState({ username: "none" });
     const [loading, setLoading] = useState(true);
-
-    useEffect(()=> {
+    useEffect(()=> { 
         const storedUser = localStorage.getItem('username');
         if (storedUser) {
             setUser({ username: storedUser });

@@ -18,6 +18,28 @@ int main()
     // Your code here
     return 0;
 }`;
+const pycode = `import sys
+input = sys.stdin.read
+sys.setrecursionlimit(10**6)
+
+def main():
+    # Your code here
+    pass
+
+if __name__ == "__main__":
+    main()`;
+const javacode = `import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        // Example to read a line: String input = br.readLine();
+        
+        // Your code here
+
+    }
+}`;
 
   const location = useLocation();
   const problem = location.state;
@@ -34,6 +56,15 @@ int main()
 
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
+    if(e.target.value === 'cpp') {
+      setCode(cppCode);
+    }
+    else if(e.target.value === 'py') {
+      setCode(pycode);
+    }
+    else if(e.target.value === 'java') {
+      setCode(javacode);
+    }
   };
 
   const formatInput = (input) => {
