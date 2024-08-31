@@ -13,7 +13,7 @@ const AllSubmissions = () => {
     const myHistory = async () => {
       try {
         const Submissions = await axios.post(allSubmissions);
-        setSubmissions(Submissions.data);
+        setSubmissions(Submissions.data.reverse());
       } catch (err) {
         setSubmissions(err);
       }
