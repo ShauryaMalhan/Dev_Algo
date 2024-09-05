@@ -5,27 +5,43 @@
 .problem-container {
     display: flex;
     justify-content: space-between;    
+
 }
 
 .problem-container > * {
-    margin: 0 10%; 
-}
-
-.card {
-    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 0 2%; 
 }
 
 .card:hover {
-    transform: scale(1.05); 
+    background-color: #f7f7f7;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
 }
-
+ 
 .card-title {
-    font-size: 1.5rem; 
+    font-size: 1.3rem; 
     font-weight: bold;
 }
 
-.card-text {
-    font-size: 1rem; 
-    color: #555; 
+.Easy {
+    display: flex;
+    background-color: rgb(141, 246, 164);
+    padding-inline: 4.5%;
+    margin-top: -1%;
+    margin-bottom: -1%;
+    align-items: center;
+    border-radius: 10%;
+}
+
+.Medium {
+    display: flex;
+    background-color: rgb(210, 211, 145);
+    padding-inline: 3%;
+    margin-top: -1%;
+    margin-bottom: -1%;
+    align-items: center;
+    border-radius: 10%;
+}
+
+.Hard {
+    background-color: rgb(223, 152, 152);
 }

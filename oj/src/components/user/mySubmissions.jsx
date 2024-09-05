@@ -15,7 +15,7 @@ const MySubmissions = () => {
         const Submissions = await axios.post(mySubmissions, {
           user: user.username,
         });
-        setSubmissions(Submissions.data);
+        setSubmissions(Submissions.data.reverse());
       } catch (err) {
         setSubmissions(err);
       }

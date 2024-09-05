@@ -20,7 +20,6 @@ const Problem = () => {
     getData();
   }, []);
 
-
   const handleCardClick = (problem) => {
     navigate(`/problems/${problem._id}`, { state: problem });
   };
@@ -38,7 +37,7 @@ const Problem = () => {
             >
               <Card.Body className="problem-container">
                 <Card.Title>{problem.title}</Card.Title>
-                <Card.Title>Difficulty: {problem.difficulty}</Card.Title>
+                <Card.Title className={`${problem.difficulty}`}>{problem.difficulty}</Card.Title>
               </Card.Body>
             </Card>
           ))
