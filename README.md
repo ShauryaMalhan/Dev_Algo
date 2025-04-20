@@ -1,7 +1,7 @@
 # Dev_Algo
 
 ## Deployed Link
-[CodeClash](https://dev-algo.vercel.app/)
+[CodeRunner](https://dev-algo.vercel.app/)
 
 ## Introduction <a name="introduction"></a>
 Welcome to CodeRunner! This application is designed to help you solve coding problems, practice competitive programming, and track your progress. This README file will guide you through using the app, its features, and how to get started.
