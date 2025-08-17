@@ -1,10 +1,61 @@
-.footer {
-    background-color: grey;
-    height: 50px;
+/* --- Professional Dark Footer --- */
+.site-footer {
+    background-color: #1e1e1e; /* Matches the dark theme background */
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem 0;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+    border-top: 1px solid #363b42; /* Subtle separator line */
 }
 
-.symb {
-    padding-left: 6%;
-    padding-top: 1%;
-    color: white;
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+    gap: 1.5rem;
+}
+
+/* --- Footer Links --- */
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #61dafb; /* Accent color on hover */
+}
+
+/* --- Social Media Icons --- */
+.footer-social {
+    display: flex;
+    gap: 1.2rem;
+}
+
+.footer-social a {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+    color: #ffffff;
+    transform: translateY(-3px);
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center;
+    }
 }

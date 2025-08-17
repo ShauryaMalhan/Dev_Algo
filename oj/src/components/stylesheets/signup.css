@@ -1,67 +1,28 @@
+/* Note: This file is very similar to login.css for design consistency */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
 
 .auth-container {
     display: flex;
-    flex-direction: column; /* Stack greeting and card vertically */
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px); /* Adjust for nav/footer height */
+    min-height: calc(100vh - 120px);
     width: 100%;
     padding: 2rem;
     font-family: 'Roboto Mono', monospace;
-}
-
-/* --- Animated Greeting Styling --- */
-.greeting-container {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    color: #2a3b4c; /* Dark, muted text color */
-}
-
-.typing-effect {
-    font-size: 2.5rem;
-    font-weight: 700;
-    display: inline-block; /* Important for the animation */
-    overflow: hidden; /* Ensures the text is not visible until typed */
-    border-right: .15em solid #007bff; /* The blinking cursor */
-    white-space: nowrap; /* Keeps the content on a single line */
-    letter-spacing: .1em;
-    /* Animation: name, duration, steps, iteration-count */
-    animation:
-        typing 3.5s steps(30, end) forwards,
-        blink-caret .75s step-end infinite;
-}
-
-.fade-in-effect {
-    font-size: 1.1rem;
-    opacity: 0;
-    animation: fadeIn 1s ease-in forwards;
-    animation-delay: 3.5s; /* Start after typing animation finishes */
-}
-
-/* --- Keyframe Animations --- */
-@keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
-}
-
-@keyframes blink-caret {
-    from, to { border-color: transparent }
-    50% { border-color: #007bff }
+    animation: fadeIn 1s ease-in-out;
 }
 
 @keyframes fadeIn {
+    from { opacity: 0; }
     to { opacity: 1; }
 }
 
-/* --- Light "Glassmorphism" Card --- */
-.login-card {
+/* --- Light "Glassmorphism" Card for Signup --- */
+.signup-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 450px; /* Slightly wider to accommodate more fields */
     padding: 2.5rem;
     border-radius: 15px;
-
-    /* The new frosted glass effect */
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -69,10 +30,31 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* --- Inputs and Button for Light Card --- */
+.signup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2a3b4c;
+}
+
+.signup-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.signup-header p {
+    font-size: 1rem;
+}
+
+/* --- Shared styles from login.css --- */
+.input-group, .form-control, .auth-button, .auth-footer, .auth-link {
+    /* These styles are identical to login.css to maintain consistency */
+    /* You could optionally put these shared styles in a separate `auth.css` file */
+}
+
 .input-group {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem; /* Slightly less margin for more fields */
 }
 
 .input-icon {
@@ -80,14 +62,14 @@
     top: 50%;
     left: 15px;
     transform: translateY(-50%);
-    color: #495057; /* Dark icon color */
+    color: #495057;
 }
 
 .form-control {
     background-color: rgba(255, 255, 255, 0.5) !important;
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 8px !important;
-    color: #212529 !important; /* Dark text */
+    color: #212529 !important;
     padding: 0.9rem 0.9rem 0.9rem 2.5rem !important;
     transition: all 0.3s ease;
 }
@@ -107,7 +89,7 @@
     padding: 0.9rem;
     border: none;
     border-radius: 8px;
-    background-color: #007bff; /* Primary blue */
+    background-color: #007bff;
     color: #fff;
     font-size: 1rem;
     font-weight: 700;
@@ -116,7 +98,7 @@
 }
 
 .auth-button:hover:not(:disabled) {
-    background-color: #0056b3; /* Darker blue */
+    background-color: #0056b3;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }

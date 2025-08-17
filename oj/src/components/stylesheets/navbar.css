@@ -1,4 +1,75 @@
-.loginbtn {
-    padding-inline: 2%;
-    margin-right: 2%;
+/* --- Sleek Developer Navbar (Dark Theme) --- */
+
+.custom-navbar {
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #363b42; /* Subtle separator */
+    padding: 0.5rem 0;
+}
+
+/* --- Brand/Logo Styling --- */
+.navbar-brand {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #61dafb !important; /* A cool, techy blue */
+}
+
+/* --- Nav Link Styling --- */
+.nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500;
+    margin: 0 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+}
+
+/* --- Active Link Indicator --- */
+.nav-link.active {
+    color: #61dafb !important;
+    border-bottom: 2px solid #61dafb;
+}
+
+/* --- Button Styling --- */
+.nav-btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Solid Button (Signup) */
+.nav-btn-solid {
+    background-color: #61dafb;
+    border: 1px solid #61dafb;
+    color: #1e1e1e; /* Dark text on light button */
+    margin-left: 0.5rem;
+}
+
+.nav-btn-solid:hover {
+    background-color: #88eaff;
+    border-color: #88eaff;
+}
+
+/* Outline Button (Login/Logout) */
+.nav-btn-outline {
+    background-color: transparent;
+    border: 1px solid #61dafb;
+    color: #61dafb;
+}
+
+.nav-btn-outline:hover {
+    background-color: rgba(97, 218, 251, 0.1); /* Subtle background on hover */
+}
+
+/* Fix for the hamburger menu icon on dark backgrounds */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }

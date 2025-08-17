@@ -1,8 +1,157 @@
-.dash {
-  display: flex;
-  flex-direction: column;
-  margin-top: 21%;
-  margin-bottom: 21%;
-  font-family: 'Playwrite AT', sans-serif;
+/* Import a tech-friendly font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+/* --- Main Container & Animation --- */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    color: #212529; /* Dark primary text color */
+    display: flex;
+    flex-direction: column;
+    gap: 3rem; /* Space between sections */
+    animation: fadeIn 0.8s ease-in-out;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Header --- */
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header .username {
+    /* A cool gradient text effect for the username */
+    background: linear-gradient(90deg, #007bff, #6f42c1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.dashboard-header p {
+    font-size: 1.1rem;
+    color: #6c757d; /* Softer gray for subtitles */
+}
+
+/* --- Stats Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: #ffffff; /* White background for cards */
+    border: 1px solid #dee2e6; /* Light gray border */
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #007bff; /* Accent color border on hover */
+    box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1); /* Subtle blue glow */
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #007bff; /* Accent color for icons */
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #212529; /* Dark text for the main value */
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d; /* Softer gray for labels */
+}
+
+/* --- Recent Activity --- */
+.recent-activity h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6; /* Light gray separator line */
+    padding-bottom: 0.5rem;
+}
+
+.submission-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.submission-item {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #adb5bd; /* Default gray border */
+    transition: all 0.3s ease;
+}
+
+.submission-item:hover {
+    background: #f8f9fa; /* Slight background change on hover */
+    border-left-color: #007bff;
+}
+
+.submission-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.problem-name {
+    font-weight: 500;
+}
+
+.submission-details {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.submission-time {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* --- Verdict Styling --- */
+.verdict-icon {
+    font-size: 1.2rem;
+}
+
+.verdict {
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background-color: rgba(0,0,0,0.05); /* Light background for the tag */
+}
+
+/* Specific verdict colors */
+.accepted { color: #198754; } /* Bootstrap success green */
+.wa, .wrong-answer { color: #dc3545; } /* Bootstrap danger red */
+.tle, .time-limit-exceeded { color: #fd7e14; } /* Bootstrap orange */

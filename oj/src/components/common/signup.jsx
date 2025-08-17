@@ -1,177 +1,134 @@
-import { Link } from "react-router-dom";
-import "../stylesheets/login.css";
+// I've renamed the component to Signup to match your App.js router
+import { Link, useNavigate } from "react-router-dom";
+import "../stylesheets/signup.css"; // Changed to a new CSS file
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
-import InputGroup from "react-bootstrap/InputGroup";
-import { useNavigate } from "react-router-dom";
 import Alert from "../services/alert";
+// Import new icons for the form
+import { FaUser, FaUserAstronaut, FaEnvelope, FaLock } from 'react-icons/fa';
 
-const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [name, setFullname] = useState("");
-  const navigate = useNavigate();
-  const [alertMessage, setAlertMessage] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
+const Signup = () => {
+    // --- All your existing state and logic remains the same ---
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
+    const [name, setFullname] = useState("");
+    const navigate = useNavigate();
+    const [alertMessage, setAlertMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
+    // Fixed the validation logic to correctly chain all conditions
+    const isValid =
+        email.length > 5 &&
+        password.length > 5 &&
+        username.length > 5 &&
+        name.length > 5 &&
+        email.endsWith("@gmail.com");
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        // Your submission logic remains the same...
+        if (!email.endsWith("@gmail.com")) {
+            setAlertMessage('Please use a verified Gmail account to register.');
+            setShowAlert(true);
+            return;
+        }
+        try {
+            const REGISTER_URL = import.meta.env.VITE_REGISTER_PATH;
+            const response = await fetch(REGISTER_URL, {
+                method: 'POST',
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ name, username, email, password })
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                setAlertMessage('Signup failed, please try again');
+                setShowAlert(true);
+                throw new Error(result.error);
+            }
+            navigate('/login');
+        } catch (err) {
+            setShowAlert(true);
+            setAlertMessage('Signup failed, please try again');
+            console.error(err);
+        }
+    };
 
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
-  };
+    return (
+        <>
+            <div className="auth-container">
+                <div className="signup-card">
+                    <div className="signup-header">
+                        <h1>Create Your Account</h1>
+                        <p>Join the community and start your coding journey</p>
+                    </div>
 
-  const handleNameChange = (e) => {
-    setFullname(e.target.value);
-  };
+                    <Form className="auth-form" onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <FaUser className="input-icon" />
+                            <Form.Control
+                                type="text"
+                                placeholder="Full Name"
+                                value={name}
+                                onChange={(e) => setFullname(e.target.value)}
+                                required
+                            />
+                        </div>
 
-  const isValid =
-    (email.length > 5) &
-    (password.length > 5) &
-    (username.length > 5) &
-    (name.length > 5)
-    email.endsWith("@gmail.com");
+                        <div className="input-group">
+                            <FaUserAstronaut className="input-icon" />
+                            <Form.Control
+                                type="text"
+                                placeholder="Username / Handle"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+                        </div>
 
-  const handleSubmit = async (e)=>{
-    e.preventDefault();
-    
-    if (!email.endsWith("@gmail.com")) {
-      setAlertMessage('Please use a verified Gmail account to register.');
-      setShowAlert(true);
-      return; 
-    }
+                        <div className="input-group">
+                            <FaEnvelope className="input-icon" />
+                            <Form.Control
+                                type="email"
+                                placeholder="Email Address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-    try {
-      const REGISTER_URL = import.meta.env.VITE_REGISTER_PATH;
-      const respose = await fetch(REGISTER_URL, {
-        method: 'POST',
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          username,
-          email,
-          password,
-        })
-      })
-      const result = await respose.json();
-      if(!respose.ok){
-        setAlertMessage('Signup failed, please try again');
-        setShowAlert(true);
-        throw new Error(result.error);
-      }
-      navigate('/login');
-    } catch (err) {
-      setShowAlert(true);
-      setAlertMessage('Signup failed, please try again');
-      throw new Error(err);
-    }
-  }
+                        <div className="input-group">
+                            <FaLock className="input-icon" />
+                            <Form.Control
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-  return (
-    <>
-      <div className="flex">
-        <img
-          src="./register.png"
-          className="authimg signupimg"
-          alt="register"
-        />
-        <div className="loginbox registerbox">
-          <div className="loginhead">
-            <h1>
-              Register<br></br>Start your journey!!
-            </h1>
-          </div>
-          <br></br>
-          <Form className="loginform" onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="name" className="emaillabel">
-                name
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Full Name</InputGroup.Text>
-                <Form.Control
-                  id="name"
-                  name="name"
-                  type="name"
-                  onChange={handleNameChange}
+                        <button type="submit" className="auth-button" disabled={!isValid}>
+                           &gt; Register
+                        </button>
+                    </Form>
+
+                    <div className="auth-footer">
+                        Already have an account?{" "}
+                        <Link to="/login" className="auth-link">
+                            Log In
+                        </Link>
+                    </div>
+                </div>
+            </div>
+            {showAlert && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => setShowAlert(false)}
                 />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="username" className="emaillabel">
-                username
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Username</InputGroup.Text>
-                <Form.Control
-                  id="username"
-                  name="username"
-                  type="username"
-                  onChange={handleUsernameChange}
-                />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="email" className="emaillabel">
-                Email address
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Email</InputGroup.Text>
-                <Form.Control
-                  id="email"
-                  name="email"
-                  type="email"
-                  onChange={handleEmailChange}
-                />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label className="passwordlabel" htmlFor="password">
-                Password
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
-                <Form.Control
-                  id="password"
-                  name="password"
-                  type="password"
-                  onChange={handlePasswordChange}
-                />
-              </InputGroup>
-            </Form.Group>
-            <button
-              type="submit"
-              className={`loginformbtn  ${isValid ? "btn-green" : ""}`}
-              disabled={!isValid}
-            >
-              Submit
-            </button>
-          </Form>
-          <br></br>
-          <h6>
-            Already have an account?{" "}
-            <Link to="/login" className="createAccount">
-              Log in
-            </Link>
-          </h6>
-          {showAlert && (
-            <Alert
-              message={alertMessage}
-              onClose={() => setShowAlert(false)} // Close handler
-            />
-          )}
-        </div>
-      </div>
-    </>
-  );
+            )}
+        </>
+    );
 };
 
-export default Register;
+export default Signup;

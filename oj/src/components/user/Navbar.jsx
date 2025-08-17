@@ -23,8 +23,9 @@ const Usernavbar = () => {
     navigate('/login');
   }
 
-  return (
-    <Navbar expand="lg" className="navbar-dark bg-dark">
+   return (
+    // REMOVED: className="navbar-dark bg-dark"
+    <Navbar expand="lg" className="custom-navbar"> 
       <Container>
         <Navbar.Brand as={Link} to="/">
           Code Runner
@@ -32,40 +33,30 @@ const Usernavbar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link
-              as={Link}
-              to="/problems"
-              className={location.pathname === "/problems" ? "active" : ""}
-            >
+            {/* Nav Links are fine as they are */}
+            <Nav.Link as={Link} to="/problems" className={location.pathname === "/problems" ? "active" : ""}>
               Problem List
             </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to="/mySubmissions"
-              className={location.pathname === "/mySubmissions" ? "active" : ""}
-            >
+            <Nav.Link as={Link} to="/mySubmissions" className={location.pathname === "/mySubmissions" ? "active" : ""}>
               My Submissions
             </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to="/allSubmissions"
-              className={location.pathname === "/allSubmissions" ? "active" : ""}
-            >
+            <Nav.Link as={Link} to="/allSubmissions" className={location.pathname === "/allSubmissions" ? "active" : ""}>
               All Submissions
             </Nav.Link>
           </Nav>
           {!isValid ? (
             <>
-              <Button as={Link} to="/login" className="loginbtn">
+              {/* UPDATED: Added specific classNames */}
+              <Button as={Link} to="/login" className="nav-btn nav-btn-outline">
                 Login
               </Button>
-              <Button as={Link} to="/signup" className="signupbtn">
+              <Button as={Link} to="/signup" className="nav-btn nav-btn-solid">
                 Signup
               </Button>
             </>
           ) : (
             <>
-              <Button as={Link} className="loginbtn" onClick={handlelogout}>
+              <Button as={Link} className="nav-btn nav-btn-outline" onClick={handlelogout}>
                 Logout
               </Button>
             </>

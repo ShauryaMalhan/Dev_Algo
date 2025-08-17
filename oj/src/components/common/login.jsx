@@ -1,125 +1,108 @@
 import "../stylesheets/login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
-import { useState } from "react";
-import InputGroup from "react-bootstrap/InputGroup";
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import authContext from "../../contexts/auth/authContext";
-import { useNavigate } from "react-router-dom";
 import Alert from "../services/alert";
+import { FaUserAstronaut, FaLock } from 'react-icons/fa';
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { setUser } = useContext(authContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [alertMessage, setAlertMessage] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
+    // --- All your existing state and logic (navigate, user, email, etc.) remains the same ---
+    const navigate = useNavigate();
+    const { setUser } = useContext(authContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
+    const isValid = email.length > 5 && password.length > 5;
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const LOGIN_URL = import.meta.env.VITE_LOGIN_PATH;
+            const response = await fetch(LOGIN_URL, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                setAlertMessage('Login with correct credentials');
+                setShowAlert(true);
+                throw new Error(result.error);
+            }
+            localStorage.setItem('username', result.username);
+            setUser({ username: result.username });
+            navigate('/');
+        } catch (err) {
+            console.error(err);
+            setAlertMessage('Login with correct credentials');
+            setShowAlert(true);
+        }
+    };
 
-  const isValid = (email.length > 5) & (password.length > 5);
+    // --- New Time-Based Greeting Logic ---
+    const currentHour = new Date().getHours();
+    const greeting =
+        currentHour < 12 ? "Good Morning, Coder." :
+        currentHour < 18 ? "Good Afternoon, Coder." :
+        "Good Evening, Coder.";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const LOGIN_URL = import.meta.env.VITE_LOGIN_PATH;
-      const response = await fetch(LOGIN_URL, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    return (
+        <>
+            <div className="auth-container">
+                {/* --- New Animated Greeting --- */}
+                <div className="greeting-container">
+                    <h1 className="typing-effect">{greeting}</h1>
+                    <p className="fade-in-effect">Do. Or do not. There is no try.</p>
+                </div>
 
-      const result = await response.json();
-      if(!response.ok) {
-        setAlertMessage('Login with correct credentials');
-        setShowAlert(true);
-        throw new Error(result.error);
-      }
-      localStorage.setItem('username', result.username);
-      setUser({ username: result.username });
-      navigate('/');
-    } catch (err) {
-      setAlertMessage('Login with correct credentials');
-      setShowAlert(true);
-      throw new Error(err);
-    }
-  };
+                <div className="login-card">
+                    <Form className="auth-form" onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <FaUserAstronaut className="input-icon" />
+                            <Form.Control
+                                type="email"
+                                placeholder="Email / Handle"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-  return (
-    <>
-      <div className="flex">
-        <img src="./login.png" className="authimg" alt="login" />
-        <div className="loginbox">
-          <div className="loginhead">
-            <h1>
-              Log in to continue your <br></br> coding journey
-            </h1>
-          </div>
-          <br></br>
+                        <div className="input-group">
+                            <FaLock className="input-icon" />
+                            <Form.Control
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-          <Form className="loginform" onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="email" className="emaillabel">
-                Email address
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Email</InputGroup.Text>
-                <Form.Control
-                  id="email"
-                  name="email"
-                  type="email"
-                  onChange={handleEmailChange}
+                        <button type="submit" className="auth-button" disabled={!isValid}>
+                           &gt; Authenticate
+                        </button>
+                    </Form>
+
+                    <div className="auth-footer">
+                        New user?{" "}
+                        <Link to="/signup" className="auth-link">
+                            Create an account
+                        </Link>
+                    </div>
+                </div>
+            </div>
+            {showAlert && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => setShowAlert(false)}
                 />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label className="passwordlabel" htmlFor="password">
-                Password
-              </Form.Label>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
-                <Form.Control
-                  id="password"
-                  name="password"
-                  type="password"
-                  onChange={handlePasswordChange}
-                />
-              </InputGroup>
-            </Form.Group>
-            <button
-              type="submit"
-              className={`loginformbtn  ${isValid ? "btn-green" : ""}`}
-              disabled={!isValid}
-            >
-              Submit
-            </button>
-          </Form>
-          <br></br>
-          <h6>
-            Don&#39;t have an account?{" "}
-            <Link to="/signup" className="createAccount">
-              Sign up
-            </Link>
-          </h6>
-        {showAlert && (
-            <Alert
-              message={alertMessage}
-              onClose={() => setShowAlert(false)} // Close handler
-            />
-          )}
-        </div>
-      </div>
-    </>
-  );
+            )}
+        </>
+    );
 };
 
 export default Login;
