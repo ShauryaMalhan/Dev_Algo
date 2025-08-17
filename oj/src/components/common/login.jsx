@@ -1,13 +1,12 @@
 import "../stylesheets/login.css";
 import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import authContext from "../../contexts/auth/authContext";
 import Alert from "../services/alert";
-import { FaUserAstronaut, FaLock } from 'react-icons/fa';
+import { FaUserAstronaut, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
-    // --- All your existing state and logic (navigate, user, email, etc.) remains the same ---
     const navigate = useNavigate();
     const { setUser } = useContext(authContext);
     const [email, setEmail] = useState("");
@@ -15,7 +14,17 @@ const Login = () => {
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
+    // --- NEW: State and Ref for password visibility ---
+    const [showPassword, setShowPassword] = useState(false);
+    const passwordInputRef = useRef(null);
+
     const isValid = email.length > 5 && password.length > 5;
+
+    // --- NEW: Toggle function ---
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+        passwordInputRef.current.focus();
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,7 +51,6 @@ const Login = () => {
         }
     };
 
-    // --- New Time-Based Greeting Logic ---
     const currentHour = new Date().getHours();
     const greeting =
         currentHour < 12 ? "Good Morning, Coder." :
@@ -52,7 +60,6 @@ const Login = () => {
     return (
         <>
             <div className="auth-container">
-                {/* --- New Animated Greeting --- */}
                 <div className="greeting-container">
                     <h1 className="typing-effect">{greeting}</h1>
                     <p className="fade-in-effect">Do. Or do not. There is no try.</p>
@@ -71,15 +78,25 @@ const Login = () => {
                             />
                         </div>
 
+                        {/* --- UPDATED: Password Input --- */}
                         <div className="input-group">
                             <FaLock className="input-icon" />
                             <Form.Control
-                                type="password"
+                                ref={passwordInputRef} // Attach the ref
+                                type={showPassword ? "text" : "password"} // Dynamic type
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
+                            {/* --- NEW: Toggle Button --- */}
+                            <button
+                                type="button"
+                                className="password-toggle-btn"
+                                onClick={togglePasswordVisibility}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                         </div>
 
                         <button type="submit" className="auth-button" disabled={!isValid}>

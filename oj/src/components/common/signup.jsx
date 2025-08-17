@@ -1,14 +1,12 @@
-// I've renamed the component to Signup to match your App.js router
 import { Link, useNavigate } from "react-router-dom";
-import "../stylesheets/signup.css"; // Changed to a new CSS file
+import "../stylesheets/signup.css"; // We will add styles to this file
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import Alert from "../services/alert";
-// Import new icons for the form
-import { FaUser, FaUserAstronaut, FaEnvelope, FaLock } from 'react-icons/fa';
+// Import all necessary icons, including the new eye icons
+import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Signup = () => {
-    // --- All your existing state and logic remains the same ---
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
@@ -16,8 +14,10 @@ const Signup = () => {
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
+    
+    // --- NEW: State for password visibility ---
+    const [showPassword, setShowPassword] = useState(false);
 
-    // Fixed the validation logic to correctly chain all conditions
     const isValid =
         email.length > 5 &&
         password.length > 5 &&
@@ -64,6 +64,7 @@ const Signup = () => {
                     </div>
 
                     <Form className="auth-form" onSubmit={handleSubmit}>
+                        {/* --- Full Name Input --- */}
                         <div className="input-group">
                             <FaUser className="input-icon" />
                             <Form.Control
@@ -75,6 +76,7 @@ const Signup = () => {
                             />
                         </div>
 
+                        {/* --- Username Input --- */}
                         <div className="input-group">
                             <FaUserAstronaut className="input-icon" />
                             <Form.Control
@@ -86,6 +88,7 @@ const Signup = () => {
                             />
                         </div>
 
+                        {/* --- Email Input --- */}
                         <div className="input-group">
                             <FaEnvelope className="input-icon" />
                             <Form.Control
@@ -97,15 +100,25 @@ const Signup = () => {
                             />
                         </div>
 
+                        {/* --- UPDATED: Password Input with Toggle Button --- */}
                         <div className="input-group">
                             <FaLock className="input-icon" />
                             <Form.Control
-                                type="password"
+                                // Conditionally set the input type
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
+                            {/* The toggle button */}
+                            <button
+                                type="button"
+                                className="password-toggle-btn"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                         </div>
 
                         <button type="submit" className="auth-button" disabled={!isValid}>

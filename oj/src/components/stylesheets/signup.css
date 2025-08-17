@@ -121,3 +121,20 @@
     font-weight: 700;
     text-decoration: none;
 }
+
+.password-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Position on the right side */
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d; /* A neutral gray color */
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.1rem;
+}
+
+.password-toggle-btn:hover {
+    color: #212529; /* Darken on hover */
+}
