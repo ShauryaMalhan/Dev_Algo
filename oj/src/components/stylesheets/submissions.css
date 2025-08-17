@@ -1,32 +1,89 @@
-.container {
-  padding: 20px;
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+.submissions-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    color: #212529;
 }
 
-.submissionsHead {
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  font-size: x-large;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #333;
+.page-header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
 }
 
-.submissions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  column-gap: 2%;
-  text-align: center;
-  border-bottom: 2px solid #ccc;
+/* --- Table Styling (Consistent with problems.css) --- */
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.submissions > div {
-  width: 15%;
-  padding: 5px;
+.submissions-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.no-submission {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 18px;
-  color: #888;
+.submissions-table th, .submissions-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.submissions-table thead {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.submissions-table tbody tr {
+    border-top: 1px solid #dee2e6;
+}
+
+.submissions-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.problem-title {
+    font-weight: 500;
+}
+
+/* --- Time Cell Styling --- */
+.time-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-secondary {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* --- Verdict Tag Color-Coding --- */
+.verdict-tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem; /* Pill shape */
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.verdict-tag.accepted { background-color: #d1e7dd; color: #0f5132; }
+.verdict-tag.wrong-answer { background-color: #f8d7da; color: #842029; }
+.verdict-tag.time-limit-exceeded { background-color: #fff3cd; color: #664d03; }
+.verdict-tag.error, .verdict-tag.runtime-error { background-color: #e2e3e5; color: #41464b; }
+
+/* --- Loading / No Submission Styling --- */
+.loading-message, .no-submission {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.2rem;
+    color: #6c757d;
 }

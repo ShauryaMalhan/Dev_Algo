@@ -18,9 +18,9 @@ router.post('/newHistory', async (req, res)=> {
     }
 })
 
-router.post('/myHistory', async (req, res)=> {
+router.get('/myHistory', async (req, res)=> {
     try {
-        const user = req.body.user;
+        const user = req.query.user;
         const history = await History.find({ user: user });
         res.status(200).send( history );
     } catch(err) {
@@ -28,7 +28,7 @@ router.post('/myHistory', async (req, res)=> {
     }
 })
 
-router.post('/allHistory', async (req, res)=> {
+router.get('/allHistory', async (req, res)=> {
     try {
         const history = await History.find();
         res.status(200).send( history );
