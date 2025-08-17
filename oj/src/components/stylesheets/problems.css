@@ -1,47 +1,137 @@
-.problems {
-    margin-top: 2%;
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+.problems-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    color: #212529;
 }
 
-.problem-container {
+.problems-header {
+    margin-bottom: 2rem;
+}
+
+.problems-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.actions-container {
     display: flex;
-    justify-content: space-between;    
-
-}
-
-.problem-container > * {
-    margin: 0 2%; 
-}
-
-.card:hover {
-    background-color: #f7f7f7;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
-}
- 
-.card-title {
-    font-size: 1.3rem; 
-    font-weight: bold;
-}
-
-.Easy {
-    display: flex;
-    background-color: rgb(141, 246, 164);
-    padding-inline: 4.5%;
-    margin-top: -1%;
-    margin-bottom: -1%;
+    justify-content: space-between;
     align-items: center;
-    border-radius: 10%;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.Medium {
+/* --- Filter & Search Bar Styling --- */
+.filter-buttons {
     display: flex;
-    background-color: rgb(210, 211, 145);
-    padding-inline: 3%;
-    margin-top: -1%;
-    margin-bottom: -1%;
-    align-items: center;
-    border-radius: 10%;
+    gap: 0.5rem;
+    background-color: #e9ecef;
+    padding: 0.4rem;
+    border-radius: 8px;
 }
 
-.Hard {
-    background-color: rgb(223, 152, 152);
+.filter-buttons button {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-buttons button.active {
+    background-color: #ffffff;
+    color: #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.search-bar {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    width: 300px;
+    font-family: 'Roboto Mono', monospace;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* --- Table Styling --- */
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden; /* This makes the border-radius work with the table */
+}
+
+.problems-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.problems-table th, .problems-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.problems-table thead {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.problems-table tbody tr {
+    border-top: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.problems-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* --- Column Widths --- */
+.status-col { width: 10%; }
+.title-col { width: 70%; font-weight: 500; }
+.difficulty-col { width: 20%; }
+
+/* --- Status Icon Styling --- */
+.status-icon {
+    font-size: 1.2rem;
+}
+.status-icon.solved { color: #198754; } /* Green */
+.status-icon.attempted { color: #fd7e14; } /* Orange */
+.status-icon.todo { color: #adb5bd; } /* Gray */
+
+/* --- Difficulty Tag Styling --- */
+.difficulty-tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem; /* Pill shape */
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.difficulty-easy { background-color: #d1e7dd; color: #0f5132; }
+.difficulty-medium { background-color: #fff3cd; color: #664d03; }
+.difficulty-hard { background-color: #f8d7da; color: #842029; }
+
+.loading-message {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.2rem;
+    color: #6c757d;
 }

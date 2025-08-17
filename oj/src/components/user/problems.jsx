@@ -1,52 +1,106 @@
-import Card from "react-bootstrap/Card";
-import { fetchProblems } from "../services/problems.jsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchProblems } from "../services/problems.jsx";
 import '../stylesheets/problems.css';
+import { FaCheckCircle, FaRegCircle, FaTimesCircle } from 'react-icons/fa';
 
 const Problem = () => {
-  const [problems, setProblems] = useState([]);
-  const navigate = useNavigate();
+    const [problems, setProblems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const problemData = await fetchProblems();
-        setProblems(problemData);
-      } catch (err) {
-        setProblems(err);
-      }
+    const [searchTerm, setSearchTerm] = useState("");
+    const [difficultyFilter, setDifficultyFilter] = useState("All");
+
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const problemData = await fetchProblems();
+
+                console.log("--- Data received from backend: ---");
+                problemData.forEach(problem => {
+                    console.log(`Title: "${problem.title}", Status: "${problem.status}"`);
+                });
+
+                setProblems(problemData);
+            } catch (err) {
+                console.error("Failed to fetch problems:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        getData();
+    }, []);
+
+    const handleRowClick = (problem) => {
+        navigate(`/problems/${problem._id}`, { state: problem });
     };
-    getData();
-  }, []);
 
-  const handleCardClick = (problem) => {
-    navigate(`/problems/${problem._id}`, { state: problem });
-  };
+    // --- NEW: Logic to apply filters and search ---
+    const filteredProblems = problems
+        .filter(p => difficultyFilter === "All" || p.difficulty === difficultyFilter)
+        .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // --- NEW: Status Icon Component ---
+    const StatusIcon = ({ status }) => {
+        if (status === "Solved") return <FaCheckCircle className="status-icon solved" title="Solved" />;
+        if (status === "Attempted") return <FaTimesCircle className="status-icon attempted" title="Attempted" />;
+        return <FaRegCircle className="status-icon todo" title="Todo" />;
+    };
 
-  return (
-    <div>
-      <div className="problems">
-        {problems.length > 0 ? (
-          problems.map((problem) => (
-            <Card
-              key={problem._id}
-              className="mb-3"
-              onClick={() => handleCardClick(problem)} 
-              style={{ cursor: "pointer" }}
-            >
-              <Card.Body className="problem-container">
-                <Card.Title>{problem.title}</Card.Title>
-                <Card.Title className={`${problem.difficulty}`}>{problem.difficulty}</Card.Title>
-              </Card.Body>
-            </Card>
-          ))
-        ) : (
-          <div>Loading problems...</div>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div className="problems-page-container">
+            <div className="problems-header">
+                <h1>Problemset</h1>
+                <div className="actions-container">
+                    <div className="filter-buttons">
+                        <button onClick={() => setDifficultyFilter("All")} className={difficultyFilter === 'All' ? 'active' : ''}>All</button>
+                        <button onClick={() => setDifficultyFilter("Easy")} className={difficultyFilter === 'Easy' ? 'active' : ''}>Easy</button>
+                        <button onClick={() => setDifficultyFilter("Medium")} className={difficultyFilter === 'Medium' ? 'active' : ''}>Medium</button>
+                        <button onClick={() => setDifficultyFilter("Hard")} className={difficultyFilter === 'Hard' ? 'active' : ''}>Hard</button>
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search by title..."
+                        className="search-bar"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {loading ? (
+                <div className="loading-message">Loading problems...</div>
+            ) : (
+                <div className="table-container">
+                    <table className="problems-table">
+                        <thead>
+                            <tr>
+                                <th className="status-col">Status</th>
+                                <th className="title-col">Title</th>
+                                <th className="difficulty-col">Difficulty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredProblems.map((problem) => (
+                                <tr key={problem._id} onClick={() => handleRowClick(problem)}>
+                                    <td className="status-col">
+                                        <StatusIcon status={problem.status} />
+                                    </td>
+                                    <td className="title-col">{problem.title}</td>
+                                    <td className="difficulty-col">
+                                        <span className={`difficulty-tag difficulty-${problem.difficulty.toLowerCase()}`}>
+                                            {problem.difficulty}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default Problem;
