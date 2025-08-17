@@ -6,21 +6,31 @@
     padding: 2rem;
     font-family: 'Roboto Mono', monospace;
     color: #212529;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .page-header {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 2rem;
+    letter-spacing: 1px;
+    /* Changed to a professional black color */
+    color: #212529; 
+    /* Changed the border to a neutral gray to match */
+    border-bottom: 2px solid #dee2e6;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #dee2e6;
 }
 
-/* --- Table Styling (Consistent with problems.css) --- */
+/* --- HUD-Style Table --- */
 .table-container {
     background-color: #ffffff;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 4px; /* Sharper corners */
     overflow: hidden;
 }
 
@@ -33,22 +43,29 @@
     padding: 1rem 1.25rem;
     text-align: left;
     vertical-align: middle;
+    /* Sharp grid lines */
+    border-bottom: 1px solid #e9ecef;
+}
+
+.submissions-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .submissions-table thead {
     background-color: #f8f9fa;
-    color: #495057;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    /* Header text uses the accent color */
+    color: #000000;
 }
 
 .submissions-table tbody tr {
-    border-top: 1px solid #dee2e6;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .submissions-table tbody tr:hover {
-    background-color: #f1f3f5;
+    background-color: #eef2f7; /* A subtle blue-tinted hover */
 }
 
 .problem-title {
@@ -66,19 +83,24 @@
     color: #6c757d;
 }
 
-/* --- Verdict Tag Color-Coding --- */
+/* --- Monochromatic Verdict Tags with Color Hints --- */
 .verdict-tag {
     display: inline-block;
     padding: 0.3rem 0.8rem;
-    border-radius: 1rem; /* Pill shape */
+    border-radius: 4px; /* Sharper corners */
     font-size: 0.85rem;
     font-weight: 700;
+    /* Neutral background for all tags */
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
 }
 
-.verdict-tag.accepted { background-color: #d1e7dd; color: #0f5132; }
-.verdict-tag.wrong-answer { background-color: #f8d7da; color: #842029; }
-.verdict-tag.time-limit-exceeded { background-color: #fff3cd; color: #664d03; }
-.verdict-tag.error, .verdict-tag.runtime-error { background-color: #e2e3e5; color: #41464b; }
+/* The color comes from the text, not the background */
+.verdict-tag.accepted { color: #198754; }
+.verdict-tag.wrong-answer { color: #dc3545; }
+.verdict-tag.time-limit-exceeded { color: #fd7e14; }
+.verdict-tag.error, .verdict-tag.runtime-error { color: #495057; }
+
 
 /* --- Loading / No Submission Styling --- */
 .loading-message, .no-submission {
