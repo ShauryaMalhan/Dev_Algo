@@ -1,11 +1,7 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { spawn } from 'child_process';
-
-const execPromise = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

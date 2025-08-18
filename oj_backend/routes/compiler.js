@@ -28,7 +28,7 @@ router.post('/run', async (req, res) => {
             filePath = await generateJavaFile(code, language);
             input_filePath = await generateInputFile(input);
             output = await executeJava(filePath, input_filePath);
-        } else if (language === 'py') {
+        } else if (language === 'python') {
             filePath = await generatePyFile(code, language);
             input_filePath = await generateInputFile(input);
             output = await executePy(filePath, input_filePath);

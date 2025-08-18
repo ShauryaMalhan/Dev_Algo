@@ -7,6 +7,16 @@ import "../stylesheets/submitProblem.css";
 // Import the Monaco Editor
 import Editor from '@monaco-editor/react';
 
+const sanitizeVerdict = (message) => {
+    if (!message) return "Error";
+    if (message.startsWith("Accepted")) return "Accepted";
+    if (message.startsWith("Wrong Answer")) return "Wrong Answer";
+    if (message.startsWith("Time Limit Exceeded")) return "Time Limit Exceeded";
+    if (message.startsWith("Compilation Error")) return "Compilation Error";
+    if (message.startsWith("Runtime Error")) return "Runtime Error";
+    return "Error"; // Default case for other errors
+};
+
 const SubmitProblem = () => {
     // Boilerplate code for each language
     const cppCode = `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Your code here\n    return 0;\n}`;
@@ -39,7 +49,7 @@ const SubmitProblem = () => {
         setIsSubmitting(true);
         setVerdict("Running...");
 
-        let finalVerdict = "Accepted"; // Start with a positive assumption
+        let finalVerdict = "Accepted";
 
         for (const testcase of problem.testcases) {
             const formattedInputs = testcase.inputs
@@ -60,7 +70,7 @@ const SubmitProblem = () => {
 
                 const userOutput = response.data.output.trim();
                 const expectedOutput = formatInput(testcase.output).trim();
-
+                console.log(userOutput);
                 if (userOutput !== expectedOutput) {
                     finalVerdict = "Wrong Answer";
                     break; // Stop testing on the first wrong answer
@@ -81,7 +91,7 @@ const SubmitProblem = () => {
         try {
             await axios.post(NEW_SUBMISSION_PATH, {
                 user: user.username,
-                verdict: finalVerdict,
+                verdict: sanitizeVerdict(finalVerdict),
                 language: language,
                 problem: problem.title,
                 link: location.pathname.slice(0, -7),
