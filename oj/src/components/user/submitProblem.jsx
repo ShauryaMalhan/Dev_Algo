@@ -70,7 +70,6 @@ const SubmitProblem = () => {
 
                 const userOutput = response.data.output.trim();
                 const expectedOutput = formatInput(testcase.output).trim();
-                console.log(userOutput);
                 if (userOutput !== expectedOutput) {
                     finalVerdict = "Wrong Answer";
                     break; // Stop testing on the first wrong answer
