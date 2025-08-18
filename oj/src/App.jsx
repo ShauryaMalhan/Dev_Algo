@@ -44,7 +44,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/problems/:id"
+                  path="/problems/:slug"
                   element={
                     <ProtectedRoute>
                       <ProblemDetail />
@@ -52,7 +52,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/problems/:id/submit"
+                  path="/problems/:slug/submit"
                   element={
                     <ProtectedRoute>
                       <SubmitProblem />

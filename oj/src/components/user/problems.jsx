@@ -4,6 +4,12 @@ import { fetchProblems } from "../services/problems.jsx";
 import '../stylesheets/problems.css';
 import { FaCheckCircle, FaRegCircle, FaTimesCircle } from 'react-icons/fa';
 
+const createSlug = (title) => {
+    return title
+        .toLowerCase() // Convert all characters to small letters
+        .replace(/\s+/g, '-'); // Replace all spaces with a hyphen
+};
+
 const Problem = () => {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -33,7 +39,8 @@ const Problem = () => {
     }, []);
 
     const handleRowClick = (problem) => {
-        navigate(`/problems/${problem._id}`, { state: problem });
+        const problemSlug = createSlug(problem.title);
+        navigate(`/problems/${problemSlug}`, { state: problem });
     };
 
     // --- NEW: Logic to apply filters and search ---

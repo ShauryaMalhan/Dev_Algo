@@ -7,6 +7,13 @@ import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 
+const createSlug = (title) => {
+    return title
+        .toLowerCase() // Convert all characters to small letters
+        .replace(/\s+/g, '-'); // Replace all spaces with a hyphen
+};
+
+
 const ProblemDetail = () => {
   const navigate = useNavigate();
   const { user, loading } = useContext(authContext);
@@ -23,10 +30,11 @@ const ProblemDetail = () => {
   if (!problem) {
     return <div>No problem details available.</div>; 
   }
-
+  
   const handleProblemSubmit = (e)=> {
     e.preventDefault();
-    navigate(`/problems/${problem._id}/submit`, {state: problem});
+    const problemSlug = createSlug(problem.title);
+    navigate(`/problems/${problemSlug}/submit`, { state: problem });
   }
 
 
