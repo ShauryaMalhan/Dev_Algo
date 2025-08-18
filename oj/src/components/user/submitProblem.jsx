@@ -1,188 +1,157 @@
-import Button from "react-bootstrap/Button";
-import "../stylesheets/submitProblem.css";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
-import { useContext } from "react";
+import axios from "axios";
 import authContext from "../../contexts/auth/authContext";
+import "../stylesheets/submitProblem.css";
+
+// Import the Monaco Editor
+import Editor from '@monaco-editor/react';
 
 const SubmitProblem = () => {
-  const cppCode = `#include <bits/stdc++.h>
-using namespace std;
+    // Boilerplate code for each language
+    const cppCode = `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Your code here\n    return 0;\n}`;
+    const pyCode = `def main():\n    # Your code here\n    pass\n\nif __name__ == "__main__":\n    main()`;
+    const javaCode = `public class Main {\n    public static void main(String[] args) {\n        // Your code here\n    }\n}`;
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-    // Your code here
-    return 0;
-}`;
-const pycode = `import sys
-input = sys.stdin.read
-sys.setrecursionlimit(10**6)
+    const location = useLocation();
+    const problem = location.state;
+    const [language, setLanguage] = useState("cpp");
+    const [code, setCode] = useState(cppCode);
+    const [verdict, setVerdict] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { user } = useContext(authContext);
+    const COMPILE_PATH = import.meta.env.VITE_COMPILE_PATH;
+    const NEW_SUBMISSION_PATH = import.meta.env.VITE_NEW_SUBMISSION_PATH;
 
-def main():
-    # Your code here
-    pass
+    // Helper function from your original code
+    const formatInput = (input) => {
+        return (
+            input
+                .replace(/[\[\]"]/g, "")
+                .split(",")
+                .map((num) => num.trim())
+                .join(" ")
+        );
+    };
+    
+    // --- YOUR ORIGINAL API LOGIC IS NOW RESTORED ---
+    const handleProblemSubmit = async () => {
+        setIsSubmitting(true);
+        setVerdict("Running...");
 
-if __name__ == "__main__":
-    main()`;
-const javacode = `import java.io.*;
-import java.util.*;
+        let finalVerdict = "Accepted"; // Start with a positive assumption
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        // Example to read a line: String input = br.readLine();
-        
-        // Your code here
+        for (const testcase of problem.testcases) {
+            const formattedInputs = testcase.inputs
+                .map(({ input }) => formatInput(input))
+                .join("\n");
 
+            try {
+                const response = await axios.post(COMPILE_PATH, {
+                    language: language,
+                    code: code,
+                    input: formattedInputs,
+                });
+
+                if (response.status !== 200) {
+                    finalVerdict = "Error";
+                    break; // Stop testing on the first error
+                }
+
+                const userOutput = response.data.output.trim();
+                const expectedOutput = formatInput(testcase.output).trim();
+
+                if (userOutput !== expectedOutput) {
+                    finalVerdict = "Wrong Answer";
+                    break; // Stop testing on the first wrong answer
+                }
+            } catch (e) {
+                if (e.response && e.response.data && e.response.data.message) {
+                    finalVerdict = e.response.data.message;
+                } else {
+                    finalVerdict = "An Unknown Error Occurred";
+                }
+                console.error("Submission Error:", e);
+                break;
+            }
+        }
+
+        setVerdict(finalVerdict);
+
+        try {
+            await axios.post(NEW_SUBMISSION_PATH, {
+                user: user.username,
+                verdict: finalVerdict,
+                language: language,
+                problem: problem.title,
+                link: location.pathname.slice(0, -7),
+            });
+        } catch (err) {
+            console.error("Failed to save submission:", err.message);
+        }
+
+        setIsSubmitting(false);
+    };
+
+    const handleLanguageChange = (lang) => {
+        setLanguage(lang);
+        if (lang === 'cpp') setCode(cppCode);
+        else if (lang === 'python') setCode(pyCode);
+        else if (lang === 'java') setCode(javaCode);
+    };
+
+    const handleEditorChange = (value) => {
+        setCode(value);
+    };
+    
+    const handleEditorDidMount = (editor, monaco) => {
+        setTimeout(() => {
+            editor.layout();
+        }, 10);
     }
-}`;
 
-  const location = useLocation();
-  const problem = location.state;
-  const [language, setLanguage] = useState("cpp");
-  const [code, setCode] = useState(cppCode);
-  const [verdict, setVerdict] = useState("");
-  const { user } = useContext(authContext);
-  const COMPILE_PATH = import.meta.env.VITE_COMPILE_PATH;
-  const NEW_SUBMISSION_PATH = import.meta.env.VITE_NEW_SUBMISSION_PATH;
-
-  const handleCodeChange = (e) => {
-    setCode(e.target.value);
-  };
-
-  const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
-    if(e.target.value === 'cpp') {
-      setCode(cppCode);
-    }
-    else if(e.target.value === 'py') {
-      setCode(pycode);
-    }
-    else if(e.target.value === 'java') {
-      setCode(javacode);
-    }
-  };
-
-  const formatInput = (input) => {
     return (
-      input
-        // eslint-disable-next-line no-useless-escape
-        .replace(/[\[\]"]/g, "")
-        .split(",")
-        .map((num) => num.trim())
-        .join(" ")
-    );
-  };
+        <div className="submit-page-container">
+            <div className="editor-container">
+                <div className="editor-header">
+                    <div className="language-selector">
+                        <button onClick={() => handleLanguageChange('cpp')} className={language === 'cpp' ? 'active' : ''}>C++</button>
+                        <button onClick={() => handleLanguageChange('python')} className={language === 'python' ? 'active' : ''}>Python</button>
+                        <button onClick={() => handleLanguageChange('java')} className={language === 'java' ? 'active' : ''}>Java</button>
+                    </div>
+                </div>
+                
+                <Editor
+                    height="60vh"
+                    language={language}
+                    theme="vs-dark"
+                    value={code}
+                    onChange={handleEditorChange}
+                    onMount={handleEditorDidMount}
+                    options={{
+                        fontSize: 14,
+                        fontFamily: '"Fira Code", "Fira Mono", monospace',
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                    }}
+                />
+            </div>
 
-  const handleProblemSubmit = async (e) => {
-    setVerdict("Running");
-    e.preventDefault();
-    let Verdict = false;
-    let saveVerdict = "Accepted";
-    for (const testcase of problem.testcases) {
-      const formattedInputs = testcase.inputs
-        .map(({ input }) => formatInput(input))
-        .join("\n");
-
-      try {
-        const response = await axios.post(COMPILE_PATH, {
-          language: language,
-          code: code,
-          input: formattedInputs,
-        });
-        if (response.status !== 200) {
-          setVerdict("Error");
-          Verdict = true;
-          saveVerdict = "Error";
-          break;
-        }
-        const userOutput = response.data.output;
-        const expectedOutput = formatInput(testcase.output);
-
-        const processOutput = (output) => {
-          if (Array.isArray(output)) {
-            const temp = JSON.stringify(output).toLowerCase().trim();
-            return formatInput(temp);
-          } else if (typeof output === "object") {
-            return JSON.stringify(output).toLowerCase().trim();
-          } else if (typeof output === "string") {
-            return output.toLowerCase().trim();
-          } else if (typeof output === "number") {
-            return output.toString().toLowerCase().trim();
-          }
-          return "";
-        };
-
-        const processedUserOutput = processOutput(userOutput);
-        const processedExpectedOutput = processOutput(expectedOutput);
-
-        if (processedUserOutput !== processedExpectedOutput) {
-          setVerdict("Wrong Answer");
-          Verdict = true;
-          saveVerdict = "Wrong Answer";
-          break;
-        }
-      } catch (e) {
-        setVerdict("Error");
-        Verdict = true;
-        saveVerdict = "Error";
-        break;
-      }
-      if (!Verdict) {
-        saveVerdict = "Accepted";
-        setVerdict("Accepted");
-      }
-    }
-    try {
-      await axios.post(NEW_SUBMISSION_PATH, {
-        user: user.username,
-        verdict: saveVerdict,
-        language: language,
-        problem: problem.title,
-        link: location.pathname.slice(0, -7),
-      });
-    } catch (err) {
-      throw new Error(err.message);
-    }
-  };
-
-  return (
-    <div className="submitSolution mt-3 mb-3">
-      <form>
-        <div className="codeGroup">
-          <label id="language" htmlFor="language" className="codeLabel">
-            Select Language
-          </label>
-          <select id="language" name="language" onChange={handleLanguageChange}>
-            <option value="cpp">C++</option>
-            <option value="py">Python</option>
-            <option value="java">Java</option>
-          </select>
-          <br />
-          <label id="code" htmlFor="code" className="codeLabel">
-            Code
-          </label>
-          <textarea
-            placeholder="Enter your code here..."
-            id="code"
-            name="code"
-            className="codeText"
-            onChange={handleCodeChange}
-            value={code}
-          />
-          <Button className="mt-3" type="submit" onClick={handleProblemSubmit}>
-            Submit
-          </Button>
-          <br />
-          <div className="vardict">{verdict}</div>
+            <div className="submission-footer">
+                <div className={`verdict-display verdict-${verdict.toLowerCase().replace(/\s+/g, '-')}`}>
+                    Status: {verdict || "Idle"}
+                </div>
+                <button 
+                    className="submit-button" 
+                    onClick={handleProblemSubmit}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Submitting..." : "Submit Code"}
+                </button>
+            </div>
         </div>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default SubmitProblem;

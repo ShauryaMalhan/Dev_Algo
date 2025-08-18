@@ -1,41 +1,91 @@
-.submitSolution {
-  display: flex;
-  justify-content: center;
-  height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Roboto+Mono:wght@400;700&display=swap');
+
+.submit-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.codeText {
-  width: 500%;
-  height: 100%;
+/* --- Editor container styling --- */
+.editor-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden; /* This is important for the editor's corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.codeGroup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 80%;
+.editor-header {
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dee2e6;
 }
 
-.codeLabel {
-  font-size: xx-large;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+.language-selector {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.vardict {
-  border-style: solid;
-  font-size: large;
-  border-width: 1%;
-  border-radius: 10%;
-  height: 20%;
-  width: 70%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.language-selector button {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
-.time {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+.language-selector button.active {
+    background-color: #ffffff;
+    color: #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* --- Submission Footer --- */
+.submission-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.verdict-display {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    color: #495057;
+    background-color: #e9ecef;
+}
+
+/* Verdict Colors */
+.verdict-running, .verdict-running... { color: #0056b3; background-color: #cce5ff; }
+.verdict-accepted { color: #0f5132; background-color: #d1e7dd; }
+.verdict-wrong-answer { color: #842029; background-color: #f8d7da; }
+.verdict-error { color: #664d03; background-color: #fff3cd; }
+
+
+.submit-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.submit-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
 }
