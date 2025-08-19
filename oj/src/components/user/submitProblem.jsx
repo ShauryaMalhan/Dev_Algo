@@ -7,19 +7,23 @@ import "../stylesheets/submitProblem.css";
 // Import the Monaco Editor
 import Editor from '@monaco-editor/react';
 
+// In your SubmitProblem.jsx file
+
 const sanitizeVerdict = (message) => {
-    if (!message) return "Error";
+    if (!message) return "Idle";
+    if (message.startsWith("Running")) return "Running";
     if (message.startsWith("Accepted")) return "Accepted";
     if (message.startsWith("Wrong Answer")) return "Wrong Answer";
     if (message.startsWith("Time Limit Exceeded")) return "Time Limit Exceeded";
     if (message.startsWith("Compilation Error")) return "Compilation Error";
     if (message.startsWith("Runtime Error")) return "Runtime Error";
+    
     return "Error"; // Default case for other errors
 };
 
 const SubmitProblem = () => {
     // Boilerplate code for each language
-    const cppCode = `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Your code here\n    return 0;\n}`;
+    const cppCode = `#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // Your code here\n    return 0;\n}`;
     const pyCode = `def main():\n    # Your code here\n    pass\n\nif __name__ == "__main__":\n    main()`;
     const javaCode = `public class Main {\n    public static void main(String[] args) {\n        // Your code here\n    }\n}`;
 
@@ -114,9 +118,9 @@ const SubmitProblem = () => {
     };
     
     const handleEditorDidMount = (editor, monaco) => {
-        setTimeout(() => {
-            editor.layout();
-        }, 10);
+        document.fonts.ready.then(() => {
+            setTimeout(() => editor.layout(), 50);
+        });
     }
 
     return (
@@ -148,7 +152,7 @@ const SubmitProblem = () => {
             </div>
 
             <div className="submission-footer">
-                <div className={`verdict-display verdict-${verdict.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className={`verdict-display verdict-${sanitizeVerdict(verdict).toLowerCase().replace(/\s+/g, '-')}`}>
                     Status: {verdict || "Idle"}
                 </div>
                 <button 

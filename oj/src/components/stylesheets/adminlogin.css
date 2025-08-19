@@ -1,0 +1,106 @@
+.admin-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px);
+    width: 100%;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.admin-login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2a3b4c;
+}
+
+.admin-login-header .header-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #0056b3;
+}
+
+.admin-login-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Form Styles --- */
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #495057;
+}
+
+.admin-login-form input {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    color: #212529 !important;
+    padding: 0.9rem 0.9rem 0.9rem 2.5rem !important;
+    transition: all 0.3s ease;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.admin-login-form input:focus {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
+    border-color: #007bff !important;
+    outline: none;
+}
+
+.admin-login-button {
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-login-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.admin-login-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}

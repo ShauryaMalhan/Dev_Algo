@@ -1,5 +1,5 @@
 import express from 'express';
-import Problem from '../models/problems.js';
+import Problem from '../models/problem.js';
 import SubmissionHistory from '../models/history.js';
 
 const router = express.Router();

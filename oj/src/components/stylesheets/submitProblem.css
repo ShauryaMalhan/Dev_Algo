@@ -10,11 +10,11 @@
     gap: 1.5rem;
 }
 
-/* --- Editor container styling --- */
+/* --- Editor Container Styling --- */
 .editor-container {
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    overflow: hidden; /* This is important for the editor's corners */
+    overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -34,6 +34,7 @@
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
+    font-family: 'Roboto Mono', monospace;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -50,23 +51,49 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .verdict-display {
-    font-size: 1.1rem;
-    font-weight: 700;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
-    color: #495057;
-    background-color: #e9ecef;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 85%;
+    border: 1px solid transparent;
 }
 
-/* Verdict Colors */
-.verdict-running, .verdict-running... { color: #0056b3; background-color: #cce5ff; }
-.verdict-accepted { color: #0f5132; background-color: #d1e7dd; }
-.verdict-wrong-answer { color: #842029; background-color: #f8d7da; }
-.verdict-error { color: #664d03; background-color: #fff3cd; }
+/* --- Verdict Color-Coding --- */
+.verdict-display.verdict-idle,
+.verdict-display.verdict-running {
+    color: #495057; 
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+}
 
+.verdict-display.verdict-accepted {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.verdict-display.verdict-wrong-answer,
+.verdict-display.verdict-compilation-error,
+.verdict-display.verdict-runtime-error,
+.verdict-display.verdict-error {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+}
+
+.verdict-display.verdict-time-limit-exceeded {
+    color: #664d03;
+    background-color: #fff3cd;
+    border-color: #ffc107;
+}
 
 .submit-button {
     background-color: #007bff;
@@ -78,11 +105,13 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    white-space: nowrap;
 }
 
 .submit-button:hover:not(:disabled) {
     background-color: #0056b3;
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .submit-button:disabled {
