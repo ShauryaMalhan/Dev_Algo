@@ -20,6 +20,7 @@ import AdminProtectedRoute from './components/services/adminprotectedroute.jsx';
 import ManageProblems from "./components/admin/manageproblem.jsx";
 import CreateProblem from "./components/admin/createproblem.jsx";
 import EditProblem from "./components/admin/editproblem.jsx";
+import EditSampleTestCases from "./components/admin/editsampletestcases.jsx"
 
 import './App.css';
 
@@ -74,6 +75,14 @@ const AppContent = () => {
             element={
               <AdminProtectedRoute>
                 <EditProblem />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/edit-testcases/:id"
+            element={
+              <AdminProtectedRoute>
+                <EditSampleTestCases />
               </AdminProtectedRoute>
             }
           />

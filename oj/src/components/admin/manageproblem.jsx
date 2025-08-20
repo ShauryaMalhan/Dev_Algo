@@ -37,7 +37,6 @@ const ManageProblems = () => {
         setCurrentPage(1);
     }, [searchTerm, allProblems]);
 
-    // Pagination logic
     const indexOfLastProblem = currentPage * problemsPerPage;
     const indexOfFirstProblem = indexOfLastProblem - problemsPerPage;
     const currentProblems = filteredProblems.slice(indexOfFirstProblem, indexOfLastProblem);
@@ -49,6 +48,10 @@ const ManageProblems = () => {
 
     const handlePrevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    const handleEditTestCases = (problemId) => {
+        navigate(`/admin/edit-testcases/${problemId}`);
     };
 
     return (
@@ -167,7 +170,7 @@ const ManageProblems = () => {
                                         </td>
                                         <td className="owner-col">{problem.owner}</td>
                                         <td className="actions-col">
-                                            <button className="action-btn edit-btn">
+                                            <button className="action-btn edit-btn" onClick={() => handleEditTestCases(problem._id)}>
                                                 <FaPen /> Edit Test Cases
                                             </button>
                                         </td>

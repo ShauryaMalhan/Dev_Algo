@@ -2,6 +2,7 @@ import express from 'express';
 import Problem from '../models/problem.js';
 import fetchAdmin from '../middleware/fetchadmin.js';
 import Admin from '../models/admin.js';
+import SampleTestCase from '../models/sampletestcase.js';
 
 const router = express.Router();
 
@@ -92,6 +93,56 @@ router.delete('/getProblem/:id', fetchAdmin, async (req, res) => {
             return res.status(404).json({ message: 'Problem not found' });
         }
         res.status(200).json({ message: 'Problem deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => {
+    try {
+        const testcases = await SampleTestCase.find({ problemId: req.params.problemId });
+        res.status(200).json(testcases);
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.post('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => {
+    try {
+        const { problemId } = req.params;
+        const { testCases } = req.body;
+
+        if (!Array.isArray(testCases)) {
+            return res.status(400).json({ message: 'A valid array of test cases is required.' });
+        }
+
+        await SampleTestCase.deleteMany({ problemId: problemId });
+
+        const newTestCases = testCases.map(tc => ({
+            problemId: problemId,
+            input: tc.input,
+            output: tc.output,
+        }));
+
+        if (newTestCases.length > 0) {
+            const savedTestCases = await SampleTestCase.insertMany(newTestCases);
+            res.status(201).json(savedTestCases);
+        } else {
+            res.status(200).json({ message: 'All sample test cases deleted successfully.' });
+        }
+
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating test cases', error: error.message });
+    }
+});
+
+router.delete('/getProblem/testcases/:testcaseId', fetchAdmin, async (req, res) => {
+    try {
+        const deletedTestCase = await SampleTestCase.findByIdAndDelete(req.params.testcaseId);
+        if (!deletedTestCase) {
+            return res.status(404).json({ message: 'Test case not found' });
+        }
+        res.status(200).json({ message: 'Test case deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }
