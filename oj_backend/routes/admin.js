@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/admin.js'
-import fetchadmin from '../middleware/fetchadmin.js';
+import fetchAdmin from '../middleware/fetchadmin.js';
 
 const router = express.Router();
 
@@ -83,7 +83,7 @@ router.post('/login', [
     }
 })
 
-router.get('/getadmin', fetchadmin, async (req, res) => {
+router.get('/getadmin', fetchAdmin, async (req, res) => {
     try {
         const adminId = req.admin.id;
         const admin = await Admin.findById(adminId).select("-password");

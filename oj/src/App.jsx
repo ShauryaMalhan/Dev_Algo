@@ -17,6 +17,10 @@ import MySubmissions from "./components/user/mySubmissions.jsx";
 import AllSubmissions from "./components/user/allSubmissions.jsx";
 import AdminPage from "./components/admin/adminpage.jsx";
 import AdminProtectedRoute from './components/services/adminprotectedroute.jsx';
+import ManageProblems from "./components/admin/manageproblem.jsx";
+import CreateProblem from "./components/admin/createproblem.jsx";
+import EditProblem from "./components/admin/editproblem.jsx";
+
 import './App.css';
 
 const AppContent = () => {
@@ -41,13 +45,35 @@ const AppContent = () => {
           <Route path="/problems/:slug/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
           <Route path="/mySubmissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
           <Route path="/allSubmissions" element={<ProtectedRoute><AllSubmissions /></ProtectedRoute>} />
-
-          {/* Admin Routes */}
           <Route
             path="/admin"
             element={
               <AdminProtectedRoute>
                 <AdminPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/manage-problems"
+            element={
+              <AdminProtectedRoute>
+                <ManageProblems />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/new-problem"
+            element={
+              <AdminProtectedRoute>
+                <CreateProblem />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/edit-problem/:id"
+            element={
+              <AdminProtectedRoute>
+                <EditProblem />
               </AdminProtectedRoute>
             }
           />

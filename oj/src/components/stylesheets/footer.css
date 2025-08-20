@@ -59,3 +59,13 @@
         text-align: center;
     }
 }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Make the page at least the full height of the viewport */
+}
+
+.container {
+  flex-grow: 1; /* Allow the main content area to grow and push the footer down */
+}

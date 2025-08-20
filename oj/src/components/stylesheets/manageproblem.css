@@ -1,0 +1,227 @@
+.manage-problems-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.manage-problems-container h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.management-options {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.option-card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 350px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+}
+
+.option-icon {
+    font-size: 2.5rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.option-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* --- Problem List Section --- */
+.problemlist-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.problemlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.problemlist-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-container input {
+    width: 300px;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.create-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.create-btn:hover {
+    background-color: #218838;
+}
+
+/* --- COMPLETE TABLE STYLES --- */
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.problems-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; 
+}
+
+.problems-table th, .problems-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.problems-table thead {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.problem-title {
+    font-weight: 500;
+}
+
+.difficulty-tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.difficulty-easy { background-color: #d1e7dd; color: #0f5132; }
+.difficulty-medium { background-color: #fff3cd; color: #664d03; }
+.difficulty-hard { background-color: #f8d7da; color: #842029; }
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid #ced4da;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.action-btn.edit-btn:hover {
+    background-color: #e9ecef;
+    border-color: #495057;
+}
+
+.action-btn.delete-btn {
+    color: #dc3545;
+    border-color: #f5c2c7;
+}
+
+.action-btn.delete-btn:hover {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+
+/* --- COMPLETE PAGINATION STYLES --- */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.pagination-controls button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-controls button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.pagination-controls span {
+    font-weight: 500;
+}
+
+.title-col {
+    width: 30%;
+}
+.difficulty-col {
+    width: 15%;
+}
+.owner-col {
+    width: 15%;
+}
+.actions-col {
+    width: 30%;
+}
