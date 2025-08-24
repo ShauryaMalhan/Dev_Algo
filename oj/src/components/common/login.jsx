@@ -5,6 +5,7 @@ import { useState, useContext, useRef } from "react";
 import authContext from "../../contexts/auth/authContext";
 import Alert from "../services/alert";
 import { FaUserAstronaut, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -14,13 +15,11 @@ const Login = () => {
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
-    // --- NEW: State and Ref for password visibility ---
     const [showPassword, setShowPassword] = useState(false);
     const passwordInputRef = useRef(null);
 
     const isValid = email.length > 5 && password.length > 5;
 
-    // --- NEW: Toggle function ---
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
         passwordInputRef.current.focus();
@@ -30,20 +29,20 @@ const Login = () => {
         e.preventDefault();
         try {
             const LOGIN_URL = import.meta.env.VITE_LOGIN_PATH;
-            const response = await fetch(LOGIN_URL, {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-            const result = await response.json();
-            if (!response.ok) {
-                setAlertMessage('Login with correct credentials');
+            const response = await axios.post(LOGIN_URL, { email, password });
+            
+            const result = response.data;
+
+            if (result.authtoken) {
+                localStorage.setItem('username', result.username);
+                localStorage.setItem('authtoken', result.authtoken);
+                
+                setUser({ username: result.username });
+                navigate('/');
+            } else {
+                setAlertMessage('Login failed: No token received.');
                 setShowAlert(true);
-                throw new Error(result.error);
             }
-            localStorage.setItem('username', result.username);
-            setUser({ username: result.username });
-            navigate('/');
         } catch (err) {
             console.error(err);
             setAlertMessage('Login with correct credentials');
@@ -78,18 +77,16 @@ const Login = () => {
                             />
                         </div>
 
-                        {/* --- UPDATED: Password Input --- */}
                         <div className="input-group">
                             <FaLock className="input-icon" />
                             <Form.Control
-                                ref={passwordInputRef} // Attach the ref
-                                type={showPassword ? "text" : "password"} // Dynamic type
+                                ref={passwordInputRef}
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            {/* --- NEW: Toggle Button --- */}
                             <button
                                 type="button"
                                 className="password-toggle-btn"

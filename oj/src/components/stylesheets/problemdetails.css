@@ -1,37 +1,150 @@
-.problem {
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+.problem-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    color: #212529;
+}
+
+.problem-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.problem-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.header-meta {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    color: #6c757d;
+    font-size: 0.9rem;
 }
 
-.descriptiontitle {
-    font-weight: bold;
-    font-size: x-large;
+.problem-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
 }
 
-.title {
-    font-family: "Merriweather", serif;
-    font-weight: bold;
-    font-size: xx-large;
+.problem-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.content-box {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    font-family: sans-serif;
+    line-height: 1.6;
+}
+
+/* --- NEW: Add this rule to fix the extra spacing --- */
+.content-box p {
+    /* Reduces the default vertical space around paragraphs */
+    margin-top: 0;
+    margin-bottom: 0.5rem; /* Adds a small, controlled space after each paragraph */
+}
+
+/* --- This ensures the last paragraph has no extra space at the bottom --- */
+.content-box p:last-child {
+    margin-bottom: 0;
+}
+
+/* --- KaTeX/LaTeX Specific Styling --- */
+.katex {
+    font-size: 1.1em !important; /* Make math formulas slightly larger */
+}
+
+.problem-footer {
+    margin-top: 3rem;
     text-align: center;
 }
 
-.description {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: large;
+.submit-solution-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
-.input {
-    font-weight: 600;
-    font-size: large;
+.submit-solution-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
-.problemSubmit {
-    width: 15%;
+.loading-container, .error-container {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.2rem;
+    color: #6c757d;
 }
 
-.div_problemSubmit {
+.sample-case-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.sample-box {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the border-radius is applied */
+}
+
+.sample-box-header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.sample-box-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.copy-btn:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.sample-io {
+    padding: 1rem;
+    margin: 0;
+    background-color: #ffffff;
+    white-space: pre-wrap; /* Allows text to wrap */
+    word-wrap: break-word;
 }

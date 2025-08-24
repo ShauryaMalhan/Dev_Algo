@@ -4,12 +4,6 @@ import { fetchProblems } from "../services/problems.jsx";
 import '../stylesheets/problems.css';
 import { FaCheckCircle, FaRegCircle, FaTimesCircle } from 'react-icons/fa';
 
-const createSlug = (title) => {
-    return title
-        .toLowerCase() // Convert all characters to small letters
-        .replace(/\s+/g, '-'); // Replace all spaces with a hyphen
-};
-
 const Problem = () => {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,13 +16,8 @@ const Problem = () => {
         const getData = async () => {
             try {
                 const problemData = await fetchProblems();
-
-                console.log("--- Data received from backend: ---");
-                problemData.forEach(problem => {
-                    console.log(`Title: "${problem.title}", Status: "${problem.status}"`);
-                });
-
-                setProblems(problemData);
+                const formattedProblems = problemData.map(p => ({ ...p, title: p.name }));
+                setProblems(formattedProblems);
             } catch (err) {
                 console.error("Failed to fetch problems:", err);
             } finally {
@@ -39,16 +28,13 @@ const Problem = () => {
     }, []);
 
     const handleRowClick = (problem) => {
-        const problemSlug = createSlug(problem.title);
-        navigate(`/problems/${problemSlug}`, { state: problem });
+        navigate(`/problems/${problem.slug}`, { state: problem });
     };
 
-    // --- NEW: Logic to apply filters and search ---
     const filteredProblems = problems
         .filter(p => difficultyFilter === "All" || p.difficulty === difficultyFilter)
         .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // --- NEW: Status Icon Component ---
     const StatusIcon = ({ status }) => {
         if (status === "Solved") return <FaCheckCircle className="status-icon solved" title="Solved" />;
         if (status === "Attempted") return <FaTimesCircle className="status-icon attempted" title="Attempted" />;
@@ -96,8 +82,8 @@ const Problem = () => {
                                     </td>
                                     <td className="title-col">{problem.title}</td>
                                     <td className="difficulty-col">
-                                        <span className={`difficulty-tag difficulty-${problem.difficulty.toLowerCase()}`}>
-                                            {problem.difficulty}
+                                        <span className={`difficulty-tag difficulty-${(problem.difficulty || '').toLowerCase()}`}>
+                                            {problem.difficulty || 'N/A'}
                                         </span>
                                     </td>
                                 </tr>

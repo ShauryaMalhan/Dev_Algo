@@ -18,17 +18,14 @@ const EditProblem = () => {
     const [problem, setProblem] = useState(null);
     const [error, setError] = useState('');
 
-    // --- Get the base API path from the environment variable ---
-    const EDIT_PROBLEMS = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH;
+    const EDIT_PROBLEMS = import.meta.env.VITE_ADMIN_GET_ALL_PROBLEMS_PATH;
 
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                // --- Construct the dynamic URL for fetching a single problem ---
                 const response = await axios.get(`${EDIT_PROBLEMS}/${id}`, {
                     headers: { 'auth-token': localStorage.getItem('adminToken') }
                 });
-                console.log("ew");
                 setProblem(response.data);
             } catch (err) {
                 setError('Failed to load problem data.');

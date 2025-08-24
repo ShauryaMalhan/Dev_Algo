@@ -1,105 +1,140 @@
-import { useLocation } from "react-router-dom";
-import "../stylesheets/problemdetails.css";
-import Card from 'react-bootstrap/Card';
-import authContext from "../../contexts/auth/authContext";
-import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import { Link } from "react-router-dom";
-
-const createSlug = (title) => {
-    return title
-        .toLowerCase() // Convert all characters to small letters
-        .replace(/\s+/g, '-'); // Replace all spaces with a hyphen
-};
-
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import 'katex/dist/katex.min.css';
+import '../stylesheets/problemdetails.css';
+import { parsePolygonLatex } from '../services/latexParser';
+import { FaCopy } from 'react-icons/fa';
 
 const ProblemDetail = () => {
-  const navigate = useNavigate();
-  const { user, loading } = useContext(authContext);
-  
-  useEffect( () => {
-    if(!loading && user.username === "none"){
-      navigate('/login');
-    }
-  }, [navigate, user, loading]);
+    const { slug } = useParams();
+    const navigate = useNavigate();
+    const [problem, setProblem] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [copiedId, setCopiedId] = useState(null);
 
-  const location = useLocation();
-  const problem = location.state;
+    const GET_PROBLEM_BY_SLUG_PATH = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH; 
 
-  if (!problem) {
-    return <div>No problem details available.</div>; 
-  }
-  
-  const handleProblemSubmit = (e)=> {
-    e.preventDefault();
-    const problemSlug = createSlug(problem.title);
-    navigate(`/problems/${problemSlug}/submit`, { state: problem });
-  }
+    useEffect(() => {
+        const fetchProblem = async () => {
+            try {
+                const response = await axios.get(`${GET_PROBLEM_BY_SLUG_PATH}/${slug}`);
+                setProblem(response.data);
+            } catch (err) {
+                setError('Problem not found or an error occurred.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProblem();
+    }, [slug]);
 
+    const handleNavigateToSubmit = () => {
+        navigate(`/problems/${slug}/submit`, { state: problem });
+    };
 
-  return (
-    <div className="container mt-4 mb-4 problem">
-      <br />
-      <br />
-      <div className="title">{problem.title}</div>
-      <br />
-      <div className="descriptiontitle">Problem Statement: </div>
-      <div className="description">{problem.statement}</div>
-      <br />
-      <div className="descriptiontitle">Input:</div>
-      {problem.inputDescription.map((value) => (
-        <div key={value._id} className="description">
-          {value.description}
-        </div>
-      ))}
-      <br />
-      <div className="descriptiontitle">Output:</div>
-      {problem.outputDescription.map((value) => (
-        <div key={value._id} className="description">
-          {value.description}
-        </div>
-      ))}
-      <br />
-      <div className="descriptiontitle">Constraints: </div>
-      {problem.constraints.map((value) => (
-        <ul key={value._id} className="description">
-          <li>{value.constraint}</li>
-        </ul>
-      ))}
-      <br />
-      <div className="descriptiontitle">Created By: </div>
-      <div className="description">{problem.createdBy}</div>
-      <br/>
-      <br/>
-      <div className="descriptiontitle">Test Cases:</div>
-      {problem.testcases.slice(0, 2).map((value) => (
-        <Card key={value._id} className="mt-3 mb-3">
-          <Card.Body>
-            <div className="input">Input: </div>
-            <div>
-              {value.inputs.map((value1) => (
-                <div key={value1._id}>
-                  {value1.input}
+    const handleCopy = (text, id) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+        document.body.removeChild(textArea);
+    };
+
+    if (loading) return <div className="loading-container">Loading problem...</div>;
+    if (error) return <div className="error-container">{error}</div>;
+    if (!problem) return null;
+
+    return (
+        <div className="problem-detail-container">
+            <div className="problem-header">
+                <h1>{problem.name}</h1>
+                <div className="header-meta">
+                    <span>Time Limit: {problem.timeLimit}s</span>
+                    <span>Owner: {problem.owner}</span>
                 </div>
-              ))}
             </div>
-            <br/>
-            <div className="input">Output: </div>
-            <div>{value.output}</div>
-            <br/>
-            {value.explanation}
-            <Card.Text>
-            </Card.Text>
-          </Card.Body>
-        </Card>
-      ))}
-      <br/>
-      <div className="div_problemSubmit">
-        <Button as={Link} className="problemSubmit" onClick={handleProblemSubmit}>Submit Problem</Button>
-      </div>
-    </div>
-  );
+
+            <div className="problem-body">
+                <div className="problem-section">
+                    <h2>Legend</h2>
+                    {/* 2. Parse the text and render the resulting HTML */}
+                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.legend) }} />
+                </div>
+
+                <div className="problem-section">
+                    <h2>Input Format</h2>
+                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.input) }} />
+                </div>
+
+                <div className="problem-section">
+                    <h2>Output Format</h2>
+                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.output) }} />
+                </div>
+                {/* This section for sample test cases remains the same */}
+                {problem.sampleTestCases && problem.sampleTestCases.length > 0 && (
+                    <div className="problem-section">
+                        <h2>Sample Cases</h2>
+                        {problem.sampleTestCases.map((tc, index) => (
+                            <div key={index} className="sample-case-grid">
+                                {/* Input Box */}
+                                <div className="sample-box">
+                                    <div className="sample-box-header">
+                                        <h4>Sample Input {index + 1}</h4>
+                                        <button 
+                                            className="copy-btn" 
+                                            onClick={() => handleCopy(tc.input, `input-${index}`)}
+                                            title="Copy to clipboard"
+                                        >
+                                            {copiedId === `input-${index}` ? 'Copied!' : <FaCopy />}
+                                        </button>
+                                    </div>
+                                    <pre className="sample-io">{tc.input}</pre>
+                                </div>
+                                {/* Output Box */}
+                                <div className="sample-box">
+                                    <div className="sample-box-header">
+                                        <h4>Sample Output {index + 1}</h4>
+                                        {/* --- NEW: Copy button for the output --- */}
+                                        <button 
+                                            className="copy-btn" 
+                                            onClick={() => handleCopy(tc.output, `output-${index}`)}
+                                            title="Copy to clipboard"
+                                        >
+                                            {copiedId === `output-${index}` ? 'Copied!' : <FaCopy />}
+                                        </button>
+                                    </div>
+                                    <pre className="sample-io">{tc.output}</pre>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {problem.notes && (
+                    <div className="problem-section">
+                        <h2>Notes</h2>
+                        <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.notes) }} />
+                    </div>
+                )}
+                
+            </div>
+
+            <div className="problem-footer">
+                <button className="submit-solution-btn" onClick={handleNavigateToSubmit}>
+                    Submit Solution
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default ProblemDetail;

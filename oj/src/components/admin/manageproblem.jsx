@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaListUl, FaVial, FaPlus, FaSearch, FaChevronLeft, FaChevronRight, FaPen, FaFlask } from 'react-icons/fa';
-import '../stylesheets/manageproblem.css'; // Corrected file path and name
+import '../stylesheets/manageproblem.css';
 
-const ManageProblem = () => { // Corrected component name
+const ManageProblem = () => {
     const navigate = useNavigate();
     const [view, setView] = useState('cards'); 
     
@@ -54,7 +54,7 @@ const ManageProblem = () => { // Corrected component name
     };
 
     const handleEditTestCases = (problemId) => {
-        navigate(`/admin/manage-testcases/${problemId}`);
+        navigate(`/admin/edit-testcases/${problemId}`);
     };
     
     const handleEditJudgingTestCases = (problemId) => {
@@ -81,8 +81,6 @@ const ManageProblem = () => { // Corrected component name
                     <p>Upload or delete large, hidden test case files.</p>
                 </div>
             </div>
-
-            {/* --- View for Problem List --- */}
             {view === 'problemlist' && (
                  <div className="problemlist-section">
                  <div className="problemlist-header">
@@ -141,8 +139,6 @@ const ManageProblem = () => { // Corrected component name
                  </div>
              </div>
             )}
-
-            {/* --- View for Sample Test Cases --- */}
             {view === 'sampletestcaselist' && (
                  <div className="problemlist-section">
                  <div className="problemlist-header">
@@ -198,8 +194,6 @@ const ManageProblem = () => { // Corrected component name
                  </div>
              </div>
             )}
-
-            {/* --- View for Judging Test Cases --- */}
             {view === 'judgingtestcaselist' && (
                  <div className="problemlist-section">
                     <div className="problemlist-header">

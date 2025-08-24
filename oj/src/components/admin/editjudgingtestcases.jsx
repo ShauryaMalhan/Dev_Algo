@@ -11,7 +11,7 @@ const ManageJudgingTestCases = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     
-    const GET_ALL_PROBLEMS_PATH = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH;
+    const GET_ALL_PROBLEMS_PATH = import.meta.env.VITE_ADMIN_GET_ALL_PROBLEMS_PATH;
 
     const fetchTestCases = async () => {
         try {

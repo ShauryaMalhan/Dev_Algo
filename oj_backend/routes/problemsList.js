@@ -6,14 +6,14 @@ import SampleTestCase from '../models/sampletestcase.js';
 import upload from '../middleware/multerconfig.js';
 import TestCase from '../models/testcase.js';
 import deleteExistingTestCases from '../middleware/multerdel.js';
-import fs from 'fs';
+import UserProgress from '../models/userprogress.js';
+import fetchuser from '../middleware/fetchuser.js';
 
 const router = express.Router();
 
 router.post('/newProblem', fetchAdmin, async (req, res) => {
     try {
         const adminID = req.admin.id;
-        console.log("re");
 
         const admin = await Admin.findById(adminID);
         if (!admin) {
@@ -61,7 +61,53 @@ router.get('/getProblem', async (req, res) => {
     }
 });
 
-router.get('/getProblem/:id', fetchAdmin, async (req, res) => {
+router.get('/getProblem/with-status', fetchuser, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const allProblems = await Problem.find({}).lean();
+        const userProgress = await UserProgress.find({ userId: userId }).lean();
+        const progressMap = new Map();
+        for (const progress of userProgress) {
+            progressMap.set(progress.problemId.toString(), progress.status);
+        }
+        const problemsWithStatus = allProblems.map(problem => {
+            const status = progressMap.get(problem._id.toString()) || 'Todo';
+            return {
+                ...problem,
+                status: status,
+            };
+        });
+        res.status(200).json(problemsWithStatus);
+    } catch (err) {
+        console.error("Error fetching problems with status:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get('/getProblem/:slug', async (req, res) => {
+    try {
+        const problem = await Problem.findOne({ slug: req.params.slug }).lean();
+
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+
+        const sampleTestCases = await SampleTestCase.find({ problemId: problem._id }).lean();
+
+        const responseData = {
+            ...problem,
+            sampleTestCases: sampleTestCases
+        };
+
+        res.status(200).json(responseData);
+
+    } catch (err) {
+        console.error("Error fetching problem by slug:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get('/getProblem/admin/:id', fetchAdmin, async (req, res) => {
     try {
         const problem = await Problem.findById(req.params.id);
         if (!problem) {
@@ -73,12 +119,12 @@ router.get('/getProblem/:id', fetchAdmin, async (req, res) => {
     }
 });
 
-router.put('/getProblem/:id', fetchAdmin, async (req, res) => {
+router.put('/getProblem/admin/:id', fetchAdmin, async (req, res) => {
     try {
         const updatedProblem = await Problem.findByIdAndUpdate(
             req.params.id,
-            req.body, // The new data from the form
-            { new: true, runValidators: true } // Options: return the updated doc and run schema validation
+            req.body,
+            { new: true, runValidators: true }
         );
 
         if (!updatedProblem) {
@@ -90,7 +136,7 @@ router.put('/getProblem/:id', fetchAdmin, async (req, res) => {
     }
 });
 
-router.delete('/getProblem/:id', fetchAdmin, async (req, res) => {
+router.delete('/getProblem/admin/:id', fetchAdmin, async (req, res) => {
     try {
         const deletedProblem = await Problem.findByIdAndDelete(req.params.id);
         if (!deletedProblem) {
@@ -102,7 +148,7 @@ router.delete('/getProblem/:id', fetchAdmin, async (req, res) => {
     }
 });
 
-router.get('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => {
+router.get('/getProblem/admin/:problemId/testcases', fetchAdmin, async (req, res) => {
     try {
         const testcases = await SampleTestCase.find({ problemId: req.params.problemId });
         res.status(200).json(testcases);
@@ -111,7 +157,7 @@ router.get('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => {
     }
 });
 
-router.post('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => {
+router.post('/getProblem/admin/:problemId/testcases', fetchAdmin, async (req, res) => {
     try {
         const { problemId } = req.params;
         const { testCases } = req.body;
@@ -140,7 +186,7 @@ router.post('/getProblem/:problemId/testcases', fetchAdmin, async (req, res) => 
     }
 });
 
-router.delete('/getProblem/testcases/:testcaseId', fetchAdmin, async (req, res) => {
+router.delete('/getProblem/admin/testcases/:testcaseId', fetchAdmin, async (req, res) => {
     try {
         const deletedTestCase = await SampleTestCase.findByIdAndDelete(req.params.testcaseId);
         if (!deletedTestCase) {
@@ -152,7 +198,7 @@ router.delete('/getProblem/testcases/:testcaseId', fetchAdmin, async (req, res) 
     }
 });
 
-router.get('/getProblem/:problemId/judging-testcases', fetchAdmin, async (req, res) => {
+router.get('/getProblem/admin/:problemId/judging-testcases', fetchAdmin, async (req, res) => {
     try {
         const testcases = await TestCase.find({ problemId: req.params.problemId });
         res.json(testcases);
@@ -161,7 +207,7 @@ router.get('/getProblem/:problemId/judging-testcases', fetchAdmin, async (req, r
     }
 });
 
-router.post('/getProblem/:problemId/judging-testcases', fetchAdmin, deleteExistingTestCases, upload.any(), async (req, res) => {
+router.post('/getProblem/admin/:problemId/judging-testcases', fetchAdmin, deleteExistingTestCases, upload.any(), async (req, res) => {
     try {
         const { problemId } = req.params;
         const files = req.files;

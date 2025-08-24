@@ -12,7 +12,7 @@ const ManageTestCases = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
-    const EDIT_SAMPLE_TEST_API = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH;
+    const EDIT_SAMPLE_TEST_API = import.meta.env.VITE_ADMIN_GET_ALL_PROBLEMS_PATH;
 
     useEffect(() => {
         const fetchData = async () => {
