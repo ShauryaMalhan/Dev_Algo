@@ -3,6 +3,10 @@ import Problem from '../models/problem.js';
 import fetchAdmin from '../middleware/fetchadmin.js';
 import Admin from '../models/admin.js';
 import SampleTestCase from '../models/sampletestcase.js';
+import upload from '../middleware/multerconfig.js';
+import TestCase from '../models/testcase.js';
+import deleteExistingTestCases from '../middleware/multerdel.js';
+import fs from 'fs';
 
 const router = express.Router();
 
@@ -145,6 +149,58 @@ router.delete('/getProblem/testcases/:testcaseId', fetchAdmin, async (req, res) 
         res.status(200).json({ message: 'Test case deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get('/getProblem/:problemId/judging-testcases', fetchAdmin, async (req, res) => {
+    try {
+        const testcases = await TestCase.find({ problemId: req.params.problemId });
+        res.json(testcases);
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+router.post('/getProblem/:problemId/judging-testcases', fetchAdmin, deleteExistingTestCases, upload.any(), async (req, res) => {
+    try {
+        const { problemId } = req.params;
+        const files = req.files;
+        const fileMap = new Map();
+        files.forEach(file => {
+            const lastDotIndex = file.originalname.lastIndexOf('.');
+            const baseName = lastDotIndex === -1 
+                ? file.originalname 
+                : file.originalname.substring(0, lastDotIndex);
+            
+            if (!fileMap.has(baseName)) {
+                fileMap.set(baseName, {});
+            }
+            
+            if (file.fieldname === 'inputFiles') {
+                fileMap.get(baseName).input = file;
+            } else if (file.fieldname === 'outputFiles') {
+                fileMap.get(baseName).output = file;
+            }
+        });
+
+        const newTestCases = [];
+        for (const [baseName, pair] of fileMap.entries()) {
+            if (pair.input && pair.output) {
+                newTestCases.push({
+                    problemId,
+                    inputPath: pair.input.path,
+                    outputPath: pair.output.path,
+                });
+            }
+        }
+
+        if (newTestCases.length > 0) {
+            await TestCase.insertMany(newTestCases);
+        }
+        
+        res.status(201).json({ message: `${newTestCases.length} test case pairs were saved.` });
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error', error: err.message });
     }
 });
 

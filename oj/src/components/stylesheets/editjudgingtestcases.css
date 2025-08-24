@@ -1,0 +1,140 @@
+.manage-judging-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.manage-judging-container h1, .manage-judging-container h2 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.upload-form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.file-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.file-input-wrapper label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.upload-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #0056b3;
+}
+
+.existing-testcases .testcase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.testcase-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.testcase-item span {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+
+.delete-btn:hover {
+    color: #c82333;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.detected-pairs {
+    margin-top: 2rem;
+    border-top: 1px solid #e9ecef;
+    padding-top: 1.5rem;
+}
+
+.detected-pairs h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.pair-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.pair-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.file-info span {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.file-info strong {
+    font-weight: 700;
+}
+
+.arrow-icon {
+    color: #6c757d;
+}
