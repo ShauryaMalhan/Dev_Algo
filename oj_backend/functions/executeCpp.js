@@ -6,13 +6,36 @@ import { v4 as uuid } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const tempPath = path.join(__dirname, 'temp');
 
-if (!fs.existsSync(tempPath)) {
-    fs.mkdirSync(tempPath, { recursive: true });
-}
+const codesPath = path.join(__dirname, 'codesCpp');
+const inputsPath = path.join(__dirname, 'inputs');
+const outputPath = path.join(__dirname, 'outputsCpp');
 
-const compileCpp = (filepath, outPath) => {
+[codesPath, inputsPath, outputPath].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
+const cleanupFiles = async (files, retries = 5, delay = 300) => {
+    let lastError = null;
+    for (let i = 0; i < retries; i++) {
+        try {
+            files.forEach(file => {
+                if (fs.existsSync(file)) fs.unlinkSync(file);
+            });
+            return; // Success
+        } catch (error) {
+            lastError = error;
+            if (error.code === 'EPERM' && i < retries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                throw lastError;
+            }
+        }
+    }
+};
+const compileWithSpawn = (filepath, outPath) => {
     return new Promise((resolve, reject) => {
         const compileProcess = spawn('g++', [filepath, '-o', outPath]);
         let compileError = '';
@@ -29,7 +52,7 @@ const compileCpp = (filepath, outPath) => {
     });
 };
 
-const executeProgram = (executablePath, inputPath, timeLimitMs) => {
+const executeWithSpawn = (executablePath, inputPath, timeLimitMs) => {
     return new Promise((resolve, reject) => {
         const executeProcess = spawn(executablePath);
         let stdout = '';
@@ -52,14 +75,9 @@ const executeProgram = (executablePath, inputPath, timeLimitMs) => {
         });
         executeProcess.on('close', (code) => {
             clearTimeout(timeoutId);
-            // --- CORRECTED LOGIC ---
-            // A non-zero exit code indicates a runtime error.
             if (code !== 0) {
                 reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
             } else {
-                // If the exit code is 0, the program succeeded, even if stdout is empty.
-                // We also check stderr here because some valid programs might print warnings.
-                // For a strict judge, you might reject if stderr is not empty.
                 resolve(stdout);
             }
         });
@@ -68,31 +86,31 @@ const executeProgram = (executablePath, inputPath, timeLimitMs) => {
 
 export const executeCpp = async (code, input, timeLimit = 2) => {
     const jobId = uuid();
-    const jobPath = path.join(tempPath, jobId);
-    fs.mkdirSync(jobPath, { recursive: true });
+    const timeLimitMs = timeLimit * 1000;
 
-    const filepath = path.join(jobPath, 'main.cpp');
-    const inputPath = path.join(jobPath, 'input.txt');
-    const outPath = path.join(jobPath, 'main.out');
-
-    // 1. Write the code and input to temporary files
-    await fs.promises.writeFile(filepath, code);
-    await fs.promises.writeFile(inputPath, input);
+    const codeFilePath = path.join(codesPath, `${jobId}.cpp`);
+    const inputFilePath = path.join(inputsPath, `${jobId}.txt`);
+    const outputFilePath = path.join(outputPath, `${jobId}.out`);
 
     try {
-        // 2. Compile the .cpp file
-        await compileCpp(filepath, outPath);
-        
-        // 3. Execute the compiled .out file
-        const output = await executeProgram(outPath, inputPath, timeLimit * 1000);
-        return output;
+        await fs.promises.writeFile(codeFilePath, code);
+        await fs.promises.writeFile(inputFilePath, input);
+
+        await compileWithSpawn(codeFilePath, outputFilePath);
+
+        const stdout = await executeWithSpawn(outputFilePath, inputFilePath, timeLimitMs);
+        return stdout;
+
     } catch (error) {
-        // Re-throw any errors (Compilation, TLE, Runtime)
         throw error;
     } finally {
-        // 4. Clean up the entire temporary directory
-        if (fs.existsSync(jobPath)) {
-            fs.rmSync(jobPath, { recursive: true, force: true });
+        try {
+            await cleanupFiles([codeFilePath, inputFilePath, outputFilePath]);
+        } catch (cleanupError) {
+            console.warn(
+                `Warning: Cleanup failed for job ${jobId}.`,
+                cleanupError.message
+            );
         }
     }
 };

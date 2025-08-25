@@ -37,7 +37,7 @@ router.post('/run/:problemId', fetchuser, async (req, res) => {
                     userOutput = await executeJava(code, inputContent, problem.timeLimit);
                 } else if (language === 'python') {
                     userOutput = await executePy(code, inputContent, problem.timeLimit);
-                }
+                } 
 
                 if (userOutput.trim() !== expectedOutputContent.trim()) {
                     return res.status(200).json({ verdict: `Wrong Answer on test case #${testCaseCounter}` });

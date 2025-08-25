@@ -67,6 +67,7 @@ const CreateProblem = () => {
         e.preventDefault();
         setError('');
         try {
+            console.log(problem);
             await axios.post(NEW_PROBLEM_PATH, problem, {
                 headers: { 'auth-token': localStorage.getItem('adminToken') }
             });

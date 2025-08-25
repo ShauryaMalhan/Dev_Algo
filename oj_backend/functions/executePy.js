@@ -6,11 +6,37 @@ import { v4 as uuid } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const tempPath = path.join(__dirname, 'temp');
 
-if (!fs.existsSync(tempPath)) {
-    fs.mkdirSync(tempPath, { recursive: true });
-}
+// Define paths to your specific folders for Python
+const codesPath = path.join(__dirname, 'codesPy');
+const inputsPath = path.join(__dirname, 'inputs');
+
+// Ensure all directories exist
+[codesPath, inputsPath].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
+// Helper function to retry file deletion
+const cleanupFiles = async (files, retries = 5, delay = 300) => {
+    let lastError = null;
+    for (let i = 0; i < retries; i++) {
+        try {
+            files.forEach(file => {
+                if (fs.existsSync(file)) fs.unlinkSync(file);
+            });
+            return; // Success
+        } catch (error) {
+            lastError = error;
+            if (error.code === 'EPERM' && i < retries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                throw lastError;
+            }
+        }
+    }
+};
 
 // Helper function for Python execution using spawn
 const executePythonWithSpawn = (scriptPath, inputPath, timeLimitMs) => {
@@ -21,7 +47,6 @@ const executePythonWithSpawn = (scriptPath, inputPath, timeLimitMs) => {
         let stderr = '';
         let timeoutId;
 
-        // Manual timeout to forcefully kill the process
         timeoutId = setTimeout(() => {
             spawn('taskkill', ['/pid', executeProcess.pid, '/f', '/t']);
             reject(new Error(`Time Limit Exceeded`));
@@ -33,52 +58,50 @@ const executePythonWithSpawn = (scriptPath, inputPath, timeLimitMs) => {
         executeProcess.stdout.on('data', (data) => {
             stdout += data.toString();
         });
-
         executeProcess.stderr.on('data', (data) => {
             stderr += data.toString();
         });
-
         executeProcess.on('close', (code) => {
-            clearTimeout(timeoutId); // Process finished, clear the timeout
-            if (code === 0) {
-                resolve(stdout);
-            } else {
-                // For Python, syntax and runtime errors are both caught here
-                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
-            }
-        });
-
-        executeProcess.on('error', (err) => {
             clearTimeout(timeoutId);
-            reject(new Error(`Execution process error: ${err.message}`));
+            if (code !== 0) {
+                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
+            } else {
+                resolve(stdout);
+            }
         });
     });
 };
 
-// Main function now adapted for Python
+// Main function now takes raw code and input
 export const executePy = async (code, input, timeLimit = 2) => {
     const jobId = uuid();
-    const jobPath = path.join(tempPath, jobId);
-    fs.mkdirSync(jobPath, { recursive: true });
+    const timeLimitMs = timeLimit * 1000;
 
-    const filepath = path.join(jobPath, 'main.py');
-    const inputPath = path.join(jobPath, 'input.txt');
-
-    // 1. Write the code and input to temporary files
-    await fs.promises.writeFile(filepath, code);
-    await fs.promises.writeFile(inputPath, input);
+    // Define unique file paths for this specific job in your preferred folders
+    const codeFilePath = path.join(codesPath, `${jobId}.py`);
+    const inputFilePath = path.join(inputsPath, `${jobId}.txt`);
 
     try {
+        // 1. Write the code and input to their respective files
+        await fs.promises.writeFile(codeFilePath, code);
+        await fs.promises.writeFile(inputFilePath, input);
+
         // 2. Execute the Python script
-        const output = await executePythonWithSpawn(filepath, inputPath, timeLimit * 1000);
-        return output;
+        const stdout = await executePythonWithSpawn(codeFilePath, inputFilePath, timeLimitMs);
+        return stdout;
+
     } catch (error) {
-        // This catch block will handle TLE and Runtime Errors
+        // Re-throw any errors to be handled by the controller
         throw error;
     } finally {
-        // 3. Clean up the entire temporary directory
-        if (fs.existsSync(jobPath)) {
-            fs.rmSync(jobPath, { recursive: true, force: true });
+        // 3. Clean up the individual files from their respective directories
+        try {
+            await cleanupFiles([codeFilePath, inputFilePath]);
+        } catch (cleanupError) {
+            console.warn(
+                `Warning: Cleanup failed for job ${jobId}.`,
+                cleanupError.message
+            );
         }
     }
 };
