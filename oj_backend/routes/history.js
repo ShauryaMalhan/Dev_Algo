@@ -1,5 +1,8 @@
 import express from 'express';
 import History from "../models/history.js";
+import UserProgress from '../models/userprogress.js';
+import User from '../models/user.js';
+import Problem from '../models/problem.js';
 
 const router = express.Router();
 
@@ -11,12 +14,30 @@ router.post('/newHistory', async (req, res)=> {
             problem: req.body.problem,
             language: req.body.language,
             link: req.body.link
-        })
-        res.status(200).send(newHistory);
+        });
+        const user = await User.findOne({ username: req.body.user });
+        const problem = await Problem.findOne({ name: req.body.problem });
+        if (user && problem) {
+            if (req.body.verdict === 'Accepted') {
+                await UserProgress.updateOne(
+                    { userId: user._id, problemId: problem._id },
+                    { $set: { status: 'Solved' } },
+                    { upsert: true } 
+                );
+            } else {
+                await UserProgress.updateOne(
+                    { userId: user._id, problemId: problem._id },
+                    { $setOnInsert: { status: 'Attempted' } },
+                    { upsert: true }
+                );
+            }
+        }
+
+        res.status(200).json(newHistory);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-})
+});
 
 router.get('/myHistory', async (req, res)=> {
     try {

@@ -1,44 +1,58 @@
 import express from 'express';
-import { generateFile } from '../functions/generateFile.js';
+import fs from 'fs/promises';
 import { executeCpp } from '../functions/executeCpp.js';
-import { generateInputFile } from '../functions/generateInputFile.js';
-import { generateJavaFile } from '../functions/generateJavaFile.js';
-import { generatePyFile } from '../functions/generatePyFile.js';
 import { executeJava } from '../functions/executeJava.js';
 import { executePy } from '../functions/executePy.js';
-
+import Problem from '../models/problem.js';
+import TestCase from '../models/testcase.js';
+import fetchuser from '../middleware/fetchuser.js';
 
 const router = express.Router();
 
-router.post('/run', async (req, res) => {
-    const { language = 'cpp', code, input } = req.body;
-
-    if (!code) {
-        return res.status(500).json({ success: false, message: "Empty code body" });
-    }
+router.post('/run/:problemId', fetchuser, async (req, res) => {
+    const { language, code } = req.body;
+    const { problemId } = req.params;
 
     try {
-        let filePath, output, input_filePath;
+        const problem = await Problem.findById(problemId);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found.' });
+        }
+        const allTestCases = await TestCase.find({ problemId }).lean();
 
-        if (language === 'cpp') {
-            filePath = await generateFile(code, language);
-            input_filePath = await generateInputFile(input);
-            output = await executeCpp(filePath, input_filePath);
-        } else if (language === 'java') {
-            filePath = await generateJavaFile(code, language);
-            input_filePath = await generateInputFile(input);
-            output = await executeJava(filePath, input_filePath);
-        } else if (language === 'python') {
-            filePath = await generatePyFile(code, language);
-            input_filePath = await generateInputFile(input);
-            output = await executePy(filePath, input_filePath);
-        } else {
-            return res.status(400).json({ success: false, message: "Unsupported language" });
+        if (allTestCases.length === 0) {
+            return res.status(400).json({ message: 'No test cases found for this problem.' });
         }
 
-        res.json({ filePath, output, input_filePath });
+        let testCaseCounter = 1;
+
+        for (const testcase of allTestCases) {
+            const inputContent = await fs.readFile(testcase.inputPath, 'utf-8');
+            const expectedOutputContent = await fs.readFile(testcase.outputPath, 'utf-8');
+            try {
+                let userOutput;
+                if (language === 'cpp') {
+                    userOutput = await executeCpp(code, inputContent, problem.timeLimit);
+                } else if (language === 'java') {
+                    userOutput = await executeJava(code, inputContent, problem.timeLimit);
+                } else if (language === 'python') {
+                    userOutput = await executePy(code, inputContent, problem.timeLimit);
+                }
+
+                if (userOutput.trim() !== expectedOutputContent.trim()) {
+                    return res.status(200).json({ verdict: `Wrong Answer on test case #${testCaseCounter}` });
+                }
+            } catch (error) {
+                return res.status(200).json({ verdict: `${error.message} on test case #${testCaseCounter}` });
+            }
+            testCaseCounter++;
+        }
+
+        res.status(200).json({ verdict: 'Accepted' });
+
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        console.error("Judging error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

@@ -107,6 +107,15 @@ router.get('/getProblem/:slug', async (req, res) => {
     }
 });
 
+router.get('/getProblem/:problemId/judging-testcases', fetchuser, async (req, res) => {
+    try {
+        const testcases = await TestCase.find({ problemId: req.params.problemId });
+        res.json(testcases);
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 router.get('/getProblem/admin/:id', fetchAdmin, async (req, res) => {
     try {
         const problem = await Problem.findById(req.params.id);

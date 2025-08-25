@@ -31,7 +31,7 @@ const ProblemDetail = () => {
     }, [slug]);
 
     const handleNavigateToSubmit = () => {
-        navigate(`/problems/${slug}/submit`, { state: problem });
+        navigate(`/problems/${slug}/submit`);
     };
 
     const handleCopy = (text, id) => {

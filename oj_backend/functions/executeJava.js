@@ -1,48 +1,25 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
-// --- Use spawn from child_process ---
 import { spawn } from 'child_process';
+import { v4 as uuid } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const outputPath = path.join(__dirname, 'outputsjava');
+const tempPath = path.join(__dirname, 'temp');
 
-if (!fs.existsSync(outputPath)) {
-    fs.mkdirSync(outputPath, { recursive: true });
+if (!fs.existsSync(tempPath)) {
+    fs.mkdirSync(tempPath, { recursive: true });
 }
 
-// Your cleanup function remains the same
-const cleanupFiles = async (files, retries = 5, delay = 300) => {
-    let lastError = null;
-    for (let i = 0; i < retries; i++) {
-        try {
-            files.forEach(file => {
-                if (fs.existsSync(file)) fs.unlinkSync(file);
-            });
-            return; // Success
-        } catch (error) {
-            lastError = error;
-            if (error.code === 'EPERM' && i < retries - 1) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-            } else {
-                throw lastError;
-            }
-        }
-    }
-};
-
-// --- NEW: Helper function for Java compilation ---
-const compileJavaWithSpawn = (filepath, outPath) => {
+// Helper function for Java compilation
+const compileJava = (filepath, jobPath) => {
     return new Promise((resolve, reject) => {
-        // Use javac and the -d flag to specify the output directory for the .class file
-        const compileProcess = spawn('javac', ['-d', outPath, filepath]);
-        
+        const compileProcess = spawn('javac', ['-d', jobPath, filepath]);
         let compileError = '';
         compileProcess.stderr.on('data', (data) => {
             compileError += data.toString();
         });
-
         compileProcess.on('close', (code) => {
             if (code !== 0) {
                 reject(new Error(`Compilation Error: ${compileError}`));
@@ -53,12 +30,10 @@ const compileJavaWithSpawn = (filepath, outPath) => {
     });
 };
 
-// --- NEW: Helper function for Java execution ---
-const executeJavaWithSpawn = (outPath, className, inputPath, timeLimitMs) => {
+// Helper function for Java execution
+const executeJavaProgram = (jobPath, className, inputPath, timeLimitMs) => {
     return new Promise((resolve, reject) => {
-        // Use java, set the classpath (-cp) to the output directory, and provide the class name
-        const executeProcess = spawn('java', ['-cp', outPath, className]);
-        
+        const executeProcess = spawn('java', ['-cp', jobPath, className]);
         let stdout = '';
         let stderr = '';
         let timeoutId;
@@ -82,42 +57,43 @@ const executeJavaWithSpawn = (outPath, className, inputPath, timeLimitMs) => {
             if (code === 0) {
                 resolve(stdout);
             } else {
-                reject(new Error(`Runtime Error: ${stderr}`));
+                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
             }
         });
     });
 };
 
-// --- Main function now adapted for Java ---
-export const executeJava = async (filepath, inputPath, timeLimit = 2, memoryLimit = 128) => {
-    // For Java, the main class name is the same as the filename without the extension
-    const className = path.basename(filepath).split('.')[0];
-    const outPath = outputPath; // The directory where the .class file will be created
-    const timeLimitMs = timeLimit * 1000;
-    
-    // The path to the compiled .class file
-    const classFilePath = path.join(outPath, `${className}.class`);
+export const executeJava = async (code, input, timeLimit = 2) => {
+    const jobId = uuid().replace(/-/g, '_');
+    const className = `Main_${jobId}`;
+    const jobPath = path.join(tempPath, jobId);
+    fs.mkdirSync(jobPath, { recursive: true });
+
+    const filename = `${className}.java`;
+    const filepath = path.join(jobPath, filename);
+    const inputPath = path.join(jobPath, 'input.txt');
+
+    // Automatically replace the user's class name with our unique one
+    const modifiedCode = code.replace(/public\s+class\s+\w+/, `public class ${className}`);
+
+    // 1. Write the modified code and input to temporary files
+    await fs.promises.writeFile(filepath, modifiedCode);
+    await fs.promises.writeFile(inputPath, input);
 
     try {
-        // Step 1: Compile the .java file
-        await compileJavaWithSpawn(filepath, outPath);
-
-        // Step 2: Execute the compiled .class file
-        const stdout = await executeJavaWithSpawn(outPath, className, inputPath, timeLimitMs);
-        return stdout;
-
+        // 2. Compile the .java file
+        await compileJava(filepath, jobPath);
+        
+        // 3. Execute the compiled .class file
+        const output = await executeJavaProgram(jobPath, className, inputPath, timeLimit * 1000);
+        return output;
     } catch (error) {
-        // Re-throw any errors to be handled by the controller
+        // Re-throw any errors (Compilation, TLE, Runtime)
         throw error;
     } finally {
-        // The finally block cleans up the source, input, and compiled class file
-        try {
-            await cleanupFiles([classFilePath, filepath, inputPath]);
-        } catch (cleanupError) {
-            console.warn(
-                `Warning: Cleanup failed for job ${className}.`,
-                cleanupError.message
-            );
+        // 4. Clean up the entire temporary directory
+        if (fs.existsSync(jobPath)) {
+            fs.rmSync(jobPath, { recursive: true, force: true });
         }
     }
 };
