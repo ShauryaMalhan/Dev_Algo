@@ -14,20 +14,19 @@ const router = express.Router();
 router.post('/newProblem', fetchAdmin, async (req, res) => {
     try {
         const adminID = req.admin.id;
-
         const admin = await Admin.findById(adminID);
         if (!admin) {
             return res.status(404).json({ message: 'Admin user not found.' });
         }
-
+        
         const existingProblem = await Problem.findOne({ 
             $or: [{ name: req.body.name }, { slug: req.body.slug }] 
         });
- 
+        
         if (existingProblem) {
             return res.status(400).json({ message: 'A problem with this name or slug already exists.' });
         }
-
+        
         const newProblem = new Problem({
             name: req.body.name,
             slug: req.body.slug,
@@ -40,7 +39,6 @@ router.post('/newProblem', fetchAdmin, async (req, res) => {
             notes: req.body.notes,
             checker: req.body.checker,
         });
-
         const savedProblem = await newProblem.save();
         res.status(201).json(savedProblem);
 
