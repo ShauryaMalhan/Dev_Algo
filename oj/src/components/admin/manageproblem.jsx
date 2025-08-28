@@ -12,6 +12,7 @@ const ManageProblem = () => {
     const [filteredProblems, setFilteredProblems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
     const problemsPerPage = 10;
     const GET_ALL_PROBLEMS_PATH = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH;
 
@@ -24,6 +25,8 @@ const ManageProblem = () => {
                 setFilteredProblems(problemsData);
             } catch (error) {
                 console.error("Failed to fetch problems:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchProblems();
