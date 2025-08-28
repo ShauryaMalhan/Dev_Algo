@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./components/stylesheets/footer.css";
 import Navbar from "./components/user/Navbar.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -26,14 +25,6 @@ import EditJudgingTestCases from "./components/admin/editjudgingtestcases.jsx"
 import './App.css';
 
 const AppContent = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (!location.pathname.startsWith('/admin')) {
-      localStorage.removeItem('adminToken');
-    }
-  }, [location]);
-
   return (
     <div className="page">
       <Navbar />
