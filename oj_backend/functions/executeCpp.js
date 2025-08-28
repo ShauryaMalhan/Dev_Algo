@@ -24,7 +24,7 @@ const cleanupFiles = async (files, retries = 5, delay = 300) => {
             files.forEach(file => {
                 if (fs.existsSync(file)) fs.unlinkSync(file);
             });
-            return; // Success
+            return;
         } catch (error) {
             lastError = error;
             if (error.code === 'EPERM' && i < retries - 1) {
