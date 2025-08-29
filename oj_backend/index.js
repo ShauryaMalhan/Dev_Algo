@@ -21,11 +21,11 @@ app.get('/', (req, res) => {
     res.send("Backend is running");
 })
 
-app.use('/api/auth', authRoutes);
-app.use('/api/problems', problemRoutes);
-app.use('/api/cppCompiler', authCompiler);
-app.use('/api/submissions', History);
-app.use('/api/admin', Admin);
+app.use('/api/auth', authRoutes); // Auth Routes
+app.use('/api/problems', problemRoutes); // Problems Routes
+app.use('/api/cppCompiler', authCompiler); // Compiler Routes
+app.use('/api/submissions', History); // Submission Routes
+app.use('/api/admin', Admin); // Admin Routes
 
 app.listen(8000, (req, res) => {
     console.log('listening on port 8000');
