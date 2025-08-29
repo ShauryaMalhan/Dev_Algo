@@ -1,0 +1,28 @@
+name: Frontend CI - Build React App
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'oj/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./oj
+
+      - name: Build application
+        run: npm run build
+        working-directory: ./oj
