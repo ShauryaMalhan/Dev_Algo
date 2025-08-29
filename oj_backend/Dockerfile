@@ -5,7 +5,7 @@ RUN apk add --no-cache \
     gcc \
     openjdk11-jdk \
     python3 \
-    py3-pip \
+    py3-pip 
 
 WORKDIR /app
 
