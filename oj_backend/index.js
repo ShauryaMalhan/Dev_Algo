@@ -15,6 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 
 DBConnection();
 
+// All Routes
+
 app.get('/', (req, res) => {
     res.send("Backend is running");
 })
