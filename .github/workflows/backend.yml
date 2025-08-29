@@ -47,4 +47,4 @@ jobs:
             docker stop oj-backend-container || true
             docker rm oj-backend-container || true
             # Run the new container
-            docker run -d --name oj_backend-container -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
+            docker run -d --env-file ./.env --name oj_backend-container -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
