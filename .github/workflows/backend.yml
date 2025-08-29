@@ -27,4 +27,4 @@ jobs:
         with:
           context: ./oj_backend 
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-repo-name:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
