@@ -69,7 +69,6 @@ const ManageJudgingTestCases = () => {
         });
 
         try {
-            // Construct the correct URL for posting
             await axios.post(`${GET_ALL_PROBLEMS_PATH}/${problemId}/judging-testcases`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
