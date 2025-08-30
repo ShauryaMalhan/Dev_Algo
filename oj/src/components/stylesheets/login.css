@@ -15,9 +15,9 @@
     text-align: center;
     margin-bottom: 2.5rem;
     color: #2a3b4c;
-    width: 100%; /* Ensure it takes full width */
-    padding: 0 1rem; /* Add some padding to prevent touching edges */
-    box-sizing: border-box; /* Include padding in the width calculation */
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;
 }
 
 .typing-effect {
@@ -37,10 +37,9 @@
     font-size: 1.1rem;
     opacity: 0;
     animation: fadeIn 1s ease-in forwards;
-    animation-delay: 3.5s; /* Start after typing animation finishes */
+    animation-delay: 3.5s;
 }
 
-/* --- Keyframe Animations --- */
 @keyframes typing {
     from { width: 0 }
     to { width: 100% }
@@ -66,16 +65,16 @@
     }
 }
 
-/* For small mobile phones */
 @media (max-width: 480px) {
     .typing-effect {
-        /* Further reduce font size for very narrow screens */
-        font-size: 1.4rem; 
+        font-size: 1.4rem;
+        white-space: normal;
+        border-right: none;
+        width: 100%;
+        animation: none;
     }
 }
 
-
-/* --- Light "Glassmorphism" Card --- */
 .login-card {
     width: 100%;
     max-width: 420px;
