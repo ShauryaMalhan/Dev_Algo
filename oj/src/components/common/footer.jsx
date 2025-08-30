@@ -10,7 +10,7 @@ const Footer = () => {
         <footer className="site-footer">
             <div className="footer-container">
                 <div className="footer-copyright">
-                    &copy; {currentYear} Code Runner. All Rights Reserved.
+                    &copy; {currentYear} PiCode. All Rights Reserved.
                 </div>
                 
                 <div className="footer-links">
@@ -19,11 +19,9 @@ const Footer = () => {
                 </div>
                 
                 <div className="footer-social">
-                    {/* Updated GitHub link */}
                     <a href="https://github.com/ShauryaMalhan" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                         <FaGithub />
                     </a>
-                    {/* Updated LinkedIn link */}
                     <a href="https://www.linkedin.com/in/shaurya-malhan-573830258/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                         <FaLinkedin />
                     </a>
