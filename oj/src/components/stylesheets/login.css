@@ -29,7 +29,7 @@
     white-space: nowrap;
     letter-spacing: .1em;
     animation:
-        typing 3.5s steps(30, end) forwards,
+        typing 3.5s steps(24, end) forwards,
         blink-caret .75s step-end infinite;
 }
 
@@ -37,12 +37,12 @@
     font-size: 1.1rem;
     opacity: 0;
     animation: fadeIn 1s ease-in forwards;
-    animation-delay: 3.5s;
+    /* animation-delay: 3.5s; */
 }
 
 @keyframes typing {
     from { width: 0 }
-    to { width: 100% }
+    to { width: 24ch }
 }
 
 @keyframes blink-caret {
@@ -56,7 +56,6 @@
 
 @media (max-width: 768px) {
     .typing-effect {
-        /* Reduce font size to prevent overflow */
         font-size: 1.8rem; 
     }
 
@@ -67,13 +66,17 @@
 
 @media (max-width: 480px) {
     .typing-effect {
-        font-size: 1.4rem;
-        white-space: normal;
+        font-size: 1.6rem;
+        white-space: normal; 
         border-right: none;
-        width: 100%;
-        animation: none;
+        width: 100%; 
+        animation: none; 
+    }
+    .fade-in-effect {
+        font-size: 0.8rem;
     }
 }
+
 
 .login-card {
     width: 100%;
