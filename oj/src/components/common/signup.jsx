@@ -74,7 +74,7 @@ const Signup = () => {
                             <FaUserAstronaut className="input-icon" />
                             <Form.Control
                                 type="text"
-                                placeholder="Email"
+                                placeholder="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required

@@ -70,7 +70,7 @@ const Login = () => {
                             <FaUserAstronaut className="input-icon" />
                             <Form.Control
                                 type="email"
-                                placeholder="Email / Handle"
+                                placeholder="Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
