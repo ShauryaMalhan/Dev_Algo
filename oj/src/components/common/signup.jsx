@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import "../stylesheets/signup.css"; // We will add styles to this file
+import "../stylesheets/signup.css";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import Alert from "../services/alert";
-// Import all necessary icons, including the new eye icons
 import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Signup = () => {
@@ -14,8 +13,6 @@ const Signup = () => {
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
-    
-    // --- NEW: State for password visibility ---
     const [showPassword, setShowPassword] = useState(false);
 
     const isValid =
@@ -27,7 +24,6 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Your submission logic remains the same...
         if (!email.endsWith("@gmail.com")) {
             setAlertMessage('Please use a verified Gmail account to register.');
             setShowAlert(true);
@@ -64,7 +60,6 @@ const Signup = () => {
                     </div>
 
                     <Form className="auth-form" onSubmit={handleSubmit}>
-                        {/* --- Full Name Input --- */}
                         <div className="input-group">
                             <FaUser className="input-icon" />
                             <Form.Control
@@ -75,20 +70,16 @@ const Signup = () => {
                                 required
                             />
                         </div>
-
-                        {/* --- Username Input --- */}
                         <div className="input-group">
                             <FaUserAstronaut className="input-icon" />
                             <Form.Control
                                 type="text"
-                                placeholder="Username / Handle"
+                                placeholder="Email"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
                             />
                         </div>
-
-                        {/* --- Email Input --- */}
                         <div className="input-group">
                             <FaEnvelope className="input-icon" />
                             <Form.Control
@@ -99,19 +90,15 @@ const Signup = () => {
                                 required
                             />
                         </div>
-
-                        {/* --- UPDATED: Password Input with Toggle Button --- */}
                         <div className="input-group">
                             <FaLock className="input-icon" />
                             <Form.Control
-                                // Conditionally set the input type
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            {/* The toggle button */}
                             <button
                                 type="button"
                                 className="password-toggle-btn"
