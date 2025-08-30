@@ -24,16 +24,14 @@ const Usernavbar = () => {
   }
 
    return (
-    // REMOVED: className="navbar-dark bg-dark"
     <Navbar expand="lg" className="custom-navbar"> 
       <Container>
         <Navbar.Brand as={Link} to="/">
-          Code Runner
+          Pi<span style={{ fontWeight: 'bold' }}>Code</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {/* Nav Links are fine as they are */}
             <Nav.Link as={Link} to="/problems" className={location.pathname === "/problems" ? "active" : ""}>
               Problem List
             </Nav.Link>
@@ -46,7 +44,6 @@ const Usernavbar = () => {
           </Nav>
           {!isValid ? (
             <>
-              {/* UPDATED: Added specific classNames */}
               <Button as={Link} to="/login" className="nav-btn nav-btn-outline">
                 Login
               </Button>
