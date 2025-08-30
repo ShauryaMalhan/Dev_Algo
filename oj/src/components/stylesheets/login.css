@@ -2,31 +2,32 @@
 
 .auth-container {
     display: flex;
-    flex-direction: column; /* Stack greeting and card vertically */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px); /* Adjust for nav/footer height */
+    min-height: calc(100vh - 120px);
     width: 100%;
     padding: 2rem;
     font-family: 'Roboto Mono', monospace;
 }
 
-/* --- Animated Greeting Styling --- */
 .greeting-container {
     text-align: center;
     margin-bottom: 2.5rem;
-    color: #2a3b4c; /* Dark, muted text color */
+    color: #2a3b4c;
+    width: 100%; /* Ensure it takes full width */
+    padding: 0 1rem; /* Add some padding to prevent touching edges */
+    box-sizing: border-box; /* Include padding in the width calculation */
 }
 
 .typing-effect {
     font-size: 2.5rem;
     font-weight: 700;
-    display: inline-block; /* Important for the animation */
-    overflow: hidden; /* Ensures the text is not visible until typed */
-    border-right: .15em solid #007bff; /* The blinking cursor */
-    white-space: nowrap; /* Keeps the content on a single line */
+    display: inline-block;
+    overflow: hidden;
+    border-right: .15em solid #007bff;
+    white-space: nowrap;
     letter-spacing: .1em;
-    /* Animation: name, duration, steps, iteration-count */
     animation:
         typing 3.5s steps(30, end) forwards,
         blink-caret .75s step-end infinite;
@@ -53,6 +54,26 @@
 @keyframes fadeIn {
     to { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+    .typing-effect {
+        /* Reduce font size to prevent overflow */
+        font-size: 1.8rem; 
+    }
+
+    .fade-in-effect {
+        font-size: 1rem;
+    }
+}
+
+/* For small mobile phones */
+@media (max-width: 480px) {
+    .typing-effect {
+        /* Further reduce font size for very narrow screens */
+        font-size: 1.4rem; 
+    }
+}
+
 
 /* --- Light "Glassmorphism" Card --- */
 .login-card {
