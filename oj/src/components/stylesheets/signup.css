@@ -17,10 +17,9 @@
     to { opacity: 1; }
 }
 
-/* --- Light "Glassmorphism" Card for Signup --- */
 .signup-card {
     width: 100%;
-    max-width: 450px; /* Slightly wider to accommodate more fields */
+    max-width: 450px;
     padding: 2.5rem;
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.25);
@@ -125,16 +124,99 @@
 .password-toggle-btn {
     position: absolute;
     top: 50%;
-    right: 15px; /* Position on the right side */
+    right: 15px;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #6c757d; /* A neutral gray color */
+    color: #6c757d;
     cursor: pointer;
     padding: 0;
     font-size: 1.1rem;
 }
 
 .password-toggle-btn:hover {
-    color: #212529; /* Darken on hover */
+    color: #212529;
 }
+
+.timer {
+    font-weight: 700;
+    color: #007bff;
+    margin-top: 0.5rem;
+}
+
+.resend-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.back-link, .resend-link {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.back-link {
+    color: #fff;
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+}
+.back-link:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    text-decoration: none;
+}
+
+.resend-link {
+    color: #0056b3;
+    background: none;
+    border: none;
+}
+.resend-link:hover {
+    text-decoration: underline;
+}
+
+.resend-link {
+    color: #fff;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+}
+.resend-link:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    text-decoration: none;
+}
+
+.resend-link:disabled {
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    text-decoration: none;
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 6px;
+}
+
+.success-message {
+    color: #198754;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(25, 135, 84, 0.1);
+    border-radius: 6px;
+}
+

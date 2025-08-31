@@ -162,3 +162,13 @@
     font-weight: 700;
     text-decoration: none;
 }
+
+.error-message {
+    color: #dc3545;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 6px;
+}
