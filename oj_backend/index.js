@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes); // Auth Routes
 app.use('/api/problems', problemRoutes); // Problems Routes
-app.use('/api/cppCompiler', authCompiler); // All Compiler Routes
+app.use('/api/cppCompiler', authCompiler); // Compiler Routes
 app.use('/api/submissions', History); // Submission Routes
 app.use('/api/admin', Admin); // Admin Routes
 
