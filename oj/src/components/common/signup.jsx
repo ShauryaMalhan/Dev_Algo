@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
-import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaKey } from 'react-icons/fa';
+import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
 import '../stylesheets/signup.css';
 
 const Signup = () => {
@@ -20,6 +20,9 @@ const Signup = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [timer, setTimer] = useState(300);
     const [resendCooldown, setResendCooldown] = useState(0);
+
+    const [showPassword, setShowPassword] = useState(false);
+    const passwordInputRef = useRef(null);
 
     const SEND_OTP_PATH = import.meta.env.VITE_SEND_OTP_PATH; 
     const REGISTER_PATH = import.meta.env.VITE_REGISTER_PATH;
@@ -59,6 +62,11 @@ const Signup = () => {
         return () => clearInterval(interval);
     }, [resendCooldown]);
 
+     const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+        passwordInputRef.current.focus();
+    };
+
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -67,12 +75,6 @@ const Signup = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
-        if (!formData.email.endsWith('@gmail.com')) {
-            setError('Please use a valid @gmail.com address.');
-            setLoading(false);
-            return;
-        }
 
         try {
             await axios.post(SEND_OTP_PATH, { email: formData.email });
@@ -150,7 +152,17 @@ const Signup = () => {
                         </div>
                         <div className="input-group">
                             <FaLock className="input-icon" />
-                            <Form.Control type="password" name="password" placeholder="Password" onChange={handleInputChange} required />
+                            <Form.Control
+                                ref={passwordInputRef}
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                placeholder="Password"
+                                onChange={handleInputChange}
+                                required
+                            />
+                            <button type="button" className="password-toggle-btn" onClick={togglePasswordVisibility} >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                         </div>
                         {error && <p className="error-message">{error}</p>}
                         <button type="submit" className="auth-button" disabled={loading}>
