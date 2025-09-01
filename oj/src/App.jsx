@@ -22,6 +22,8 @@ import CreateProblem from "./components/admin/createproblem.jsx";
 import EditProblem from "./components/admin/editproblem.jsx";
 import EditSampleTestCases from "./components/admin/editsampletestcases.jsx"
 import EditJudgingTestCases from "./components/admin/editjudgingtestcases.jsx"
+import ForgotPassword from "./components/common/forgotpassword.jsx";
+import ResetPassword from "./components/common/reset-password.jsx";
 
 import './App.css';
 
@@ -39,9 +41,11 @@ const AppContent = () => {
       <Navbar />
       <div className="container">
         <Routes>
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
           <Route path="/problems/:slug" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
           <Route path="/problems/:slug/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />

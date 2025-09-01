@@ -97,6 +97,10 @@ const Login = () => {
                         </button>
                     </div>
 
+                    <div className="forgot-password-link">
+                        <Link to="/forgot-password">Forgot Password?</Link>
+                    </div>
+
                     {error && <p className="error-message">{error}</p>}
 
                     <button type="submit" className="auth-button" disabled={!isValid || loading}>

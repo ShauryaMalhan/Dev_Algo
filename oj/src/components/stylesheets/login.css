@@ -172,3 +172,19 @@
     background-color: rgba(220, 53, 69, 0.1);
     border-radius: 6px;
 }
+
+.forgot-password-link {
+    text-align: right;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.forgot-password-link a {
+    color: #007bff;
+    text-decoration: none;
+    transition: text-decoration 0.2s ease-in-out;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}
