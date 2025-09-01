@@ -29,7 +29,7 @@
     white-space: nowrap;
     letter-spacing: .1em;
     animation:
-        typing 3.5s steps(24, end) forwards,
+        typing 3.5s steps(27, end) forwards,
         blink-caret .75s step-end infinite;
 }
 
@@ -42,7 +42,7 @@
 
 @keyframes typing {
     from { width: 0 }
-    to { width: 24ch }
+    to { width: 27ch }
 }
 
 @keyframes blink-caret {
