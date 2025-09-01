@@ -69,12 +69,16 @@ const ResetPassword = () => {
                      <div className="input-group">
                         <FaLock className="input-icon" />
                         <Form.Control 
+                            ref={passwordInputRef}
                             type={showPassword ? "text" : "password"} 
                             placeholder="Confirm New Password" 
                             value={confirmPassword} 
                             onChange={(e) => setConfirmPassword(e.target.value)} 
                             required 
                         />
+                        <button type="button" className="password-toggle-btn" onClick={togglePasswordVisibility}>
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
                     </div>
                     {error && <p className="error-message">{error}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
