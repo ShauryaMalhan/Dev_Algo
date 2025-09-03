@@ -35,6 +35,7 @@ const CreateBlog = () => {
                 ['link', 'image'],
                 ['clean']
             ],
+            
             handlers: {
                 image: function () {
                     const input = document.createElement('input');
