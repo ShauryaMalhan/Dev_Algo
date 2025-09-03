@@ -14,7 +14,6 @@ export const fetchProblems = async ()=> {
                 'auth-token': token
             }
         });
-        console.log("rere");
         return response.data;
     } catch (err){
         throw new Error(err);
