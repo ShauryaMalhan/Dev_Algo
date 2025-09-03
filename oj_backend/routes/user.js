@@ -77,20 +77,17 @@ router.post('/blog', fetchuser, async (req, res) => {
         const { title, content, tags, coAuthorUsernames } = req.body;
         const ownerId = req.user.id;
         const authorIds = [ownerId];
-
         if (coAuthorUsernames && coAuthorUsernames.length > 0) {
             const coAuthors = await User.find({ username: { $in: coAuthorUsernames } }).select('_id');
             const coAuthorIds = coAuthors.map(author => author._id);
             authorIds.push(...coAuthorIds);
         }
-
         const newBlog = new Blog({
             title,
             content,
             tags,
             authors: [...new Set(authorIds)], 
         });
-
         const savedBlog = await newBlog.save();
         res.status(201).json(savedBlog);
     } catch (error) {
