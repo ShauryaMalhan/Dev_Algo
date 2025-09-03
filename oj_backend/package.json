@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.879.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -19,7 +20,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
     "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
     "nodemailer": "^7.0.6",
+    "react-quill": "^2.0.0",
+    "slugify": "^1.6.6",
     "uuid": "^10.0.0"
   }
 }

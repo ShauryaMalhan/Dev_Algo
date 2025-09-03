@@ -1,157 +1,157 @@
-/* Import a tech-friendly font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
-/* --- Main Container & Animation --- */
-.dashboard-container {
+.all-blogs-container {
     max-width: 1200px;
     margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    color: #212529; /* Dark primary text color */
-    display: flex;
-    flex-direction: column;
-    gap: 3rem; /* Space between sections */
-    animation: fadeIn 0.8s ease-in-out;
+    padding: 0 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.all-blogs-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
 }
 
-/* --- Header --- */
-.dashboard-header h1 {
+.all-blogs-header h1 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: 800;
+    color: #212529;
     margin-bottom: 0.5rem;
 }
 
-.dashboard-header .username {
-    /* A cool gradient text effect for the username */
-    background: linear-gradient(90deg, #007bff, #6f42c1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-}
-
-.dashboard-header p {
+.all-blogs-header p {
     font-size: 1.1rem;
-    color: #6c757d; /* Softer gray for subtitles */
-}
-
-/* --- Stats Grid --- */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.stat-card {
-    background: #ffffff; /* White background for cards */
-    border: 1px solid #dee2e6; /* Light gray border */
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: #007bff; /* Accent color border on hover */
-    box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1); /* Subtle blue glow */
-}
-
-.stat-icon {
-    font-size: 2.5rem;
-    color: #007bff; /* Accent color for icons */
-    margin-bottom: 1rem;
-}
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #212529; /* Dark text for the main value */
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: #6c757d; /* Softer gray for labels */
-}
-
-/* --- Recent Activity --- */
-.recent-activity h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #dee2e6; /* Light gray separator line */
-    padding-bottom: 0.5rem;
-}
-
-.submission-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.submission-item {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 4px solid #adb5bd; /* Default gray border */
-    transition: all 0.3s ease;
-}
-
-.submission-item:hover {
-    background: #f8f9fa; /* Slight background change on hover */
-    border-left-color: #007bff;
-}
-
-.submission-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.problem-name {
-    font-weight: 500;
-}
-
-.submission-details {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.submission-time {
-    font-size: 0.9rem;
     color: #6c757d;
 }
 
-/* --- Verdict Styling --- */
-.verdict-icon {
-    font-size: 1.2rem;
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
 }
 
-.verdict {
+.search-input {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.tag-filter {
+    flex-basis: 300px;
+    min-width: 250px;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.blog-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-title {
+    font-size: 1.25rem;
     font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    background-color: rgba(0,0,0,0.05); /* Light background for the tag */
+    margin-bottom: 0.75rem;
 }
 
-/* Specific verdict colors */
-.accepted { color: #198754; } /* Bootstrap success green */
-.wa, .wrong-answer { color: #dc3545; } /* Bootstrap danger red */
-.tle, .time-limit-exceeded { color: #fd7e14; } /* Bootstrap orange */
+.card-title a {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.card-title a:hover {
+    color: #007bff;
+}
+
+.card-excerpt {
+    font-size: 0.95rem;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.card-author {
+    font-weight: 500;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+    }
+    
+    .all-blogs-container {
+        padding: 0 1rem;
+    }
+
+    .all-blogs-header h1 {
+        font-size: 2rem;
+    }
+}

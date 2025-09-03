@@ -1,67 +1,103 @@
+import { useState, useEffect, useContext, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import "../stylesheets/navbar.css";
-import { useContext } from "react";
 import authContext from "../../contexts/auth/authContext";
-import { useNavigate } from "react-router-dom";
+import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
 
 const Usernavbar = () => {
-  let location = useLocation();
-  useEffect(() => {}, [location]);
-  const { user, setUser } = useContext(authContext);
-  const navigate = useNavigate();
-  const isValid = user.username !== "none";
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { user, setUser } = useContext(authContext);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const isValid = user && user.username && user.username !== "none";
 
-  const handlelogout = ()=> {
-    localStorage.removeItem('username');
-    setUser({ username: "none" });
-    navigate('/login');
-  }
+    const handleLogout = () => {
+        localStorage.removeItem('username');
+        setUser({ username: "none" });
+        setIsDropdownOpen(false);
+        navigate('/login');
+    };
 
-   return (
-    <Navbar expand="lg" className="custom-navbar"> 
-      <Container>
-        <Navbar.Brand as={Link} to="/">
-          Pi<span style={{ fontWeight: 'bold' }}>Code</span>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/problems" className={location.pathname === "/problems" ? "active" : ""}>
-              Problem List
-            </Nav.Link>
-            <Nav.Link as={Link} to="/mySubmissions" className={location.pathname === "/mySubmissions" ? "active" : ""}>
-              My Submissions
-            </Nav.Link>
-            <Nav.Link as={Link} to="/allSubmissions" className={location.pathname === "/allSubmissions" ? "active" : ""}>
-              All Submissions
-            </Nav.Link>
-          </Nav>
-          {!isValid ? (
-            <>
-              <Button as={Link} to="/login" className="nav-btn nav-btn-outline">
-                Login
-              </Button>
-              <Button as={Link} to="/signup" className="nav-btn nav-btn-solid">
-                Signup
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button as={Link} className="nav-btn nav-btn-outline" onClick={handlelogout}>
-                Logout
-              </Button>
-            </>
-          )}
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-  );
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [location]);
+
+    return (
+        <Navbar expand="lg" className="custom-navbar dark-theme sticky-top">
+            <Container>
+                <Navbar.Brand as={Link} to="/" className="navbar-brand-custom">
+                    Pi<span>Code</span>
+                </Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/problems" className={location.pathname === "/problems" ? "active" : ""}>
+                            Problem List
+                        </Nav.Link>
+                        <Nav.Link as={Link} to="/mySubmissions" className={location.pathname === "/mySubmissions" ? "active" : ""}>
+                            My Submissions
+                        </Nav.Link>
+                        <Nav.Link as={Link} to="/allSubmissions" className={location.pathname === "/allSubmissions" ? "active" : ""}>
+                            All Submissions
+                        </Nav.Link>
+                    </Nav>
+                    <Nav className="ms-auto align-items-center">
+                        {!isValid ? (
+                            <div className="auth-buttons">
+                                <Button as={Link} to="/login" className="nav-btn nav-btn-outline">
+                                    Login
+                                </Button>
+                                <Button as={Link} to="/signup" className="nav-btn nav-btn-solid">
+                                    Signup
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="profile-section" ref={dropdownRef}>
+                                <button className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                                    {user.profilePicture ? (
+                                        <img src={user.profilePicture} alt="Profile" />
+                                    ) : (
+                                        <div className="profile-initial">{user.username.charAt(0).toUpperCase()}</div>
+                                    )}
+                                </button>
+                                {isDropdownOpen && (
+                                    <div className="profile-dropdown">
+                                        <div className="dropdown-header">
+                                            <span>Signed in as</span>
+                                            <strong>{user.username}</strong>
+                                        </div>
+                                        <Link to={`/profile/${user.username}`} className="dropdown-item">
+                                            <FaUserCircle className="dropdown-icon" /> My Profile
+                                        </Link>
+                                        <button onClick={handleLogout} className="dropdown-item dropdown-logout">
+                                            <FaSignOutAlt className="dropdown-icon" /> Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
+    );
 };
 
 export default Usernavbar;

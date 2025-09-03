@@ -1,0 +1,96 @@
+.multiselect-container {
+    position: relative;
+    width: 100%;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.multiselect-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #fff;
+    min-height: 48px;
+}
+
+.selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 0;
+}
+
+
+.tag-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #e9ecef;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+}
+
+.tag-pill button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    line-height: 1;
+}
+
+.placeholder {
+    color: #6c757d;
+    font-size: 0.9rem;
+    background: none;
+    display: inline-block;
+}
+
+.placeholder:empty {
+    display: none;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.arrow-icon.open {
+    transform: rotate(180deg);
+}
+
+.options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.option-item {
+    padding: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.option-item:hover {
+    background-color: #f8f9fa;
+}
+
+.option-item.selected {
+    background-color: #e7f3ff;
+    font-weight: 500;
+}

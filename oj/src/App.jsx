@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./components/stylesheets/footer.css";
 import Navbar from "./components/user/Navbar.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,18 +23,14 @@ import EditSampleTestCases from "./components/admin/editsampletestcases.jsx"
 import EditJudgingTestCases from "./components/admin/editjudgingtestcases.jsx"
 import ForgotPassword from "./components/common/forgotpassword.jsx";
 import ResetPassword from "./components/common/reset-password.jsx";
+import ProfilePage from "./components/user/profilepage.jsx";
+import CreateBlog from "./components/user/createblog.jsx";
+import BlogDetail from "./components/user/blogdetail.jsx";
+import EditBlog from "./components/user/editblog.jsx";
 
 import './App.css';
 
 const AppContent = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (!location.pathname.startsWith('/admin')) {
-      localStorage.removeItem('adminToken');
-    }
-  }, [location]);
-
   return (
     <div className="page">
       <Navbar />
@@ -45,20 +40,17 @@ const AppContent = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
           <Route path="/problems/:slug" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
           <Route path="/problems/:slug/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
           <Route path="/mySubmissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
           <Route path="/allSubmissions" element={<ProtectedRoute><AllSubmissions /></ProtectedRoute>} />
-          <Route
-            path="/admin"
-            element={
-              <AdminProtectedRoute>
-                <AdminPage />
-              </AdminProtectedRoute>
-            }
-          />
+          <Route path="/profile/:username" element={<ProfilePage />} />
+          <Route path="/profile/:username/new-blog" element={<ProtectedRoute><CreateBlog /></ProtectedRoute>}/>
+          <Route path="/admin" element={<AdminProtectedRoute><AdminPage /></AdminProtectedRoute>}/>
+          <Route path="/blog/:slug" element={<BlogDetail />} />
+          <Route path="/profile/:username/edit-blog/:slug" element={<ProtectedRoute><EditBlog /></ProtectedRoute>}/>
           <Route
             path="/admin/manage-problems"
             element={

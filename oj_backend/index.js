@@ -6,6 +6,7 @@ import problemRoutes from './routes/problemsList.js'
 import authCompiler from './routes/compiler.js';
 import History from './routes/history.js';
 import Admin from './routes/admin.js';
+import User from './routes/user.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/problems', problemRoutes); // Problems Routes
 app.use('/api/cppCompiler', authCompiler); // Compiler Routes
 app.use('/api/submissions', History); // Submission Routes
 app.use('/api/admin', Admin); // Admin Routes
+app.use('/api/user', User); // User Routes
 
 app.listen(8000, (req, res) => {
     console.log('listening on port 8000');

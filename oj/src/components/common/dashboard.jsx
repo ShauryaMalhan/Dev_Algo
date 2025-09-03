@@ -1,72 +1,119 @@
-import { useContext } from "react";
-import authContext from "../../contexts/auth/authContext";
-import "../stylesheets/dashboard.css";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import '../stylesheets/dashboard.css';
+import MultiSelect from '../services/multiselect';
 
-// Import cool icons from react-icons
-import { FaCheckCircle, FaCode, FaChartLine, FaTimesCircle, FaHourglassHalf } from 'react-icons/fa';
+const predefinedTags = [
+    "Problem Discussion", "Tutorial", "Contest Analysis", "Time Complexity", "Memory Complexity",
+    "User", "Cheating", "Bug", "Feedback",
+    "Data Structures", "Graphs", "Dynamic Programming", "Greedy", "Strings", "Sorting", "Searching",
+    "Maths", "Number Theory", "Geometry"
+];
 
 const Dashboard = () => {
-    const { user } = useContext(authContext);
+    const [blogs, setBlogs] = useState([]);
+    const [filteredBlogs, setFilteredBlogs] = useState([]);
+    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
 
-    // --- Mock Data (replace with API calls later) ---
-    const stats = [
-        { icon: <FaCheckCircle />, value: "128", label: "Problems Solved" },
-        { icon: <FaCode />, value: "350", label: "Total Submissions" },
-        { icon: <FaChartLine />, value: "82%", label: "Submission Accuracy" }
-    ];
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const BLOG_PATH = import.meta.env.VITE_BLOG_PATH; 
+                const response = await axios.get(BLOG_PATH);
+                setBlogs(response.data);
+                setFilteredBlogs(response.data);
+            } catch (err) {
+                setError('Failed to fetch blog posts.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBlogs();
+    }, []);
 
-    const recentSubmissions = [
-        { id: 1, name: "Two Sum", verdict: "Accepted", icon: <FaCheckCircle className="verdict-icon accepted"/>, time: "5m ago" },
-        { id: 2, name: "Longest Substring", verdict: "Wrong Answer", icon: <FaTimesCircle className="verdict-icon wa"/>, time: "1h ago" },
-        { id: 3, name: "Median of Two Sorted Arrays", verdict: "Time Limit Exceeded", icon: <FaHourglassHalf className="verdict-icon tle"/>, time: "3h ago" },
-        { id: 4, name: "Reverse Integer", verdict: "Accepted", icon: <FaCheckCircle className="verdict-icon accepted"/>, time: "Yesterday" }
-    ];
-    // --- End of Mock Data ---
+    useEffect(() => {
+        let result = blogs;
+        if (searchTerm) {
+            result = result.filter(blog =>
+                blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        if (selectedTags.length > 0) {
+            result = result.filter(blog =>
+                selectedTags.every(tag => blog.tags.includes(tag))
+            );
+        }
 
-    const currentHour = new Date().getHours();
-    const greeting =
-        currentHour < 12
-            ? "Good Morning"
-            : currentHour < 18
-            ? "Good Afternoon"
-            : "Good Evening";
+        setFilteredBlogs(result);
+    }, [blogs, searchTerm, selectedTags]);
+
+    if (loading) return <div className="loading-message">Loading blogs...</div>;
+    if (error) return <div className="error-message">{error}</div>;
 
     return (
-        <div className="dashboard-container">
-            <div className="dashboard-header">
-                <h1>{greeting}, <span className="username">{user.username}</span>!</h1>
-                <p>Ready to solve some problems?</p>
+        <div className="all-blogs-container">
+            <header className="all-blogs-header">
+                <h1>Explore Articles</h1>
+                <p>Find tutorials, contest analyses, and discussions from the community.</p>
+            </header>
+
+            <div className="filter-bar">
+                <input
+                    type="text"
+                    placeholder="Search by title..."
+                    className="search-input"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="tag-filter">
+                    <MultiSelect
+                        options={predefinedTags}
+                        selected={selectedTags}
+                        onChange={setSelectedTags}
+                        placeholder="Filter by tags..."
+                    />
+                </div>
             </div>
 
-            {/* --- Stats Grid --- */}
-            <div className="stats-grid">
-                {stats.map((stat, index) => (
-                    <div className="stat-card" key={index}>
-                        <div className="stat-icon">{stat.icon}</div>
-                        <div className="stat-value">{stat.value}</div>
-                        <div className="stat-label">{stat.label}</div>
+            <main className="blog-grid">
+                {filteredBlogs.length > 0 ? (
+                    filteredBlogs.map(blog => (
+                        <article key={blog.slug} className="blog-card">
+                            <div className="card-content">
+                                <div className="card-tags">
+                                    {blog.tags.slice(0, 3).map(tag => (
+                                        <span key={tag} className="tag">{tag}</span>
+                                    ))}
+                                </div>
+                                <h2 className="card-title">
+                                    <Link to={`/blog/${blog.slug}`}>{blog.title}</Link>
+                                </h2>
+                                <p className="card-excerpt">
+                                    {`${blog.content.replace(/<[^>]+>/g, '').substring(0, 120)}...`}
+                                </p>
+                            </div>
+                            <div className="card-footer">
+                                <span className="card-author">by {blog.authors[0]?.username || 'Anonymous'}</span>
+                                <span className="card-date">
+                                    {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric', month: 'short', day: 'numeric'
+                                    })}
+                                </span>
+                            </div>
+                        </article>
+                    ))
+                ) : (
+                    <div className="no-results">
+                        <h3>No posts found</h3>
+                        <p>Try adjusting your search or filter criteria.</p>
                     </div>
-                ))}
-            </div>
-
-            {/* --- Recent Activity --- */}
-            <div className="recent-activity">
-                <h2>Recent Submissions</h2>
-                <ul className="submission-list">
-                    {recentSubmissions.map((sub) => (
-                        <li className="submission-item" key={sub.id}>
-                            <div className="submission-info">
-                                {sub.icon}
-                                <span className="problem-name">{sub.name}</span>
-                            </div>
-                            <div className="submission-details">
-                                <span className={`verdict ${sub.verdict.toLowerCase().replace(/\s/g, '-')}`}>{sub.verdict}</span>
-                                <span className="submission-time">{sub.time}</span>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                )}
+            </main>
         </div>
     );
 };
