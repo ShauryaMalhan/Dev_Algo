@@ -12,7 +12,6 @@ const router = express.Router();
 router.post('/run/:problemId', fetchuser, async (req, res) => {
     const { language, code } = req.body;
     const { problemId } = req.params;
-
     try {
         const problem = await Problem.findById(problemId);
         if (!problem) {
