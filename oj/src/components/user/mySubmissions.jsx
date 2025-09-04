@@ -10,15 +10,12 @@ const MySubmissions = () => {
     const mySubmissionsURL = import.meta.env.VITE_MY_SUBMISSIONS_PATH;
 
     useEffect(() => {
-        // We only run this effect if the username is valid (not "none")
         if (user.username !== "none") {
             const myHistory = async () => {
                 try {
-                    // UPDATED: Changed to a GET request with query parameters
                     const response = await axios.get(mySubmissionsURL, {
                         params: { user: user.username }
                     });
-                    // The backend now sorts the data, so .reverse() is not needed
                     setSubmissions(response.data);
                 } catch (err) {
                     console.error("Failed to fetch submissions:", err);
@@ -30,7 +27,6 @@ const MySubmissions = () => {
         }
     }, [user.username, mySubmissionsURL]);
 
-    // Helper function to format the verdict class name
     const getVerdictClass = (verdict) => {
         return verdict.toLowerCase().replace(/\s+/g, '-');
     };

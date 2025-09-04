@@ -1,104 +1,181 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
 .profile-page-container {
     max-width: 1000px;
     margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
+    padding: 0 1.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .profile-header {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e9ecef;
+    margin-bottom: 2.5rem;
+}
+
+.profile-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-identity {
     display: flex;
     align-items: center;
-    gap: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #dee2e6;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.profile-avatar img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 3px solid #dee2e6;
-    background-color: #f8f9fa;
-}
-
-.profile-info {
+    gap: 1.5rem;
     flex-grow: 1;
 }
 
-.profile-info h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0;
+.profile-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.profile-info h2 {
-    font-size: 1.2rem;
+.profile-info-main h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.1rem 0;
+    color: #212529;
+}
+
+.profile-info-main h2 {
+    font-size: 1rem;
+    font-weight: 400;
     color: #6c757d;
     margin: 0;
 }
 
-.write-blog-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
+.profile-header-details {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f3f5;
+}
+
+.profile-organization {
     font-size: 1rem;
-    font-weight: 700;
+    color: #495057;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.profile-bio {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+}
+
+.profile-linkedin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #0077b5;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.profile-linkedin:hover {
+    text-decoration: underline;
+}
+
+.view-profile-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
     cursor: pointer;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #343a40;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     transition: all 0.2s ease-in-out;
 }
 
-.write-blog-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
+.view-profile-btn:hover {
+    background-color: #e9ecef;
 }
 
-.profile-main-content h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
+.profile-main-content {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e9ecef;
+}
+
+.blog-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
     margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.blog-section-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #343a40;
+    margin: 0;
+}
+
+.write-blog-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #0d6efd;
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.write-blog-btn:hover {
+    background-color: #0b5ed7;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
 }
 
 .blog-post-list {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
 .blog-post-item {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 1.5rem;
-    transition: all 0.2s ease-in-out;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1.25rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
 }
 
 .blog-post-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border-color: #007bff;
+    border-color: #ced4da;
 }
 
 .blog-post-item h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.2rem;
-    font-weight: 500;
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #212529;
 }
 
 .blog-post-item p {
     margin: 0;
-    color: #6c757d;
     font-size: 0.9rem;
+    color: #6c757d;
 }
 
 .blog-actions {
@@ -107,30 +184,57 @@
 }
 
 .action-btn {
-    background: none;
-    border: 1px solid #ced4da;
     padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 500;
+    border: 1px solid transparent;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
+    gap: 0.4rem;
 }
 
 .action-btn.view-btn {
-    color: #007bff;
-    border-color: #b6d4fe;
-}
-.action-btn.view-btn:hover {
-    background-color: #e7f3ff;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #212529;
 }
 
 .action-btn.edit-btn {
-    color: #6c757d;
-}
-.action-btn.edit-btn:hover {
-    background-color: #e9ecef;
+    background-color: #e7f5ff;
+    color: #0d6efd;
 }
 
+.loading-container,
+.error-container {
+    text-align: center;
+    padding: 5rem;
+    font-size: 1.25rem;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .profile-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .profile-header-actions {
+        width: 100%;
+    }
+    .view-profile-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .blog-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .blog-post-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}

@@ -27,6 +27,7 @@ import ProfilePage from "./components/user/profilepage.jsx";
 import CreateBlog from "./components/user/createblog.jsx";
 import BlogDetail from "./components/user/blogdetail.jsx";
 import EditBlog from "./components/user/editblog.jsx";
+import ProfileDetailsPage from "./components/user/profiledetailspage.jsx";
 
 import './App.css';
 
@@ -42,6 +43,7 @@ const AppContent = () => {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/" element={<Dashboard />} />
           <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
+          <Route path="/profile/details/:username" element={<ProtectedRoute><ProfileDetailsPage/></ProtectedRoute>} />
           <Route path="/problems/:slug" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
           <Route path="/problems/:slug/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
           <Route path="/mySubmissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
@@ -51,14 +53,7 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminProtectedRoute><AdminPage /></AdminProtectedRoute>}/>
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/profile/:username/edit-blog/:slug" element={<ProtectedRoute><EditBlog /></ProtectedRoute>}/>
-          <Route
-            path="/admin/manage-problems"
-            element={
-              <AdminProtectedRoute>
-                <ManageProblems />
-              </AdminProtectedRoute>
-            }
-          />
+          <Route path="/admin/manage-problems" element={ <AdminProtectedRoute><ManageProblems /></AdminProtectedRoute>}/>
           <Route
             path="/admin/new-problem"
             element={
