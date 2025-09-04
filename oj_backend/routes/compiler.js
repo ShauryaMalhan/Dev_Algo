@@ -18,13 +18,10 @@ router.post('/run/:problemId', fetchuser, async (req, res) => {
             return res.status(404).json({ message: 'Problem not found.' });
         }
         const allTestCases = await TestCase.find({ problemId }).lean();
-
         if (allTestCases.length === 0) {
             return res.status(400).json({ message: 'No test cases found for this problem.' });
         }
-
         let testCaseCounter = 1;
-
         for (const testcase of allTestCases) {
             const inputContent = await fs.readFile(testcase.inputPath, 'utf-8');
             const expectedOutputContent = await fs.readFile(testcase.outputPath, 'utf-8');
@@ -46,11 +43,8 @@ router.post('/run/:problemId', fetchuser, async (req, res) => {
             }
             testCaseCounter++;
         }
-
         res.status(200).json({ verdict: 'Accepted' });
-
     } catch (err) {
-        console.error("Judging error:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
