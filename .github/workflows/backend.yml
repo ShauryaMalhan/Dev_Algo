@@ -41,8 +41,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
             docker stop oj_backend-container || true
             docker rm oj_backend-container || true
             docker system prune -a -f
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
             docker run -d --env-file ./.env --name oj_backend-container -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest

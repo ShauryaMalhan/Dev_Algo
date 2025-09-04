@@ -1,6 +1,6 @@
 import express from 'express';
 import User from '../models/user.js';
-import Profile from '../models/Profile.js';
+import Profile from '../models/profile.js';
 import fetchuser from '../middleware/fetchuser.js';
 
 const router = express.Router();
