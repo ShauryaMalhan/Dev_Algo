@@ -41,11 +41,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            # Pull the latest image from Docker Hub
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
-            # Stop and remove the old container if it exists
             docker stop oj_backend-container || true
             docker rm oj_backend-container || true
-            # Run the new container
-            docker run -d --env-file ./.env --name oj_backend-container -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
             docker system prune -a -f
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
+            docker run -d --env-file ./.env --name oj_backend-container -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
