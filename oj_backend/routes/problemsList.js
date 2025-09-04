@@ -133,7 +133,6 @@ router.put('/getProblem/admin/:id', fetchAdmin, async (req, res) => {
             req.body,
             { new: true, runValidators: true }
         );
-
         if (!updatedProblem) {
             return res.status(404).json({ message: 'Problem not found' });
         }
