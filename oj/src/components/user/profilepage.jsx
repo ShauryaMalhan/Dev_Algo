@@ -66,7 +66,7 @@ const ProfilePage = () => {
                     </div>
                     <div className="profile-header-actions">
                         <button className="view-profile-btn" onClick={() => navigate(`/profile/details/${username}`)}>
-                            <FaUser /> View & Edit Profile
+                            <FaUser /> View Profile
                         </button>
                     </div>
                 </div>

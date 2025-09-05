@@ -28,7 +28,7 @@ const ProblemDetail = () => {
             }
         };
         fetchProblem();
-    }, [slug]);
+    }, [slug, GET_PROBLEM_BY_SLUG_PATH]);
 
     const handleNavigateToSubmit = () => {
         navigate(`/problems/${slug}/submit`);
@@ -66,7 +66,6 @@ const ProblemDetail = () => {
             <div className="problem-body">
                 <div className="problem-section">
                     <h2>Legend</h2>
-                    {/* 2. Parse the text and render the resulting HTML */}
                     <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.legend) }} />
                 </div>
 
@@ -79,7 +78,6 @@ const ProblemDetail = () => {
                     <h2>Output Format</h2>
                     <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.output) }} />
                 </div>
-                {/* This section for sample test cases remains the same */}
                 {problem.sampleTestCases && problem.sampleTestCases.length > 0 && (
                     <div className="problem-section">
                         <h2>Sample Cases</h2>
@@ -99,11 +97,9 @@ const ProblemDetail = () => {
                                     </div>
                                     <pre className="sample-io">{tc.input}</pre>
                                 </div>
-                                {/* Output Box */}
                                 <div className="sample-box">
                                     <div className="sample-box-header">
                                         <h4>Sample Output {index + 1}</h4>
-                                        {/* --- NEW: Copy button for the output --- */}
                                         <button 
                                             className="copy-btn" 
                                             onClick={() => handleCopy(tc.output, `output-${index}`)}
