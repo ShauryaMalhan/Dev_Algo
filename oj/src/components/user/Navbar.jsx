@@ -4,6 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import axios from 'axios';
 import "../stylesheets/navbar.css";
 import authContext from "../../contexts/auth/authContext";
 import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
@@ -13,13 +14,33 @@ const Usernavbar = () => {
     const navigate = useNavigate();
     const { user, setUser } = useContext(authContext);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [profilePictureUrl, setProfilePictureUrl] = useState('');
     const dropdownRef = useRef(null);
     const isValid = user && user.username && user.username !== "none";
+    const GET_PROFILE_PATH = import.meta.env.VITE_GET_PROFILE_PATH;
 
+    useEffect(() => {
+        const fetchProfilePicture = async () => {
+            if (isValid) {
+                try {
+                    const response = await axios.get(`${GET_PROFILE_PATH}/${user.username}`);
+                    if (response.data && response.data.profilePicture) {
+                        setProfilePictureUrl(response.data.profilePicture);
+                    }
+                } catch (error) {
+                    console.error("Could not fetch profile picture", error);
+                    setProfilePictureUrl('');
+                }
+            }
+        };
+        fetchProfilePicture();
+    }, [user, GET_PROFILE_PATH, isValid]);
+    
     const handleLogout = () => {
         localStorage.removeItem('username');
         setUser({ username: "none" });
         setIsDropdownOpen(false);
+        setProfilePictureUrl('');
         navigate('/login');
     };
 
@@ -39,6 +60,8 @@ const Usernavbar = () => {
         setIsDropdownOpen(false);
     }, [location]);
 
+    const finalProfileImageUrl = profilePictureUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${user.username}`;
+
     return (
         <Navbar expand="lg" className="custom-navbar dark-theme sticky-top">
             <Container>
@@ -51,9 +74,11 @@ const Usernavbar = () => {
                         <Nav.Link as={Link} to="/problems" className={location.pathname === "/problems" ? "active" : ""}>
                             Problem List
                         </Nav.Link>
-                        <Nav.Link as={Link} to="/mySubmissions" className={location.pathname === "/mySubmissions" ? "active" : ""}>
-                            My Submissions
-                        </Nav.Link>
+                        {isValid && (
+                            <Nav.Link as={Link} to="/mySubmissions" className={location.pathname === "/mySubmissions" ? "active" : ""}>
+                                My Submissions
+                            </Nav.Link>
+                        )}
                         <Nav.Link as={Link} to="/allSubmissions" className={location.pathname === "/allSubmissions" ? "active" : ""}>
                             All Submissions
                         </Nav.Link>
@@ -71,11 +96,7 @@ const Usernavbar = () => {
                         ) : (
                             <div className="profile-section" ref={dropdownRef}>
                                 <button className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                                    {user.profilePicture ? (
-                                        <img src={user.profilePicture} alt="Profile" />
-                                    ) : (
-                                        <div className="profile-initial">{user.username.charAt(0).toUpperCase()}</div>
-                                    )}
+                                    <img src={finalProfileImageUrl} alt="Profile" />
                                 </button>
                                 {isDropdownOpen && (
                                     <div className="profile-dropdown">

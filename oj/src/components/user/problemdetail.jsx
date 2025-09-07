@@ -4,7 +4,7 @@ import axios from 'axios';
 import 'katex/dist/katex.min.css';
 import '../stylesheets/problemdetails.css';
 import { parsePolygonLatex } from '../services/latexParser';
-import { FaCopy } from 'react-icons/fa';
+import { FaCopy, FaCheck } from 'react-icons/fa';
 
 const ProblemDetail = () => {
     const { slug } = useParams();
@@ -54,81 +54,74 @@ const ProblemDetail = () => {
     if (!problem) return null;
 
     return (
-        <div className="problem-detail-container">
-            <div className="problem-header">
-                <h1>{problem.name}</h1>
-                <div className="header-meta">
-                    <span>Time Limit: {problem.timeLimit}s</span>
-                    <span>Owner: {problem.owner}</span>
-                </div>
-            </div>
-
-            <div className="problem-body">
-                <div className="problem-section">
-                    <h2>Legend</h2>
-                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.legend) }} />
+        <div className="problem-detail-page">
+            <main className="problem-main-content">
+                <div className="problem-header">
+                    <h1>{problem.name}</h1>
+                    <div className="header-meta">
+                        <span>Time Limit: {problem.timeLimit}s</span>
+                        <span>Owner: {problem.owner}</span>
+                    </div>
                 </div>
 
-                <div className="problem-section">
-                    <h2>Input Format</h2>
-                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.input) }} />
-                </div>
-
-                <div className="problem-section">
-                    <h2>Output Format</h2>
-                    <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.output) }} />
-                </div>
-                {problem.sampleTestCases && problem.sampleTestCases.length > 0 && (
+                <div className="problem-body">
                     <div className="problem-section">
-                        <h2>Sample Cases</h2>
-                        {problem.sampleTestCases.map((tc, index) => (
-                            <div key={index} className="sample-case-grid">
-                                {/* Input Box */}
-                                <div className="sample-box">
-                                    <div className="sample-box-header">
-                                        <h4>Sample Input {index + 1}</h4>
-                                        <button 
-                                            className="copy-btn" 
-                                            onClick={() => handleCopy(tc.input, `input-${index}`)}
-                                            title="Copy to clipboard"
-                                        >
-                                            {copiedId === `input-${index}` ? 'Copied!' : <FaCopy />}
-                                        </button>
+                        <h2>Legend</h2>
+                        <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.legend) }} />
+                    </div>
+                    <div className="problem-section">
+                        <h2>Input Format</h2>
+                        <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.input) }} />
+                    </div>
+                    <div className="problem-section">
+                        <h2>Output Format</h2>
+                        <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.output) }} />
+                    </div>
+
+                    {problem.sampleTestCases && problem.sampleTestCases.length > 0 && (
+                        <div className="problem-section">
+                            <h2>Sample Cases</h2>
+                            <div className="sample-cases-container">
+                                {problem.sampleTestCases.map((tc, index) => (
+                                    <div key={index} className="sample-case">
+                                        <div className="sample-box">
+                                            <div className="sample-box-header">
+                                                <h4>Input {index + 1}</h4>
+                                                <button className="copy-btn" onClick={() => handleCopy(tc.input, `input-${index}`)}>
+                                                    {copiedId === `input-${index}` ? <FaCheck /> : <FaCopy />}
+                                                </button>
+                                            </div>
+                                            <pre className="sample-io">{tc.input}</pre>
+                                        </div>
+                                        <div className="sample-box">
+                                            <div className="sample-box-header">
+                                                <h4>Output {index + 1}</h4>
+                                                <button className="copy-btn" onClick={() => handleCopy(tc.output, `output-${index}`)}>
+                                                    {copiedId === `output-${index}` ? <FaCheck /> : <FaCopy />}
+                                                </button>
+                                            </div>
+                                            <pre className="sample-io">{tc.output}</pre>
+                                        </div>
                                     </div>
-                                    <pre className="sample-io">{tc.input}</pre>
-                                </div>
-                                <div className="sample-box">
-                                    <div className="sample-box-header">
-                                        <h4>Sample Output {index + 1}</h4>
-                                        <button 
-                                            className="copy-btn" 
-                                            onClick={() => handleCopy(tc.output, `output-${index}`)}
-                                            title="Copy to clipboard"
-                                        >
-                                            {copiedId === `output-${index}` ? 'Copied!' : <FaCopy />}
-                                        </button>
-                                    </div>
-                                    <pre className="sample-io">{tc.output}</pre>
-                                </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                )}
+                        </div>
+                    )}
 
-                {problem.notes && (
-                    <div className="problem-section">
-                        <h2>Notes</h2>
-                        <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.notes) }} />
-                    </div>
-                )}
-                
-            </div>
+                    {problem.notes && (
+                        <div className="problem-section">
+                            <h2>Notes</h2>
+                            <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.notes) }} />
+                        </div>
+                    )}
+                </div>
 
-            <div className="problem-footer">
-                <button className="submit-solution-btn" onClick={handleNavigateToSubmit}>
-                    Submit Solution
-                </button>
-            </div>
+                <div className="problem-footer">
+                    <button className="submit-solution-btn" onClick={handleNavigateToSubmit}>
+                        Submit Solution
+                    </button>
+                </div>
+            </main>
         </div>
     );
 };

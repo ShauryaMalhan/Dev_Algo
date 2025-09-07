@@ -1,11 +1,45 @@
-.page {
+:root {
+  --primary-color: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --secondary-color: #6c757d;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #868e96;
+
+  --background-body: linear-gradient(135deg, #f4f7f6 0%, #e8f1f5 100%);
+  --background-card: #ffffff;
+  --border-color: #dee2e6;
+
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
+body {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f4f7f6;
-    background-image: linear-gradient(135deg, #f4f7f6 0%, #e8f1f5 100%);
-    color: #333;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--background-body);
+    color: var(--text-primary);
+    font-family: var(--font-family-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+}
+
+.loading-container,
+.error-container {
+    text-align: center;
+    padding: 5rem;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
 }

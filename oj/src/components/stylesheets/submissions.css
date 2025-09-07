@@ -1,37 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
-.submissions-page-container {
+.submissions-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    color: #212529;
-    animation: fadeIn 0.5s ease-in-out;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.submissions-header {
+    text-align: center;
+    margin-bottom: 3rem;
 }
 
-.page-header {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    letter-spacing: 1px;
-    /* Changed to a professional black color */
-    color: #212529; 
-    /* Changed the border to a neutral gray to match */
-    border-bottom: 2px solid #dee2e6;
-    padding-bottom: 0.5rem;
+.submissions-header h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
 }
 
-/* --- HUD-Style Table --- */
-.table-container {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px; /* Sharper corners */
-    overflow: hidden;
+.submissions-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.submissions-table-wrapper {
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
 }
 
 .submissions-table {
@@ -39,73 +34,115 @@
     border-collapse: collapse;
 }
 
-.submissions-table th, .submissions-table td {
+.submissions-table th,
+.submissions-table td {
     padding: 1rem 1.25rem;
     text-align: left;
-    vertical-align: middle;
-    /* Sharp grid lines */
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.submissions-table thead {
+    background-color: var(--light-color);
+}
+
+.submissions-table th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.submissions-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.submissions-table tbody tr:hover {
+    background-color: #f1f3f5;
 }
 
 .submissions-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.submissions-table thead {
-    background-color: #f8f9fa;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    /* Header text uses the accent color */
-    color: #000000;
-}
-
-.submissions-table tbody tr {
-    transition: background-color 0.2s ease-in-out;
-}
-
-.submissions-table tbody tr:hover {
-    background-color: #eef2f7; /* A subtle blue-tinted hover */
-}
-
-.problem-title {
+.submissions-table td {
+    color: var(--text-primary);
     font-weight: 500;
 }
 
-/* --- Time Cell Styling --- */
-.time-cell {
+.submissions-table td a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.submissions-table td a:hover {
+    text-decoration: underline;
+}
+
+.verdict-cell {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
 }
 
-.time-secondary {
-    font-size: 0.85rem;
-    color: #6c757d;
+.verdict-icon {
+    font-size: 1.1rem;
 }
 
-/* --- Monochromatic Verdict Tags with Color Hints --- */
-.verdict-tag {
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px; /* Sharper corners */
-    font-size: 0.85rem;
-    font-weight: 700;
-    /* Neutral background for all tags */
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
+.accepted {
+    color: var(--success-color);
 }
 
-/* The color comes from the text, not the background */
-.verdict-tag.accepted { color: #198754; }
-.verdict-tag.wrong-answer { color: #dc3545; }
-.verdict-tag.time-limit-exceeded { color: #fd7e14; }
-.verdict-tag.error, .verdict-tag.runtime-error { color: #495057; }
+.wrong-answer {
+    color: var(--danger-color);
+}
 
+.time-limit-exceeded {
+    color: #fd7e14;
+}
 
-/* --- Loading / No Submission Styling --- */
-.loading-message, .no-submission {
+.other {
+    color: var(--text-muted);
+}
+
+.no-submissions {
+    padding: 3rem;
     text-align: center;
-    padding: 4rem;
-    font-size: 1.2rem;
-    color: #6c757d;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 992px) {
+    .submissions-table thead {
+        display: none;
+    }
+
+    .submissions-table tr {
+        display: block;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+    }
+    
+    .submissions-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .submissions-table tbody tr:hover {
+        background-color: transparent;
+    }
+
+    .submissions-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: none;
+    }
+    
+    .submissions-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
 }

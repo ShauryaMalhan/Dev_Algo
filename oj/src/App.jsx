@@ -42,50 +42,22 @@ const AppContent = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/" element={<Dashboard />} />
-          <Route path="/problems" element={<ProtectedRoute><Problem /></ProtectedRoute>} />
-          <Route path="/profile/details/:username" element={<ProtectedRoute><ProfileDetailsPage/></ProtectedRoute>} />
-          <Route path="/problems/:slug" element={<ProtectedRoute><ProblemDetail /></ProtectedRoute>} />
+          <Route path="/problems" element={<Problem />} />
+          <Route path="/profile/details/:username" element={<ProfileDetailsPage/>} />
+          <Route path="/problems/:slug" element={<ProblemDetail />} />
           <Route path="/problems/:slug/submit" element={<ProtectedRoute><SubmitProblem /></ProtectedRoute>} />
           <Route path="/mySubmissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
-          <Route path="/allSubmissions" element={<ProtectedRoute><AllSubmissions /></ProtectedRoute>} />
+          <Route path="/allSubmissions" element={<AllSubmissions />} />
           <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/profile/:username/new-blog" element={<ProtectedRoute><CreateBlog /></ProtectedRoute>}/>
           <Route path="/admin" element={<AdminProtectedRoute><AdminPage /></AdminProtectedRoute>}/>
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/profile/:username/edit-blog/:slug" element={<ProtectedRoute><EditBlog /></ProtectedRoute>}/>
-          <Route path="/admin/manage-problems" element={ <AdminProtectedRoute><ManageProblems /></AdminProtectedRoute>}/>
-          <Route
-            path="/admin/new-problem"
-            element={
-              <AdminProtectedRoute>
-                <CreateProblem />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit-problem/:id"
-            element={
-              <AdminProtectedRoute>
-                <EditProblem />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit-testcases/:id"
-            element={
-              <AdminProtectedRoute>
-                <EditSampleTestCases />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit-judging-testcases/:id"
-            element={
-              <AdminProtectedRoute>
-                <EditJudgingTestCases />
-              </AdminProtectedRoute>
-            }
-          />
+          <Route path="/admin/manage-problems" element={<AdminProtectedRoute><ManageProblems /></AdminProtectedRoute>}/>
+          <Route path="/admin/new-problem" element={<AdminProtectedRoute><CreateProblem /></AdminProtectedRoute>}/>
+          <Route path="/admin/edit-problem/:id" element={<AdminProtectedRoute><EditProblem /></AdminProtectedRoute>} />
+          <Route path="/admin/edit-testcases/:id" element={<AdminProtectedRoute><EditSampleTestCases /></AdminProtectedRoute>} />
+          <Route path="/admin/edit-judging-testcases/:id" element={<AdminProtectedRoute><EditJudgingTestCases /></AdminProtectedRoute>} />
         </Routes>
       </div>
       <Footer />

@@ -1,11 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
 .problems-page-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    color: #212529;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
 .problems-header {
@@ -13,65 +9,60 @@
 }
 
 .problems-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .actions-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
     flex-wrap: wrap;
-    gap: 1rem;
 }
 
-/* --- Filter & Search Bar Styling --- */
 .filter-buttons {
     display: flex;
-    gap: 0.5rem;
     background-color: #e9ecef;
-    padding: 0.4rem;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md);
+    padding: 0.3rem;
 }
 
 .filter-buttons button {
     background: none;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
 
 .filter-buttons button.active {
-    background-color: #ffffff;
-    color: #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background-color: var(--background-card);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .search-bar {
     padding: 0.75rem 1rem;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    width: 300px;
-    font-family: 'Roboto Mono', monospace;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    min-width: 250px;
 }
 
-.search-bar:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-/* --- Table Styling --- */
 .table-container {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    overflow: hidden; /* This makes the border-radius work with the table */
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
 }
 
 .problems-table {
@@ -79,59 +70,93 @@
     border-collapse: collapse;
 }
 
-.problems-table th, .problems-table td {
+.problems-table th,
+.problems-table td {
     padding: 1rem 1.25rem;
     text-align: left;
-    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .problems-table thead {
-    background-color: #f8f9fa;
-    color: #495057;
-    font-size: 0.9rem;
+    background-color: var(--light-color);
+}
+
+.problems-table th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .problems-table tbody tr {
-    border-top: 1px solid #dee2e6;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease;
 }
 
 .problems-table tbody tr:hover {
     background-color: #f1f3f5;
 }
 
-/* --- Column Widths --- */
-.status-col { width: 10%; }
-.title-col { width: 70%; font-weight: 500; }
-.difficulty-col { width: 20%; }
-
-/* --- Status Icon Styling --- */
-.status-icon {
-    font-size: 1.2rem;
+.problems-table tbody tr:last-child td {
+    border-bottom: none;
 }
-.status-icon.solved { color: #198754; } /* Green */
-.status-icon.attempted { color: #fd7e14; } /* Orange */
-.status-icon.todo { color: #adb5bd; } /* Gray */
 
-/* --- Difficulty Tag Styling --- */
+.status-col { width: 10%; text-align: center; }
+.title-col { width: 60%; }
+.difficulty-col { width: 30%; }
+
+.status-icon {
+    font-size: 1.25rem;
+}
+
+.status-icon.solved { color: var(--success-color); }
+.status-icon.attempted { color: var(--danger-color); }
+.status-icon.todo { color: var(--text-muted); }
+
 .difficulty-tag {
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
-    border-radius: 1rem; /* Pill shape */
+    padding: 0.3rem 0.75rem;
+    border-radius: 16px;
+    font-weight: 600;
     font-size: 0.85rem;
-    font-weight: 700;
 }
 
 .difficulty-easy { background-color: #d1e7dd; color: #0f5132; }
 .difficulty-medium { background-color: #fff3cd; color: #664d03; }
 .difficulty-hard { background-color: #f8d7da; color: #842029; }
 
-.loading-message {
-    text-align: center;
-    padding: 4rem;
-    font-size: 1.2rem;
-    color: #6c757d;
+@media (max-width: 768px) {
+    .actions-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .problems-table thead {
+        display: none;
+    }
+
+    .problems-table tr {
+        display: block;
+        padding: 1rem;
+    }
+    
+    .problems-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    
+    .problems-table tr:last-child td:last-child {
+        border-bottom: none;
+    }
+
+    .problems-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .status-col, .title-col, .difficulty-col {
+        width: 100%;
+    }
 }

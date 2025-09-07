@@ -40,20 +40,20 @@ const Dashboard = () => {
         let result = blogs;
         if (searchTerm) {
             result = result.filter(blog =>
-                blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+                (blog.title || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
         if (selectedTags.length > 0) {
-            result = result.filter(blog =>
-                selectedTags.every(tag => blog.tags.includes(tag))
-            );
+            result = result.filter(blog => {
+                const blogTags = blog.tags || [];
+                return selectedTags.every(tag => blogTags.includes(tag));
+            });
         }
-
         setFilteredBlogs(result);
     }, [blogs, searchTerm, selectedTags]);
 
-    if (loading) return <div className="loading-message">Loading blogs...</div>;
-    if (error) return <div className="error-message">{error}</div>;
+    if (loading) return <div className="loading-container">Loading blogs...</div>;
+    if (error) return <div className="error-container">{error}</div>;
 
     return (
         <div className="all-blogs-container">
@@ -86,7 +86,7 @@ const Dashboard = () => {
                         <article key={blog.slug} className="blog-card">
                             <div className="card-content">
                                 <div className="card-tags">
-                                    {blog.tags.slice(0, 3).map(tag => (
+                                    {(blog.tags || []).slice(0, 3).map(tag => (
                                         <span key={tag} className="tag">{tag}</span>
                                     ))}
                                 </div>
@@ -94,11 +94,11 @@ const Dashboard = () => {
                                     <Link to={`/blog/${blog.slug}`}>{blog.title}</Link>
                                 </h2>
                                 <p className="card-excerpt">
-                                    {`${blog.content.replace(/<[^>]+>/g, '').substring(0, 120)}...`}
+                                    {`${(blog.content || '').replace(/<[^>]+>/g, '').substring(0, 120)}...`}
                                 </p>
                             </div>
                             <div className="card-footer">
-                                <span className="card-author">by {blog.authors[0]?.username || 'Anonymous'}</span>
+                                <span className="card-author">by {(blog.authors && blog.authors[0]?.username) || 'Anonymous'}</span>
                                 <span className="card-date">
                                     {new Date(blog.createdAt).toLocaleDateString('en-US', {
                                         year: 'numeric', month: 'short', day: 'numeric'

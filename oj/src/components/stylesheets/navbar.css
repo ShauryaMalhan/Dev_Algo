@@ -107,12 +107,6 @@
     object-fit: cover;
 }
 
-.dark-theme .profile-initial {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #c9d1d9;
-}
-
 .dark-theme .profile-dropdown {
     position: absolute;
     top: calc(100% + 12px);
@@ -210,4 +204,20 @@
 }
 .dark-theme .navbar-toggler:focus {
     box-shadow: none;
+}
+
+@media (max-width: 991px) {
+    .dark-theme .navbar-collapse {
+        padding-bottom: 1rem;
+    }
+    .dark-theme .profile-section {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+    .dark-theme .profile-dropdown {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
 }

@@ -3,10 +3,11 @@ import History from "../models/history.js";
 import UserProgress from '../models/userprogress.js';
 import User from '../models/user.js';
 import Problem from '../models/problem.js';
+import fetchuser from '../middleware/fetchuser.js';
 
 const router = express.Router();
 
-router.post('/newHistory', async (req, res)=> {
+router.post('/newHistory', fetchuser, async (req, res)=> {
     try{
         const newHistory = await History.create({
             user: req.body.user,

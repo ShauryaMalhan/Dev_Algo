@@ -28,7 +28,7 @@ const Problem = () => {
     }, []);
 
     const handleRowClick = (problem) => {
-        navigate(`/problems/${problem.slug}`, { state: problem });
+        navigate(`/problems/${problem.slug}`);
     };
 
     const filteredProblems = problems
@@ -63,7 +63,7 @@ const Problem = () => {
             </div>
 
             {loading ? (
-                <div className="loading-message">Loading problems...</div>
+                <div className="loading-container">Loading problems...</div>
             ) : (
                 <div className="table-container">
                     <table className="problems-table">
@@ -77,11 +77,11 @@ const Problem = () => {
                         <tbody>
                             {filteredProblems.map((problem) => (
                                 <tr key={problem._id} onClick={() => handleRowClick(problem)}>
-                                    <td className="status-col">
+                                    <td data-label="Status" className="status-col">
                                         <StatusIcon status={problem.status} />
                                     </td>
-                                    <td className="title-col">{problem.title}</td>
-                                    <td className="difficulty-col">
+                                    <td data-label="Title" className="title-col">{problem.title}</td>
+                                    <td data-label="Difficulty" className="difficulty-col">
                                         <span className={`difficulty-tag difficulty-${(problem.difficulty || '').toLowerCase()}`}>
                                             {problem.difficulty || 'N/A'}
                                         </span>

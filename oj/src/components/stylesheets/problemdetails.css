@@ -1,150 +1,151 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+.problem-detail-page {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
 
-.problem-detail-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    color: #212529;
+.problem-main-content {
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
 }
 
 .problem-header {
     text-align: center;
-    margin-bottom: 3rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #dee2e6;
+    padding: 2.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .problem-header h1 {
     font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    line-height: 1.2;
 }
 
 .header-meta {
     display: flex;
     justify-content: center;
     gap: 2rem;
-    color: #6c757d;
     font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 .problem-body {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    padding: 1.5rem 3rem 3rem 3rem;
+}
+
+.problem-section {
+    margin-top: 3rem;
+}
+
+.problem-section:first-child {
+    margin-top: 0;
 }
 
 .problem-section h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 0.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .content-box {
-    background-color: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    font-family: sans-serif;
-    line-height: 1.6;
-}
-
-/* --- NEW: Add this rule to fix the extra spacing --- */
-.content-box p {
-    /* Reduces the default vertical space around paragraphs */
-    margin-top: 0;
-    margin-bottom: 0.5rem; /* Adds a small, controlled space after each paragraph */
-}
-
-/* --- This ensures the last paragraph has no extra space at the bottom --- */
-.content-box p:last-child {
-    margin-bottom: 0;
-}
-
-/* --- KaTeX/LaTeX Specific Styling --- */
-.katex {
-    font-size: 1.1em !important; /* Make math formulas slightly larger */
-}
-
-.problem-footer {
-    margin-top: 3rem;
-    text-align: center;
-}
-
-.submit-solution-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 6px;
     font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    line-height: 1.8;
+    color: #4a5568;
 }
 
-.submit-solution-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
+.sample-cases-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.loading-container, .error-container {
-    text-align: center;
-    padding: 4rem;
-    font-size: 1.2rem;
-    color: #6c757d;
-}
-
-.sample-case-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.sample-box {
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    overflow: hidden; /* Ensures the border-radius is applied */
+.sample-case {
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
 }
 
 .sample-box-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f8f9fa;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #dee2e6;
+    background-color: var(--light-color);
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .sample-box-header h4 {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
 .copy-btn {
     background: none;
     border: none;
-    color: #6c757d;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
 }
 
 .copy-btn:hover {
-    background-color: #e9ecef;
-    color: #212529;
+    color: var(--primary-color);
 }
 
-.sample-io {
-    padding: 1rem;
+pre.sample-io {
+    background-color: #f8f9fa;
+    color: var(--text-primary);
+    padding: 1.25rem;
     margin: 0;
-    background-color: #ffffff;
-    white-space: pre-wrap; /* Allows text to wrap */
+    white-space: pre-wrap;
     word-wrap: break-word;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 0.95rem;
+}
+
+.sample-box:first-child pre.sample-io {
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.problem-footer {
+    padding: 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.submit-solution-btn {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease-in-out;
+}
+
+.submit-solution-btn:hover {
+    background-color: #157347;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.25);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .problem-body {
+        padding: 1rem 1.5rem 2rem 1.5rem;
+    }
 }

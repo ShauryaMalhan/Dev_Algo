@@ -1,72 +1,80 @@
 .all-blogs-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
 .all-blogs-header {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
 }
 
 .all-blogs-header h1 {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 800;
-    color: #212529;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .all-blogs-header p {
     font-size: 1.1rem;
-    color: #6c757d;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .filter-bar {
     display: flex;
     gap: 1rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
+    background-color: var(--background-card);
+    padding: 1rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .search-input {
     flex-grow: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
     font-size: 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
 }
 
 .tag-filter {
-    flex-basis: 300px;
+    flex-basis: 350px;
     min-width: 250px;
 }
 
 .blog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .blog-card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
 }
 
 .blog-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
 }
 
 .card-content {
@@ -77,37 +85,39 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    min-height: 25px;
 }
 
 .tag {
-    background-color: #e9ecef;
-    color: #495057;
-    padding: 0.25rem 0.6rem;
+    background-color: #e7f5ff;
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
     border-radius: 12px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
+    line-height: 1.4;
 }
 
 .card-title a {
-    color: #212529;
+    color: var(--text-primary);
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .card-title a:hover {
-    color: #007bff;
+    color: var(--primary-color);
 }
 
 .card-excerpt {
     font-size: 0.95rem;
-    color: #6c757d;
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
@@ -116,12 +126,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    background-color: var(--light-color);
+    border-top: 1px solid var(--border-color);
     font-size: 0.85rem;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .card-author {
@@ -132,26 +140,36 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
 }
 
 .no-results h3 {
     font-size: 1.5rem;
-    color: #495057;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
+}
+
+@media (max-width: 992px) {
+    .tag-filter {
+        flex-basis: 300px;
+    }
 }
 
 @media (max-width: 768px) {
     .filter-bar {
         flex-direction: column;
     }
-    
     .all-blogs-container {
         padding: 0 1rem;
+        margin-top: 2rem;
     }
-
     .all-blogs-header h1 {
-        font-size: 2rem;
+        font-size: 2.25rem;
+    }
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 }
