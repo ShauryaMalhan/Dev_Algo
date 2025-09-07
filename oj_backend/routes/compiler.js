@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import { executeCpp } from '../functions/executeCpp.js';
 import { executeJava } from '../functions/executeJava.js';
 import { executePy } from '../functions/executePy.js';
+import { runChecker } from '../services/checker.js';
 import Problem from '../models/problem.js';
 import TestCase from '../models/testcase.js';
 import fetchuser from '../middleware/fetchuser.js';
@@ -21,10 +22,12 @@ router.post('/run/:problemId', fetchuser, async (req, res) => {
         if (allTestCases.length === 0) {
             return res.status(400).json({ message: 'No test cases found for this problem.' });
         }
+
         let testCaseCounter = 1;
         for (const testcase of allTestCases) {
             const inputContent = await fs.readFile(testcase.inputPath, 'utf-8');
             const expectedOutputContent = await fs.readFile(testcase.outputPath, 'utf-8');
+            
             try {
                 let userOutput;
                 if (language === 'cpp') {
@@ -33,18 +36,23 @@ router.post('/run/:problemId', fetchuser, async (req, res) => {
                     userOutput = await executeJava(code, inputContent, problem.timeLimit);
                 } else if (language === 'python') {
                     userOutput = await executePy(code, inputContent, problem.timeLimit);
-                } 
+                }
 
-                if (userOutput.trim() !== expectedOutputContent.trim()) {
+                const isCorrect = await runChecker(problem.checker, inputContent, userOutput, expectedOutputContent);
+                
+                if (!isCorrect) {
                     return res.status(200).json({ verdict: `Wrong Answer on test case #${testCaseCounter}` });
                 }
+
             } catch (error) {
                 return res.status(200).json({ verdict: `${error.message} on test case #${testCaseCounter}` });
             }
             testCaseCounter++;
         }
+
         res.status(200).json({ verdict: 'Accepted' });
     } catch (err) {
+        console.error("Internal Server Error:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });

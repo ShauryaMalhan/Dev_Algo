@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
+    container_name: oj_backend-api
+    restart: unless-stopped
+    command: npm start
+    env_file:
+      - ./oj_backend/.env
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  judge_worker:
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
+    container_name: oj_backend-worker
+    restart: unless-stopped
+    command: npm run worker
+    env_file:
+      - ./oj_backend/.env
+    networks:
+      - app-network
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis_queue
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

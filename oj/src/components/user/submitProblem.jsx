@@ -71,6 +71,8 @@ const SubmitProblem = () => {
                 language: language,
                 problem: problem.name,
                 link: `/problems/${slug}`,
+            }, {
+                headers: { 'auth-token': localStorage.getItem('authtoken') }
             });
 
         } catch (err) {

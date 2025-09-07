@@ -3,38 +3,33 @@ import path from 'path';
 import fs from 'fs';
 import { spawn } from 'child_process';
 import { v4 as uuid } from 'uuid';
+import { createHash } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const codesPath = path.join(__dirname, 'codesCpp');
 const inputsPath = path.join(__dirname, 'inputs');
-const outputPath = path.join(__dirname, 'outputsCpp');
+const cachePath = path.join(__dirname, 'codeCache');
 
-[codesPath, inputsPath, outputPath].forEach(dir => {
+[codesPath, inputsPath, cachePath].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
 });
 
-const cleanupFiles = async (files, retries = 5, delay = 300) => {
-    let lastError = null;
-    for (let i = 0; i < retries; i++) {
+const cleanupFiles = async (files) => {
+    for (const file of files) {
         try {
-            files.forEach(file => {
-                if (fs.existsSync(file)) fs.unlinkSync(file);
-            });
-            return;
+            await fs.promises.unlink(file);
         } catch (error) {
-            lastError = error;
-            if (error.code === 'EPERM' && i < retries - 1) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-            } else {
-                throw lastError;
+            if (error.code !== 'ENOENT') {
+                console.warn(`Warning: Cleanup failed for ${file}.`, error.message);
             }
         }
     }
 };
+
 const compileWithSpawn = (filepath, outPath) => {
     return new Promise((resolve, reject) => {
         const compileProcess = spawn('g++', [filepath, '-o', outPath]);
@@ -87,30 +82,27 @@ const executeWithSpawn = (executablePath, inputPath, timeLimitMs) => {
 export const executeCpp = async (code, input, timeLimit = 2) => {
     const jobId = uuid();
     const timeLimitMs = timeLimit * 1000;
-
+    const hash = createHash('sha256').update(code).digest('hex');
+    const cachedExecutablePath = path.join(cachePath, hash);
     const codeFilePath = path.join(codesPath, `${jobId}.cpp`);
     const inputFilePath = path.join(inputsPath, `${jobId}.txt`);
-    const outputFilePath = path.join(outputPath, `${jobId}.out`);
 
     try {
-        await fs.promises.writeFile(codeFilePath, code);
         await fs.promises.writeFile(inputFilePath, input);
 
-        await compileWithSpawn(codeFilePath, outputFilePath);
+        try {
+            await fs.promises.access(cachedExecutablePath);
+        } catch {
+            await fs.promises.writeFile(codeFilePath, code);
+            await compileWithSpawn(codeFilePath, cachedExecutablePath);
+        }
 
-        const stdout = await executeWithSpawn(outputFilePath, inputFilePath, timeLimitMs);
+        const stdout = await executeWithSpawn(cachedExecutablePath, inputFilePath, timeLimitMs);
         return stdout;
 
     } catch (error) {
         throw error;
     } finally {
-        try {
-            await cleanupFiles([codeFilePath, inputFilePath, outputFilePath]);
-        } catch (cleanupError) {
-            console.warn(
-                `Warning: Cleanup failed for job ${jobId}.`,
-                cleanupError.message
-            );
-        }
+        await cleanupFiles([codeFilePath, inputFilePath]);
     }
 };
