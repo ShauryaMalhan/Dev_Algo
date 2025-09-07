@@ -58,7 +58,6 @@ const runCppChecker = async (checkerName, input, userOutput, expectedOutput) => 
         await rm(tempDir, { recursive: true, force: true }).catch(() => {});
     }
 };
-
 const runCheckerWrapper = async (checkerName, input, userOutput, expectedOutput) => {
     if (checkerName === 'No checker' || !checkerName.endsWith('.cpp')) {
         return defaultChecker(userOutput, expectedOutput);
