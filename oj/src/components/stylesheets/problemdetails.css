@@ -120,7 +120,6 @@ pre.sample-io {
     border-bottom: 1px solid var(--border-color);
 }
 
-
 .problem-footer {
     padding: 2rem;
     border-top: 1px solid var(--border-color);
@@ -148,4 +147,27 @@ pre.sample-io {
     .problem-body {
         padding: 1rem 1.5rem 2rem 1.5rem;
     }
+}
+
+/* --- Parsed Content Styling --- */
+.content-box ul, .content-box ol {
+    padding-left: 2rem;
+}
+
+.content-box li {
+    margin-bottom: 0.5rem;
+}
+
+.content-box code {
+    background-color: #e9ecef;
+    color: #c7254e;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 90%;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.katex-display {
+    padding: 0.5rem 0;
+    overflow-x: auto;
 }
