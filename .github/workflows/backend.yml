@@ -27,17 +27,34 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/oj_backend:latest
 
   deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy Backend to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script: |
-            cd pico-code
-            docker-compose pull
-            docker-compose up -d --no-deps backend judge_worker
-            docker system prune -a -f
+  needs: build-and-push
+  runs-on: ubuntu-latest
+  steps:
+    - name: Deploy and Debug Backend on EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        script: |
+          cd pico-code
+          echo "--- (1) Pulling latest images from Docker Hub ---"
+          docker-compose pull
+
+          echo "--- (2) Starting backend and worker services ---"
+          docker-compose up -d --no-deps backend judge_worker
+          
+          echo "--- (3) Waiting for services to initialize ---"
+          sleep 5
+
+          echo "--- (4) Checking status of all containers (including crashed) ---"
+          docker ps -a
+
+          echo "--- (5) Retrieving logs from API container ---"
+          docker logs oj_backend-api
+
+          echo "--- (6) Retrieving logs from Worker container ---"
+          docker logs oj_backend-worker
+          
+          echo "--- (7) Cleaning up unused images ---"
+          docker system prune -a -f
