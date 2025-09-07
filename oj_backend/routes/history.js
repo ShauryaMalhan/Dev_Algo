@@ -1,62 +1,55 @@
 import express from 'express';
-import History from "../models/history.js";
-import UserProgress from '../models/userprogress.js';
+import SubmissionHistory from '../models/SubmissionHistory.js';
 import User from '../models/user.js';
-import Problem from '../models/problem.js';
 import fetchuser from '../middleware/fetchuser.js';
+import submissionQueue from '../services/queue.js';
 
 const router = express.Router();
 
-router.post('/newHistory', fetchuser, async (req, res)=> {
-    try{
-        const newHistory = await History.create({
-            user: req.body.user,
-            verdict: req.body.verdict,
-            problem: req.body.problem,
-            language: req.body.language,
-            link: req.body.link
-        });
-        const user = await User.findOne({ username: req.body.user });
-        const problem = await Problem.findOne({ name: req.body.problem });
-        if (user && problem) {
-            if (req.body.verdict === 'Accepted') {
-                await UserProgress.updateOne(
-                    { userId: user._id, problemId: problem._id },
-                    { $set: { status: 'Solved' } },
-                    { upsert: true } 
-                );
-            } else {
-                await UserProgress.updateOne(
-                    { userId: user._id, problemId: problem._id },
-                    { $setOnInsert: { status: 'Attempted' } },
-                    { upsert: true }
-                );
-            }
-        }
+router.post('/newHistory', fetchuser, async (req, res) => {
+    try {
+        const { problem, language, code } = req.body;
+        const user = await User.findById(req.user.id);
 
-        res.status(200).json(newHistory);
+        const newSubmission = await SubmissionHistory.create({
+            user: user.username,
+            problem: problem,
+            language: language,
+            verdict: 'In Queue'
+        });
+
+        await submissionQueue.add('new-submission', {
+            submissionId: newSubmission._id,
+            code,
+            language,
+            problemName: problem
+        });
+
+        res.status(202).json({ submissionId: newSubmission._id, message: "Submission received and is being judged." });
     } catch (err) {
+        console.error("Error creating submission:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
-router.get('/myHistory', async (req, res)=> {
+router.get('/myHistory', fetchuser, async (req, res)=> {
     try {
-        const user = req.query.user;
-        const history = await History.find({ user: user }).sort({ time: -1 });
-        res.status(200).send( history );
+        const user = await User.findById(req.user.id);
+        const submissions = await SubmissionHistory.find({ user: user.username })
+            .sort({ time: -1 });
+        res.status(200).json(submissions);
     } catch(err) {
-        res.status(500).send(err);
+        res.status(500).json(err);
     }
-})
+});
 
 router.get('/allHistory', async (req, res)=> {
     try {
-        const history = await History.find().sort({ time: -1 });
-        res.status(200).send( history );
+        const history = await SubmissionHistory.find().sort({ time: -1 });
+        res.status(200).json(history);
     } catch(err) {
-        res.status(500).send(err);
+        res.status(500).json(err);
     }
-})
+});
 
 export default router;
