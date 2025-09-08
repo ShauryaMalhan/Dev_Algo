@@ -30,14 +30,27 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy Backend to EC2
+      - name: Deploy and Debug Backend on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            cd pico-code
+            echo "--- (1) Navigating to project directory ---"
+            cd ~/pico-code
+
+            echo "--- (2) Verifying current location ---"
+            pwd
+
+            echo "--- (3) Listing files in current directory ---"
+            ls -la
+
+            echo "--- (4) Pulling latest images ---"
             docker compose pull
+            
+            echo "--- (5) Starting services ---"
             docker compose up -d --no-deps backend judge_worker
+            
+            echo "--- (6) Final cleanup ---"
             docker system prune -a -f
