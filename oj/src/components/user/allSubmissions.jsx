@@ -87,7 +87,7 @@ const AllSubmissions = () => {
                                 </td>
                                 <td data-label="Language">{sub.language || 'N/A'}</td>
                                 <td data-label="Submitted At">
-                                    {sub.time ? new Date(sub.time).toLocaleString() : 'N/A'}
+                                    {sub.createdAt ? new Date(sub.createdAt).toLocaleString() : 'N/A'}
                                 </td>
                             </tr>
                         ))}
