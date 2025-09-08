@@ -2,37 +2,20 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import { spawn } from 'child_process';
-import { v4 as uuid } from 'uuid';
 import { createHash } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const codesPath = path.join(__dirname, 'codesCpp');
-const inputsPath = path.join(__dirname, 'inputs');
 const cachePath = path.join(__dirname, 'codeCache');
-
-[codesPath, inputsPath, cachePath].forEach(dir => {
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-});
-
-const cleanupFiles = async (files) => {
-    for (const file of files) {
-        try {
-            await fs.promises.unlink(file);
-        } catch (error) {
-            if (error.code !== 'ENOENT') {
-                console.warn(`Warning: Cleanup failed for ${file}.`, error.message);
-            }
-        }
-    }
-};
+if (!fs.existsSync(cachePath)) {
+    fs.mkdirSync(cachePath, { recursive: true });
+}
 
 const compileWithSpawn = (filepath, outPath) => {
     return new Promise((resolve, reject) => {
-        const compileProcess = spawn('g++', [filepath, '-o', outPath]);
+        const command = `g++ -std=c++17 -O2 "${filepath}" -o "${outPath}"`;
+        const compileProcess = spawn(command, [], { shell: true });
         let compileError = '';
         compileProcess.stderr.on('data', (data) => {
             compileError += data.toString();
@@ -47,20 +30,32 @@ const compileWithSpawn = (filepath, outPath) => {
     });
 };
 
-const executeWithSpawn = (executablePath, inputPath, timeLimitMs) => {
+const killProcess = (process) => {
+    if (process.platform === 'win32') {
+        spawn('taskkill', ['/pid', process.pid, '/f', '/t']);
+    } else {
+        process.kill('SIGKILL');
+    }
+};
+
+const executeWithSpawn = (executablePath, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
-        const executeProcess = spawn(executablePath);
+        const command = `"${executablePath}"`;
+        const executeProcess = spawn(command, [], { shell: true });
         let stdout = '';
         let stderr = '';
         let timeoutId;
 
         timeoutId = setTimeout(() => {
-            spawn('taskkill', ['/pid', executeProcess.pid, '/f', '/t']);
+            killProcess(executeProcess);
             reject(new Error(`Time Limit Exceeded`));
         }, timeLimitMs);
 
-        const inputStream = fs.createReadStream(inputPath);
-        inputStream.pipe(executeProcess.stdin);
+        let stdoutEnded = false;
+        let stderrEnded = false;
+
+        executeProcess.stdin.write(input);
+        executeProcess.stdin.end();
 
         executeProcess.stdout.on('data', (data) => {
             stdout += data.toString();
@@ -68,41 +63,60 @@ const executeWithSpawn = (executablePath, inputPath, timeLimitMs) => {
         executeProcess.stderr.on('data', (data) => {
             stderr += data.toString();
         });
-        executeProcess.on('close', (code) => {
-            clearTimeout(timeoutId);
-            if (code !== 0) {
-                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
-            } else {
-                resolve(stdout);
+
+        const checkStreamsEnded = () => {
+            if (stdoutEnded && stderrEnded) {
+                clearTimeout(timeoutId);
+                if (stderr) {
+                    reject(new Error(`Runtime Error: ${stderr}`));
+                } else {
+                    resolve(stdout);
+                }
             }
+        };
+
+        executeProcess.stdout.on('end', () => {
+            stdoutEnded = true;
+            checkStreamsEnded();
+        });
+
+        executeProcess.stderr.on('end', () => {
+            stderrEnded = true;
+            checkStreamsEnded();
+        });
+
+        executeProcess.on('error', (err) => {
+            clearTimeout(timeoutId);
+            reject(new Error(`Execution failed: ${err.message}`));
         });
     });
 };
 
-export const executeCpp = async (code, input, timeLimit = 2) => {
-    const jobId = uuid();
-    const timeLimitMs = timeLimit * 1000;
+export const compileAndCacheCpp = async (code) => {
     const hash = createHash('sha256').update(code).digest('hex');
     const cachedExecutablePath = path.join(cachePath, hash);
-    const codeFilePath = path.join(codesPath, `${jobId}.cpp`);
-    const inputFilePath = path.join(inputsPath, `${jobId}.txt`);
+    const tempSourcePath = path.join(cachePath, `${hash}.cpp`);
 
     try {
-        await fs.promises.writeFile(inputFilePath, input);
-
+        await fs.promises.access(cachedExecutablePath);
+        return cachedExecutablePath;
+    } catch {
+        await fs.promises.writeFile(tempSourcePath, code);
         try {
-            await fs.promises.access(cachedExecutablePath);
-        } catch {
-            await fs.promises.writeFile(codeFilePath, code);
-            await compileWithSpawn(codeFilePath, cachedExecutablePath);
+            await compileWithSpawn(tempSourcePath, cachedExecutablePath);
+            return cachedExecutablePath;
+        } finally {
+            await fs.promises.unlink(tempSourcePath).catch(() => {});
         }
+    }
+};
 
-        const stdout = await executeWithSpawn(cachedExecutablePath, inputFilePath, timeLimitMs);
-        return stdout;
-
+export const runCompiledCpp = async (executablePath, input, timeLimit) => {
+    const timeLimitMs = timeLimit * 1000;
+    try {
+        const output = await executeWithSpawn(executablePath, input, timeLimitMs);
+        return output;
     } catch (error) {
         throw error;
-    } finally {
-        await cleanupFiles([codeFilePath, inputFilePath]);
     }
 };
