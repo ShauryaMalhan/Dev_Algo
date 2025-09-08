@@ -23,6 +23,7 @@ const AllSubmissions = () => {
                 setSubmissions(response.data.submissions);
                 setTotalPages(response.data.totalPages);
             } catch (err) {
+                console.error("Failed to fetch all submissions:", err);
                 setError('Failed to fetch submissions.');
             } finally {
                 setLoading(false);
@@ -91,7 +92,7 @@ const AllSubmissions = () => {
                         ))}
                     </tbody>
                 </table>
-                 {submissions.length === 0 && <div className="no-submissions">No submissions found.</div>}
+                 {submissions.length === 0 && !loading && <div className="no-submissions">No submissions found.</div>}
             </div>
 
             {totalPages > 1 && (

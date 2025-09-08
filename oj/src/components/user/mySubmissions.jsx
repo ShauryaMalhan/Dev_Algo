@@ -33,7 +33,6 @@ const MySubmissions = () => {
                         clearInterval(intervalId);
                     }
                 } catch (err) {
-                    console.error("Failed to fetch submissions:", err);
                     setError("Failed to fetch your submissions.");
                     if (intervalId) clearInterval(intervalId);
                 } finally {
@@ -118,7 +117,7 @@ const MySubmissions = () => {
                         ))}
                     </tbody>
                 </table>
-                {submissions.length === 0 && <div className="no-submissions">You haven't made any submissions yet.</div>}
+                {submissions.length === 0 && !loading && <div className="no-submissions">You haven't made any submissions yet.</div>}
             </div>
 
             {totalPages > 1 && (
