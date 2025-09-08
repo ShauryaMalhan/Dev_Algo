@@ -30,49 +30,41 @@ const compileWithSpawn = (filepath, outPath) => {
     });
 };
 
-const killProcess = (process) => {
+const killProcessTree = (pid) => {
     if (process.platform === 'win32') {
-        spawn('taskkill', ['/pid', process.pid, '/f', '/t']);
+        spawn('taskkill', ['/pid', pid, '/f', '/t']);
     } else {
-        process.kill('SIGKILL');
+        spawn('kill', ['-9', `-${pid}`]);
     }
 };
 
 const executeWithSpawn = (executablePath, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
         const command = `"${executablePath}"`;
-        const executeProcess = spawn(command, [], { shell: true });
+        const executeProcess = spawn(command, [], { shell: true, detached: true });
         let stdout = '';
         let stderr = '';
         let timeoutId;
 
         timeoutId = setTimeout(() => {
-            killProcess(executeProcess);
+            killProcessTree(executeProcess.pid);
             reject(new Error(`Time Limit Exceeded`));
         }, timeLimitMs);
-
-        let stdoutEnded = false;
-        let stderrEnded = false;
 
         executeProcess.stdin.write(input);
         executeProcess.stdin.end();
 
         executeProcess.stdout.on('data', (data) => { stdout += data.toString(); });
         executeProcess.stderr.on('data', (data) => { stderr += data.toString(); });
-
-        const checkStreamsEnded = () => {
-            if (stdoutEnded && stderrEnded) {
-                clearTimeout(timeoutId);
-                if (stderr) {
-                    reject(new Error(`Runtime Error: ${stderr}`));
-                } else {
-                    resolve(stdout);
-                }
+        
+        executeProcess.on('close', (code) => {
+            clearTimeout(timeoutId);
+            if (code !== 0) {
+                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
+            } else {
+                resolve(stdout);
             }
-        };
-        executeProcess.stdout.on('end', () => { stdoutEnded = true; checkStreamsEnded(); });
-        executeProcess.stderr.on('end', () => { stderrEnded = true; checkStreamsEnded(); });
-        executeProcess.on('error', (err) => { clearTimeout(timeoutId); reject(new Error(`Execution failed: ${err.message}`)); });
+        });
     });
 };
 
