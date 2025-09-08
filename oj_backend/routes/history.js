@@ -11,6 +11,10 @@ router.post('/newHistory', fetchuser, async (req, res) => {
         const { problem, language, code } = req.body;
         const user = await User.findById(req.user.id);
 
+        if (!problem || !language || !code) {
+            return res.status(400).json({ message: "Missing required fields." });
+        }
+
         const newSubmission = await SubmissionHistory.create({
             user: user.username,
             problem: problem,
@@ -36,19 +40,21 @@ router.get('/myHistory', fetchuser, async (req, res)=> {
     try {
         const user = await User.findById(req.user.id);
         const submissions = await SubmissionHistory.find({ user: user.username })
-            .sort({ time: -1 });
+            .sort({ createdAt: -1 });
         res.status(200).json(submissions);
     } catch(err) {
-        res.status(500).json(err);
+        console.error("Error fetching user submissions:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
 router.get('/allHistory', async (req, res)=> {
     try {
-        const history = await SubmissionHistory.find().sort({ time: -1 });
-        res.status(200).json(history);
+        const submissions = await SubmissionHistory.find().sort({ createdAt: -1 });
+        res.status(200).json(submissions);
     } catch(err) {
-        res.status(500).json(err);
+        console.error("Error fetching all submissions:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
