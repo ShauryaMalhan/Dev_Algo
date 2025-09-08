@@ -16,7 +16,9 @@ const ensureCacheDirExists = async () => {
 };
 
 const defaultChecker = (userOutput, expectedOutput) => {
-    return userOutput.trim() === expectedOutput.trim();
+    return userOutput.trim() === expectedOutput.trim() 
+        ? { verdict: 'Accepted', message: 'Outputs match exactly.' }
+        : { verdict: 'Wrong Answer', message: 'Outputs do not match.' };
 };
 
 const runCppChecker = async (checkerName, input, userOutput, expectedOutput) => {
@@ -48,12 +50,15 @@ const runCppChecker = async (checkerName, input, userOutput, expectedOutput) => 
         
         await execPromise(`"${checkerExecPath}" "${inputPath}" "${userOutputPath}" "${expectedOutputPath}"`);
         
-        return true;
+        return { verdict: 'Accepted', message: 'Solution is correct.' };
     } catch (executionError) {
-        if (executionError.code === 1) {
-            return false;
+        const stderr = executionError.stderr || 'Checker reported an error.';
+        switch (executionError.code) {
+            case 1: return { verdict: 'Wrong Answer', message: stderr };
+            case 2: return { verdict: 'Presentation Error', message: stderr };
+            case 3: return { verdict: 'Wrong Answer', message: `Checker Failure: ${stderr}` };
+            default: throw new Error(`An unknown checker error occurred: ${stderr}`);
         }
-        throw new Error("An error occurred while running the checker.");
     } finally {
         await rm(tempDir, { recursive: true, force: true }).catch(() => {});
     }
