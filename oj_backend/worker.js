@@ -9,7 +9,7 @@ import { runChecker } from './services/checker.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URL).then(() => {
+mongoose.connect(process.env.MONGODB_URL).then(() => {
     console.log("Judge worker connected to MongoDB.");
 });
 
