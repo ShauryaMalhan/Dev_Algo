@@ -93,6 +93,7 @@ const judge = async (job) => {
     }
 };
 
+
 const worker = new Worker('submissions', judge, {
     connection: {
         host: 'redis_queue',
