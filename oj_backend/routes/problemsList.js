@@ -3,11 +3,10 @@ import Problem from '../models/problem.js';
 import fetchAdmin from '../middleware/fetchadmin.js';
 import Admin from '../models/admin.js';
 import SampleTestCase from '../models/sampletestcase.js';
-import upload from '../middleware/multerconfig.js';
 import TestCase from '../models/testcase.js';
-import deleteExistingTestCases from '../middleware/multerdel.js';
 import UserProgress from '../models/userprogress.js';
 import fetchuser from '../middleware/fetchuser.js';
+import { findProblemMiddleware, deleteExistingTestCases, upload } from '../middleware/testcaseMiddleware.js';
 
 const router = express.Router();
 
@@ -204,56 +203,57 @@ router.delete('/getProblem/admin/testcases/:testcaseId', fetchAdmin, async (req,
     }
 });
 
-router.get('/getProblem/admin/:problemId/judging-testcases', fetchAdmin, async (req, res) => {
+router.get('/getProblem/admin/:problemId/judging-testcases', fetchAdmin, findProblemMiddleware, async (req, res) => {
     try {
-        const testcases = await TestCase.find({ problemId: req.params.problemId });
+        const testcases = await TestCase.find({ problemId: req.problem._id });
         res.json(testcases);
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
 });
 
-router.post('/getProblem/admin/:problemId/judging-testcases', fetchAdmin, deleteExistingTestCases, upload.any(), async (req, res) => {
-    try {
-        const { problemId } = req.params;
-        const files = req.files;
-        const fileMap = new Map();
-        files.forEach(file => {
-            const lastDotIndex = file.originalname.lastIndexOf('.');
-            const baseName = lastDotIndex === -1 
-                ? file.originalname 
-                : file.originalname.substring(0, lastDotIndex);
-            
-            if (!fileMap.has(baseName)) {
-                fileMap.set(baseName, {});
-            }
-            
-            if (file.fieldname === 'inputFiles') {
-                fileMap.get(baseName).input = file;
-            } else if (file.fieldname === 'outputFiles') {
-                fileMap.get(baseName).output = file;
-            }
-        });
+router.post(
+    '/getProblem/admin/:problemId/judging-testcases', 
+    fetchAdmin, 
+    findProblemMiddleware,
+    deleteExistingTestCases,
+    upload.array('testcaseFiles', 200),
+    async (req, res) => {
+        try {
+            const fileMap = new Map();
+            req.files.forEach(file => {
+                const baseName = file.originalname.replace('.a', '');
+                if (!fileMap.has(baseName)) {
+                    fileMap.set(baseName, {});
+                }
+                if (file.originalname.endsWith('.a')) {
+                    fileMap.get(baseName).output = file.location;
+                } else {
+                    fileMap.get(baseName).input = file.location;
+                }
+            });
 
-        const newTestCases = [];
-        for (const [baseName, pair] of fileMap.entries()) {
-            if (pair.input && pair.output) {
-                newTestCases.push({
-                    problemId,
-                    inputPath: pair.input.path,
-                    outputPath: pair.output.path,
-                });
+            const newTestCases = [];
+            for (const [baseName, pair] of fileMap.entries()) {
+                if (pair.input && pair.output) {
+                    newTestCases.push({
+                        problemId: req.problem._id,
+                        inputURL: pair.input,
+                        outputURL: pair.output,
+                    });
+                }
             }
-        }
 
-        if (newTestCases.length > 0) {
-            await TestCase.insertMany(newTestCases);
+            if (newTestCases.length > 0) {
+                await TestCase.insertMany(newTestCases);
+            }
+            
+            res.status(201).json({ message: `${newTestCases.length} test case pairs were saved successfully.` });
+        } catch (err) {
+            console.error("Error saving test cases to DB:", err);
+            res.status(500).json({ message: "Internal Server Error" });
         }
-        
-        res.status(201).json({ message: `${newTestCases.length} test case pairs were saved.` });
-    } catch (err) {
-        res.status(500).json({ message: 'Server Error', error: err.message });
     }
-});
+);
 
 export default router;

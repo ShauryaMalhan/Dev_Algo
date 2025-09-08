@@ -1,17 +1,22 @@
 import { Worker } from 'bullmq';
 import mongoose from 'mongoose';
+import axios from 'axios';
 import Problem from './models/problem.js';
-import SubmissionHistory from './models/history.js';
+import SubmissionHistory from './models/SubmissionHistory.js';
 import TestCase from './models/testcase.js';
 import { compileAndCacheCpp, runCompiledCpp } from './functions/executeCpp.js';
 import { runChecker } from './services/checker.js';
-import fs from 'fs/promises';
 import dotenv from 'dotenv';
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URL).then(() => {
+mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log("Judge worker connected to MongoDB.");
 });
+
+const fetchFileFromURL = async (url) => {
+    const response = await axios.get(url, { responseType: 'text' });
+    return response.data;
+};
 
 const judge = async (job) => {
     const { submissionId, code, language, problemName } = job.data;
@@ -21,12 +26,12 @@ const judge = async (job) => {
         const problem = await Problem.findOne({ name: problemName });
         if (!problem) throw new Error("Problem not found.");
 
-        const testCaseFiles = await TestCase.find({ problemId: problem._id }).lean();
-        if (testCaseFiles.length === 0) throw new Error("No test cases found.");
+        const testCases = await TestCase.find({ problemId: problem._id }).lean();
+        if (testCases.length === 0) throw new Error("No test cases found for this problem.");
         
-        const allTestCases = await Promise.all(testCaseFiles.map(async (tc) => ({
-            input: await fs.readFile(tc.inputPath, 'utf-8'),
-            output: await fs.readFile(tc.outputPath, 'utf-8'),
+        const allTestCases = await Promise.all(testCases.map(async (tc) => ({
+            input: await fetchFileFromURL(tc.inputURL),
+            output: await fetchFileFromURL(tc.outputURL),
         })));
 
         let executablePath;

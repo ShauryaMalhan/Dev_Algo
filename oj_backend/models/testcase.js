@@ -4,16 +4,16 @@ const TestCaseSchema = new mongoose.Schema({
     problemId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Problem',
-        required: true,
+        required: true
     },
-    inputPath: {
+    inputURL: {
         type: String,
-        required: true,
+        required: true
     },
-    outputPath: {
+    outputURL: {
         type: String,
-        required: true,
-    },
+        required: true
+    }
 });
 
 const TestCase = mongoose.model('TestCase', TestCaseSchema);

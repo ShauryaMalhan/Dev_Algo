@@ -1,87 +1,67 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
-import { FaFileUpload, FaFileAlt, FaArrowRight } from 'react-icons/fa';
 import '../stylesheets/editjudgingtestcases.css';
+import { FaUpload, FaFileAlt, FaTrash } from 'react-icons/fa';
 
 const ManageJudgingTestCases = () => {
     const { id: problemId } = useParams();
     const [existingTestCases, setExistingTestCases] = useState([]);
-    const [filePairs, setFilePairs] = useState([]);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [files, setFiles] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const [status, setStatus] = useState('');
     
     const GET_ALL_PROBLEMS_PATH = import.meta.env.VITE_ADMIN_GET_ALL_PROBLEMS_PATH;
 
-    const fetchTestCases = async () => {
+    const fetchTestCases = useCallback(async () => {
         try {
             const response = await axios.get(`${GET_ALL_PROBLEMS_PATH}/${problemId}/judging-testcases`, {
                 headers: { 'auth-token': localStorage.getItem('adminToken') }
             });
-            if (Array.isArray(response.data)) {
-                setExistingTestCases(response.data);
-            }
+            setExistingTestCases(response.data || []);
         } catch (err) {
             console.error("Failed to fetch test cases", err);
-        } finally {
-            setLoading(false);
         }
-    };
+    }, [problemId, GET_ALL_PROBLEMS_PATH]);
 
     useEffect(() => {
         fetchTestCases();
+    }, [fetchTestCases]);
+
+    const onDrop = useCallback(acceptedFiles => {
+        setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
+        setStatus('');
     }, []);
 
-    const handleFileSelect = (event) => {
-        const files = Array.from(event.target.files);
-        files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-        const pairs = [];
-        for (let i = 0; i < files.length; i += 2) {
-            if (i + 1 < files.length) {
-                const inputFile = files[i];
-                const outputFile = files[i + 1];
-
-                if (outputFile.name.startsWith(inputFile.name)) {
-                    pairs.push({
-                        name: inputFile.name,
-                        input: inputFile,
-                        output: outputFile
-                    });
-                }
-            }
-        }
-        setFilePairs(pairs);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (filePairs.length === 0) {
-            setError('No valid input/output pairs selected.');
+    const handleUpload = async () => {
+        if (files.length === 0) {
+            setStatus('Please select files to upload.');
             return;
         }
-        setError('');
+        setIsUploading(true);
+        setStatus('Uploading... this will replace all existing test cases.');
 
         const formData = new FormData();
-        filePairs.forEach(pair => {
-            formData.append('inputFiles', pair.input, pair.input.name);
-            formData.append('outputFiles', pair.output, pair.output.name);
+        files.forEach(file => {
+            formData.append('testcaseFiles', file, file.name);
         });
 
         try {
-            await axios.post(`${GET_ALL_PROBLEMS_PATH}/${problemId}/judging-testcases`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'auth-token': localStorage.getItem('adminToken')
-                }
+            const UPLOAD_URL = `${GET_ALL_PROBLEMS_PATH}/${problemId}/judging-testcases`;
+            const response = await axios.post(UPLOAD_URL, formData, {
+                headers: { 'auth-token': localStorage.getItem('adminToken') }
             });
-            alert('Test cases uploaded successfully!');
+            setStatus(response.data.message || 'Test cases uploaded successfully!');
+            setFiles([]);
             fetchTestCases();
-            setFilePairs([]);
-            document.getElementById('fileUploader').value = null;
         } catch (err) {
-            setError('File upload failed.');
-            console.error(err);
+            console.error("Upload failed:", err);
+            setStatus(err.response?.data?.message || 'Upload failed. Please try again.');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -89,55 +69,37 @@ const ManageJudgingTestCases = () => {
         <div className="manage-judging-container">
             <h1>Manage Judging Test Cases</h1>
             
-            <form onSubmit={handleSubmit} className="upload-form">
-                <h2>Upload New Test Case Pairs</h2>
-                <div className="file-input-wrapper">
-                    <label htmlFor="fileUploader">Select Input & Output Files</label>
-                    <input type="file" id="fileUploader" multiple onChange={handleFileSelect} />
+            <div className="upload-card">
+                <h3>Upload New Test Cases</h3>
+                <p className="upload-warning">Warning: Uploading new files will delete all existing test cases for this problem.</p>
+                <div {...getRootProps({ className: `dropzone ${isDragActive ? 'active' : ''}` })}>
+                    <input {...getInputProps()} />
+                    <FaUpload className="dropzone-icon" />
+                    <p>Drag & drop files here, or click to select</p>
+                    <em>(e.g., 01, 01.a, 02, 02.a)</em>
                 </div>
-
-                {filePairs.length > 0 && (
-                    <div className="detected-pairs">
-                        <h3>{filePairs.length} Pairs Detected for Upload:</h3>
-                        <div className="pair-cards-grid">
-                            {filePairs.map(pair => (
-                                <div key={pair.name} className="pair-card">
-                                    <div className="file-info">
-                                        <span>Input</span>
-                                        <strong>{pair.input.name}</strong>
-                                    </div>
-                                    <FaArrowRight className="arrow-icon" />
-                                    <div className="file-info">
-                                        <span>Output</span>
-                                        <strong>{pair.output.name}</strong>
-                                    </div>
-                                </div>
+                {files.length > 0 && (
+                    <div className="file-preview-list">
+                        <h4>Staged for Upload:</h4>
+                        <ul>
+                            {files.map((file, index) => (
+                                <li key={index}><FaFileAlt /> {file.name}</li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
                 )}
-
-                <button type="submit" className="upload-btn" disabled={filePairs.length === 0}>
-                    <FaFileUpload /> Upload {filePairs.length} Pairs
+                <button onClick={handleUpload} disabled={isUploading || files.length === 0} className="upload-btn">
+                    {isUploading ? 'Uploading...' : `Upload ${files.length} Files`}
                 </button>
-                {error && <p className="error-message">{error}</p>}
-            </form>
+                {status && <p className="status-message">{status}</p>}
+            </div>
 
-            <div className="existing-testcases">
-                <h2>Existing Test Cases</h2>
-                {loading ? <p>Loading...</p> : (
-                    <div className="testcase-list">
-                        {existingTestCases.length > 0 ? (
-                            existingTestCases.map((tc, index) => (
-                                <div key={tc._id} className="testcase-item">
-                                    <FaFileAlt />
-                                    <span>Test Case #{index + 1}</span>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No judging test cases uploaded for this problem yet.</p>
-                        )}
-                    </div>
+            <div className="existing-testcases-card">
+                <h3>Currently Saved Test Cases ({existingTestCases.length})</h3>
+                {existingTestCases.length > 0 ? (
+                    <p>This problem has test data saved on S3.</p>
+                ) : (
+                    <p>No judging test cases have been uploaded for this problem yet.</p>
                 )}
             </div>
         </div>
