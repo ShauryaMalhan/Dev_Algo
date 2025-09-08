@@ -1,5 +1,5 @@
 import express from 'express';
-import SubmissionHistory from '../models/SubmissionHistory.js';
+import SubmissionHistory from '../models/history.js';
 import User from '../models/user.js';
 import Problem from '../models/problem.js';
 import fetchuser from '../middleware/fetchuser.js';
