@@ -98,7 +98,7 @@ const worker = new Worker('submissions', judge, {
         host: 'redis_queue',
         port: 6379
     },
-    concurrency: 2
+    concurrency: 1
 });
 
 console.log("Judge worker started...");
