@@ -47,7 +47,6 @@ const judge = async (job) => {
 
         for (const [index, tc] of testCases.entries()) {
             try {
-                // Fetch only this test case when needed
                 const input = await fetchFileFromURL(tc.inputURL);
                 const output = await fetchFileFromURL(tc.outputURL);
 
@@ -66,8 +65,6 @@ const judge = async (job) => {
                     break;
                 }
 
-                // Free memory for this test case
-                // (helps Node GC reclaim memory quickly)
             } catch (error) {
                 finalVerdict = `${error.message} on test case #${index + 1}`;
                 break;
@@ -102,7 +99,7 @@ const worker = new Worker('submissions', judge, {
         host: 'redis_queue',
         port: 6379
     },
-    concurrency: 3
+    concurrency: 2
 });
 
 console.log("Judge worker started...");
