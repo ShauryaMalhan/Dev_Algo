@@ -32,7 +32,7 @@ router.post('/newHistory', fetchuser, async (req, res) => {
     }
 });
 
-router.get('/myHistory', async (req, res)=> {
+router.get('/myHistory', fetchuser, async (req, res)=> {
     try {
         const user = await User.findById(req.user.id);
         const submissions = await SubmissionHistory.find({ user: user.username })

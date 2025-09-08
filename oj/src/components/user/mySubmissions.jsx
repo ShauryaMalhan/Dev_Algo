@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import authContext from "../../contexts/auth/authContext";
 import axios from "axios";
 import "../stylesheets/submissions.css";
-import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync } from 'react-icons/fa';
 
 const MySubmissions = () => {
     const [submissions, setSubmissions] = useState([]);
@@ -14,13 +14,19 @@ const MySubmissions = () => {
     const MY_SUBMISSIONS_PATH = import.meta.env.VITE_MY_SUBMISSIONS_PATH;
 
     useEffect(() => {
+        let intervalId;
         if (user && user.username !== "none") {
             const fetchMyHistory = async () => {
                 try {
                     const response = await axios.get(MY_SUBMISSIONS_PATH, {
-                        params: { user: user.username }
+                        headers: { 'auth-token': localStorage.getItem('authtoken') }
                     });
                     setSubmissions(response.data);
+
+                    const isPending = response.data.some(s => s.verdict === 'In Queue' || s.verdict === 'Judging');
+                    if (!isPending && intervalId) {
+                        clearInterval(intervalId);
+                    }
                 } catch (err) {
                     console.error("Failed to fetch submissions:", err);
                     setError("Failed to fetch your submissions.");
@@ -28,10 +34,14 @@ const MySubmissions = () => {
                     setLoading(false);
                 }
             };
+
             fetchMyHistory();
+            intervalId = setInterval(fetchMyHistory, 3000);
         } else {
             setLoading(false);
         }
+
+        return () => clearInterval(intervalId);
     }, [user, MY_SUBMISSIONS_PATH]);
     
     const createSlug = (problemName) => {
@@ -48,11 +58,14 @@ const MySubmissions = () => {
                 return <FaTimesCircle className="verdict-icon wrong-answer" />;
             case 'Time Limit Exceeded':
                 return <FaHourglassHalf className="verdict-icon time-limit-exceeded" />;
+            case 'In Queue':
+            case 'Judging':
+                return <FaSync className="verdict-icon pending spin" />;
             default:
                 return <FaExclamationTriangle className="verdict-icon other" />;
         }
     };
-
+    
     const getVerdictClass = (verdict) => {
         if (!verdict) return 'other';
         return verdict.toLowerCase().replace(/\s+/g, '-');

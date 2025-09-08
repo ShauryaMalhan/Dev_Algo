@@ -1,120 +1,119 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Roboto+Mono:wght@400;700&display=swap');
-
 .submit-page-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
-/* --- Editor Container Styling --- */
+.submit-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.submit-header h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.submit-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.problem-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.problem-link:hover {
+    text-decoration: underline;
+}
+
 .editor-container {
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.editor-header {
-    background-color: #f8f9fa;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #dee2e6;
+.editor-controls {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--light-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .language-selector {
     display: flex;
-    gap: 0.5rem;
-}
-
-.language-selector button {
-    background: none;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-family: 'Roboto Mono', monospace;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.language-selector button.active {
-    background-color: #ffffff;
-    color: #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-/* --- Submission Footer --- */
-.submission-footer {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
-.verdict-display {
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-align: left;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    max-width: 85%;
-    border: 1px solid transparent;
+.language-selector label {
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
-/* --- Verdict Color-Coding --- */
-.verdict-display.verdict-idle,
-.verdict-display.verdict-running {
-    color: #495057; 
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-}
-
-.verdict-display.verdict-accepted {
-    color: #0f5132;
-    background-color: #d1e7dd;
-    border-color: #badbcc;
-}
-
-.verdict-display.verdict-wrong-answer,
-.verdict-display.verdict-compilation-error,
-.verdict-display.verdict-runtime-error,
-.verdict-display.verdict-error {
-    color: #842029;
-    background-color: #f8d7da;
-    border-color: #f5c2c7;
-}
-
-.verdict-display.verdict-time-limit-exceeded {
-    color: #664d03;
-    background-color: #fff3cd;
-    border-color: #ffc107;
-}
-
-.submit-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
+.language-selector select {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--background-card);
     font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
+}
+
+.editor-wrapper {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.submission-footer {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    background-color: var(--light-color);
+}
+
+.submit-btn {
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: var(--border-radius-md);
     transition: all 0.2s ease-in-out;
-    white-space: nowrap;
 }
 
-.submit-button:hover:not(:disabled) {
-    background-color: #0056b3;
+.submit-btn:hover {
+    background-color: #157347;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.submit-button:disabled {
-    background-color: #6c757d;
+.submit-btn:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+}
+
+.submission-status {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .submit-header h1 {
+        font-size: 2rem;
+    }
+    .submission-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
 }
