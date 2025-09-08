@@ -27,21 +27,22 @@ const Problem = () => {
         getData();
     }, []);
 
-    const handleRowAuxClick = (e, problem) => {
-        e.preventDefault();
+    const handleRowMouseDown = (e, problem) => {
         const url = `/problems/${problem.slug}`;
-        window.open(url, '_blank');
+        if (e.button === 1) {
+            window.open(url, '_blank');
+        }
     };
 
-    const filteredProblems = problems
-        .filter(p => difficultyFilter === "All" || p.difficulty === difficultyFilter)
-        .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
-    
     const StatusIcon = ({ status }) => {
         if (status === "Solved") return <FaCheckCircle className="status-icon solved" title="Solved" />;
         if (status === "Attempted") return <FaTimesCircle className="status-icon attempted" title="Attempted" />;
         return <FaRegCircle className="status-icon todo" title="Todo" />;
     };
+
+    const filteredProblems = problems
+        .filter(p => difficultyFilter === "All" || p.difficulty === difficultyFilter)
+        .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <div className="problems-page-container">
@@ -78,9 +79,10 @@ const Problem = () => {
                         </thead>
                         <tbody>
                             {filteredProblems.map((problem) => (
-                                <tr key={problem._id} 
+                                <tr 
+                                    key={problem._id} 
                                     onClick={() => navigate(`/problems/${problem.slug}`)} 
-                                    onAuxClick={(e) => handleRowAuxClick(e, problem)}
+                                    onMouseDown={(e) => handleRowMouseDown(e, problem)}
                                 >
                                     <td data-label="Status" className="status-col">
                                         <StatusIcon status={problem.status} />
