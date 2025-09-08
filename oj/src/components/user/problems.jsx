@@ -27,8 +27,10 @@ const Problem = () => {
         getData();
     }, []);
 
-    const handleRowClick = (problem) => {
-        navigate(`/problems/${problem.slug}`);
+    const handleRowAuxClick = (e, problem) => {
+        e.preventDefault();
+        const url = `/problems/${problem.slug}`;
+        window.open(url, '_blank');
     };
 
     const filteredProblems = problems
@@ -76,7 +78,10 @@ const Problem = () => {
                         </thead>
                         <tbody>
                             {filteredProblems.map((problem) => (
-                                <tr key={problem._id} onClick={() => handleRowClick(problem)}>
+                                <tr key={problem._id} 
+                                    onClick={() => navigate(`/problems/${problem.slug}`)} 
+                                    onAuxClick={(e) => handleRowAuxClick(e, problem)}
+                                >
                                     <td data-label="Status" className="status-col">
                                         <StatusIcon status={problem.status} />
                                     </td>
