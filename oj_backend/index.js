@@ -29,7 +29,6 @@ app.use('/api/admin', Admin); // Admin Routes
 app.use('/api/user', User); // User Routes
 app.use('/api/profile', Profile); // Profile Routes
 
-
 app.listen(8000, (req, res) => {
     console.log('listening on port 8000');
 });
