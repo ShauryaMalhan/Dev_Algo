@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import '../stylesheets/allSubmissions.css';
+import '../stylesheets/submissions.css';
 import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const AllSubmissions = () => {
