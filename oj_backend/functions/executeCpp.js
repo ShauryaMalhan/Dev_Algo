@@ -7,7 +7,7 @@ import { createHash } from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const cachePath = path.join(__dirname, 'codeCache');
+const cachePath = path.join(__dirname, '../.cache/cpp');
 if (!fs.existsSync(cachePath)) {
     fs.mkdirSync(cachePath, { recursive: true });
 }
@@ -57,12 +57,8 @@ const executeWithSpawn = (executablePath, input, timeLimitMs) => {
         executeProcess.stdin.write(input);
         executeProcess.stdin.end();
 
-        executeProcess.stdout.on('data', (data) => {
-            stdout += data.toString();
-        });
-        executeProcess.stderr.on('data', (data) => {
-            stderr += data.toString();
-        });
+        executeProcess.stdout.on('data', (data) => { stdout += data.toString(); });
+        executeProcess.stderr.on('data', (data) => { stderr += data.toString(); });
 
         const checkStreamsEnded = () => {
             if (stdoutEnded && stderrEnded) {
@@ -74,21 +70,9 @@ const executeWithSpawn = (executablePath, input, timeLimitMs) => {
                 }
             }
         };
-
-        executeProcess.stdout.on('end', () => {
-            stdoutEnded = true;
-            checkStreamsEnded();
-        });
-
-        executeProcess.stderr.on('end', () => {
-            stderrEnded = true;
-            checkStreamsEnded();
-        });
-
-        executeProcess.on('error', (err) => {
-            clearTimeout(timeoutId);
-            reject(new Error(`Execution failed: ${err.message}`));
-        });
+        executeProcess.stdout.on('end', () => { stdoutEnded = true; checkStreamsEnded(); });
+        executeProcess.stderr.on('end', () => { stderrEnded = true; checkStreamsEnded(); });
+        executeProcess.on('error', (err) => { clearTimeout(timeoutId); reject(new Error(`Execution failed: ${err.message}`)); });
     });
 };
 
