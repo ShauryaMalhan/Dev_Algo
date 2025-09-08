@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq';
 import mongoose from 'mongoose';
 import Problem from './models/problem.js';
-import SubmissionHistory from './models/SubmissionHistory.js';
+import SubmissionHistory from './models/history.js';
 import TestCase from './models/testcase.js';
 import { compileAndCacheCpp, runCompiledCpp } from './functions/executeCpp.js';
 import { runChecker } from './services/checker.js';
