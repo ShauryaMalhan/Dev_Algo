@@ -35,11 +35,6 @@ const judge = async (job) => {
 
         const testCases = await TestCase.find({ problemId: problem._id }).lean();
         if (testCases.length === 0) throw new Error("No test cases found for this problem.");
-        
-        const allTestCases = await Promise.all(testCases.map(async (tc) => ({
-            input: await fetchFileFromURL(tc.inputURL),
-            output: await fetchFileFromURL(tc.outputURL),
-        })));
 
         let executablePathOrDir;
         if (language === 'cpp') {
@@ -49,28 +44,36 @@ const judge = async (job) => {
         }
 
         let finalVerdict = 'Accepted';
-        for (const [index, testcase] of allTestCases.entries()) {
+
+        for (const [index, tc] of testCases.entries()) {
             try {
+                // Fetch only this test case when needed
+                const input = await fetchFileFromURL(tc.inputURL);
+                const output = await fetchFileFromURL(tc.outputURL);
+
                 let userOutput;
                 if (language === 'cpp') {
-                    userOutput = await runCompiledCpp(executablePathOrDir, testcase.input, problem.timeLimit);
+                    userOutput = await runCompiledCpp(executablePathOrDir, input, problem.timeLimit);
                 } else if (language === 'java') {
-                    userOutput = await runCompiledJava(executablePathOrDir, testcase.input, problem.timeLimit);
+                    userOutput = await runCompiledJava(executablePathOrDir, input, problem.timeLimit);
                 } else if (language === 'python') {
-                    userOutput = await runPython(code, testcase.input, problem.timeLimit);
+                    userOutput = await runPython(code, input, problem.timeLimit);
                 }
 
-                const checkResult = await runChecker(problem.checker, testcase.input, userOutput, testcase.output);
+                const checkResult = await runChecker(problem.checker, input, userOutput, output);
                 if (checkResult.verdict !== 'Accepted') {
                     finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
                     break;
                 }
+
+                // Free memory for this test case
+                // (helps Node GC reclaim memory quickly)
             } catch (error) {
                 finalVerdict = `${error.message} on test case #${index + 1}`;
                 break;
             }
         }
-        
+
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: finalVerdict });
 
         if (finalVerdict === 'Accepted') {
@@ -99,7 +102,7 @@ const worker = new Worker('submissions', judge, {
         host: 'redis_queue',
         port: 6379
     },
-    concurrency: 1
+    concurrency: 3
 });
 
 console.log("Judge worker started...");
