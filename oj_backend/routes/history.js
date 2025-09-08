@@ -1,6 +1,7 @@
 import express from 'express';
-import SubmissionHistory from '../models/history.js';
+import SubmissionHistory from '../models/SubmissionHistory.js';
 import User from '../models/user.js';
+import Problem from '../models/problem.js';
 import fetchuser from '../middleware/fetchuser.js';
 import submissionQueue from '../services/queue.js';
 
@@ -8,25 +9,28 @@ const router = express.Router();
 
 router.post('/newHistory', fetchuser, async (req, res) => {
     try {
-        const { problem, language, code } = req.body;
+        const { problem: problemName, language, code } = req.body;
         const user = await User.findById(req.user.id);
+        const problem = await Problem.findOne({ name: problemName });
 
-        if (!problem || !language || !code) {
-            return res.status(400).json({ message: "Missing required fields." });
+        if (!problem) {
+            return res.status(404).json({ message: "Problem not found." });
         }
 
         const newSubmission = await SubmissionHistory.create({
             user: user.username,
-            problem: problem,
+            problem: problem.name,
             language: language,
             verdict: 'In Queue'
         });
 
         await submissionQueue.add('new-submission', {
             submissionId: newSubmission._id,
+            userId: user._id,
+            problemId: problem._id,
             code,
             language,
-            problemName: problem
+            problemName: problem.name
         });
 
         res.status(202).json({ submissionId: newSubmission._id, message: "Submission received and is being judged." });
@@ -39,21 +43,18 @@ router.post('/newHistory', fetchuser, async (req, res) => {
 router.get('/myHistory', fetchuser, async (req, res)=> {
     try {
         const user = await User.findById(req.user.id);
-        const submissions = await SubmissionHistory.find({ user: user.username })
-            .sort({ createdAt: -1 });
+        const submissions = await SubmissionHistory.find({ user: user.username }).sort({ time: -1 });
         res.status(200).json(submissions);
     } catch(err) {
-        console.error("Error fetching user submissions:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
 router.get('/allHistory', async (req, res)=> {
     try {
-        const submissions = await SubmissionHistory.find().sort({ createdAt: -1 });
-        res.status(200).json(submissions);
+        const history = await SubmissionHistory.find().sort({ time: -1 });
+        res.status(200).json(history);
     } catch(err) {
-        console.error("Error fetching all submissions:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
