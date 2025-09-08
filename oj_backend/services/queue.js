@@ -7,4 +7,5 @@ const submissionQueue = new Queue('submissions', {
     }
 });
 
+
 export default submissionQueue;
