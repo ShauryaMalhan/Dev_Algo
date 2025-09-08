@@ -50,7 +50,7 @@ jobs:
             docker compose pull
             
             echo "--- (5) Starting services ---"
-            docker compose up -d --no-deps backend judge_worker
+            docker-compose up -d --force-recreate --no-deps backend judge_worker
             
             echo "--- (6) Final cleanup ---"
             docker system prune -a -f
