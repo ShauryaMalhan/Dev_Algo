@@ -94,15 +94,17 @@ const AllSubmissions = () => {
                  {submissions.length === 0 && <div className="no-submissions">No submissions found.</div>}
             </div>
 
-            <div className="pagination-controls">
-                <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                    <FaArrowLeft /> Previous
-                </button>
-                <span>Page {currentPage} of {totalPages}</span>
-                <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                    Next <FaArrowRight />
-                </button>
-            </div>
+            {totalPages > 1 && (
+                <div className="pagination-controls">
+                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                        <FaArrowLeft /> Previous
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                        Next <FaArrowRight />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

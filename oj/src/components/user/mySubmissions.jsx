@@ -37,7 +37,7 @@ const MySubmissions = () => {
                     setError("Failed to fetch your submissions.");
                     if (intervalId) clearInterval(intervalId);
                 } finally {
-                    setLoading(false);
+                    if (currentPage === 1) setLoading(false);
                 }
             };
 
