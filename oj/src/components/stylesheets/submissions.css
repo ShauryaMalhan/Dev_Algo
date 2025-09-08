@@ -53,31 +53,8 @@
     letter-spacing: 0.5px;
 }
 
-.submissions-table tbody tr {
-    transition: background-color 0.2s ease;
-}
-
-.submissions-table tbody tr:hover {
-    background-color: #f1f3f5;
-}
-
 .submissions-table tbody tr:last-child td {
     border-bottom: none;
-}
-
-.submissions-table td {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.submissions-table td a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.submissions-table td a:hover {
-    text-decoration: underline;
 }
 
 .verdict-cell {
@@ -87,29 +64,57 @@
     font-weight: 600;
 }
 
-.verdict-icon {
-    font-size: 1.1rem;
-}
+.verdict-icon.accepted { color: var(--success-color); }
+.verdict-icon.wrong-answer, .verdict-icon.error { color: var(--danger-color); }
+.verdict-icon.time-limit-exceeded { color: #fd7e14; }
+.verdict-icon.pending { color: var(--secondary-color); }
+.verdict-icon.spin { animation: spin 1.5s linear infinite; }
 
-.accepted {
-    color: var(--success-color);
-}
-
-.wrong-answer {
-    color: var(--danger-color);
-}
-
-.time-limit-exceeded {
-    color: #fd7e14;
-}
-
-.other {
-    color: var(--text-muted);
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .no-submissions {
     padding: 3rem;
     text-align: center;
+    color: var(--text-secondary);
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.pagination-controls button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pagination-controls button:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pagination-controls span {
+    font-weight: 600;
     color: var(--text-secondary);
 }
 
@@ -128,10 +133,6 @@
         border-bottom: none;
     }
     
-    .submissions-table tbody tr:hover {
-        background-color: transparent;
-    }
-
     .submissions-table td {
         display: flex;
         justify-content: space-between;

@@ -1,30 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import '../stylesheets/submissions.css';
-import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle } from 'react-icons/fa';
+import '../stylesheets/allSubmissions.css';
+import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const AllSubmissions = () => {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     const ALL_SUBMISSION_PATH = import.meta.env.VITE_ALL_SUBMISSIONS_PATH;
 
     useEffect(() => {
         const fetchAllHistory = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get(ALL_SUBMISSION_PATH);
-                setSubmissions(response.data);
+                const response = await axios.get(ALL_SUBMISSION_PATH, {
+                    params: { page: currentPage, limit: 50 }
+                });
+                setSubmissions(response.data.submissions);
+                setTotalPages(response.data.totalPages);
             } catch (err) {
-                console.error("Failed to fetch all submissions:", err);
                 setError('Failed to fetch submissions.');
             } finally {
                 setLoading(false);
             }
         };
         fetchAllHistory();
-    }, [ALL_SUBMISSION_PATH]);
+    }, [ALL_SUBMISSION_PATH, currentPage]);
 
     const createSlug = (problemName) => {
         if (!problemName) return 'unknown';
@@ -40,6 +45,9 @@ const AllSubmissions = () => {
                 return <FaTimesCircle className="verdict-icon wrong-answer" />;
             case 'Time Limit Exceeded':
                 return <FaHourglassHalf className="verdict-icon time-limit-exceeded" />;
+            case 'In Queue':
+            case 'Judging':
+                return <FaSync className="verdict-icon pending spin" />;
             default:
                 return <FaExclamationTriangle className="verdict-icon other" />;
         }
@@ -74,26 +82,26 @@ const AllSubmissions = () => {
                     <tbody>
                         {submissions.map((sub) => (
                             <tr key={sub._id}>
-                                <td data-label="Problem">
-                                    <Link to={`/problems/${createSlug(sub.problem)}`}>{sub.problem || 'Unknown Problem'}</Link>
-                                </td>
-                                <td data-label="User">
-                                    <Link to={`/profile/${sub.user}`}>{sub.user || 'Unknown User'}</Link>
-                                </td>
-                                <td data-label="Verdict">
-                                    <span className={`verdict-cell ${getVerdictClass(sub.verdict)}`}>
-                                        {getVerdictIcon(sub.verdict)} {sub.verdict || 'N/A'}
-                                    </span>
-                                </td>
+                                <td data-label="Problem"><Link to={`/problems/${createSlug(sub.problem)}`}>{sub.problem || 'Unknown'}</Link></td>
+                                <td data-label="User"><Link to={`/profile/${sub.user}`}>{sub.user || 'Unknown'}</Link></td>
+                                <td data-label="Verdict"><span className={`verdict-cell ${getVerdictClass(sub.verdict)}`}>{getVerdictIcon(sub.verdict)} {sub.verdict || 'N/A'}</span></td>
                                 <td data-label="Language">{sub.language || 'N/A'}</td>
-                                <td data-label="Submitted At">
-                                    {sub.createdAt ? new Date(sub.createdAt).toLocaleString() : 'N/A'}
-                                </td>
+                                <td data-label="Submitted At">{sub.time ? new Date(sub.time).toLocaleString() : 'N/A'}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
                  {submissions.length === 0 && <div className="no-submissions">No submissions found.</div>}
+            </div>
+
+            <div className="pagination-controls">
+                <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                    <FaArrowLeft /> Previous
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                    Next <FaArrowRight />
+                </button>
             </div>
         </div>
     );

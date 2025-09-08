@@ -16,6 +16,11 @@ const SubmissionHistorySchema = new mongoose.Schema({
     language: {
         type: String,
         required: true
+    },
+    time: {
+        type: Date,
+        default: Date.now,
+        index: true
     }
 }, { timestamps: true });
 

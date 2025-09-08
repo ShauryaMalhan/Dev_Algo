@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import authContext from "../../contexts/auth/authContext";
 import axios from "axios";
 import "../stylesheets/submissions.css";
-import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const MySubmissions = () => {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { user } = useContext(authContext);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     
     const MY_SUBMISSIONS_PATH = import.meta.env.VITE_MY_SUBMISSIONS_PATH;
 
@@ -19,18 +21,21 @@ const MySubmissions = () => {
             const fetchMyHistory = async () => {
                 try {
                     const response = await axios.get(MY_SUBMISSIONS_PATH, {
-                        headers: { 'auth-token': localStorage.getItem('authtoken') }
+                        headers: { 'auth-token': localStorage.getItem('authtoken') },
+                        params: { page: currentPage, limit: 50 }
                     });
-                    setSubmissions(response.data);
+                    
+                    setSubmissions(response.data.submissions);
+                    setTotalPages(response.data.totalPages);
 
-                    const isPending = response.data.some(s => s.verdict === 'In Queue' || s.verdict === 'Judging');
+                    const isPending = response.data.submissions.some(s => s.verdict === 'In Queue' || s.verdict === 'Judging');
                     if (!isPending && intervalId) {
                         clearInterval(intervalId);
                     }
                 } catch (err) {
                     console.error("Failed to fetch submissions:", err);
                     setError("Failed to fetch your submissions.");
-                    clearInterval(intervalId);
+                    if (intervalId) clearInterval(intervalId);
                 } finally {
                     setLoading(false);
                 }
@@ -42,8 +47,10 @@ const MySubmissions = () => {
             setLoading(false);
         }
 
-        return () => clearInterval(intervalId);
-    }, [user, MY_SUBMISSIONS_PATH]);
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [user, MY_SUBMISSIONS_PATH, currentPage]);
     
     const createSlug = (problemName) => {
         if (!problemName) return 'unknown';
@@ -105,7 +112,7 @@ const MySubmissions = () => {
                                 </td>
                                 <td data-label="Language">{sub.language || 'N/A'}</td>
                                 <td data-label="Submitted At">
-                                    {sub.createdAt ? new Date(sub.createdAt).toLocaleString() : 'N/A'}
+                                    {sub.time ? new Date(sub.time).toLocaleString() : 'N/A'}
                                 </td>
                             </tr>
                         ))}
@@ -113,6 +120,18 @@ const MySubmissions = () => {
                 </table>
                 {submissions.length === 0 && <div className="no-submissions">You haven't made any submissions yet.</div>}
             </div>
+
+            {totalPages > 1 && (
+                <div className="pagination-controls">
+                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                        <FaArrowLeft /> Previous
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                        Next <FaArrowRight />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
