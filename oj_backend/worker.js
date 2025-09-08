@@ -13,7 +13,6 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
     console.log("Judge worker connected to MongoDB.");
 });
 
-
 const fetchFileFromURL = async (url) => {
     const response = await axios.get(url, { responseType: 'text' });
     return response.data;
