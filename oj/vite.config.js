@@ -7,6 +7,7 @@ export default defineConfig({
     react(),
     sitemap({
       hostname: 'https://picode.polsage.in', 
+      generateRobotsTxt: true,
     }),
   ],
 });
