@@ -26,10 +26,10 @@ const compile = (sourcePath, cacheDir) => {
     });
 };
 
-const execute = (cacheDir, input, timeLimitMs) => {
+const execute = (cacheDir, sandboxDir, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
         const command = `java -cp "${cacheDir}" Main`;
-        const process = spawn(command, [], { shell: true, detached: true });
+        const process = spawn(command, [], { shell: true, detached: true, cwd: sandboxDir });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
             if (process.pid) process.kill('SIGKILL');
@@ -49,22 +49,12 @@ const execute = (cacheDir, input, timeLimitMs) => {
 };
 
 const acquireLock = async (lockPath) => {
-    try {
-        await writeFile(lockPath, '', { flag: 'wx' });
-        return true;
-    } catch (e) {
-        return false;
-    }
+    try { await writeFile(lockPath, '', { flag: 'wx' }); return true; } catch (e) { return false; }
 };
 
 const waitForLock = async (filePath) => {
     while (true) {
-        try {
-            await access(filePath);
-            return;
-        } catch {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
+        try { await access(filePath); return; } catch { await new Promise(resolve => setTimeout(resolve, 100)); }
     }
 };
 
@@ -100,25 +90,21 @@ const compileAndCacheJava = async (code) => {
 
 export const executeJava = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
     const cacheDir = await compileAndCacheJava(code);
-
     let finalVerdict = 'Accepted';
-    let testCaseCounter = 1;
-    for (const tc of testCases) {
+    for (const [index, tc] of testCases.entries()) {
         try {
             const input = await fetchFileFromURL(tc.inputURL);
             const output = await fetchFileFromURL(tc.outputURL);
-            
-            const userOutput = await execute(cacheDir, input, timeLimit * 1000);
+            const userOutput = await execute(cacheDir, sandboxDir, input, timeLimit * 1000);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
-                finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
+                finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
                 break;
             }
         } catch (error) {
-            finalVerdict = `${error.message} on test case #${testCaseCounter}`;
+            finalVerdict = `${error.message} on test case #${index + 1}`;
             break;
         }
-        testCaseCounter++;
     }
     return { verdict: finalVerdict };
 };

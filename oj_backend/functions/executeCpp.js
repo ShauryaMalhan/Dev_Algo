@@ -26,9 +26,9 @@ const compile = (sourcePath, execPath) => {
     });
 };
 
-const execute = (execPath, input, timeLimitMs) => {
+const execute = (execPath, sandboxDir, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
-        const process = spawn(`"${execPath}"`, [], { shell: true, detached: true });
+        const process = spawn(`"${execPath}"`, [], { shell: true, detached: true, cwd: sandboxDir });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
             if (process.pid) process.kill('SIGKILL');
@@ -48,22 +48,12 @@ const execute = (execPath, input, timeLimitMs) => {
 };
 
 const acquireLock = async (lockPath) => {
-    try {
-        await writeFile(lockPath, '', { flag: 'wx' });
-        return true;
-    } catch (e) {
-        return false;
-    }
+    try { await writeFile(lockPath, '', { flag: 'wx' }); return true; } catch (e) { return false; }
 };
 
 const waitForLock = async (filePath) => {
     while (true) {
-        try {
-            await access(filePath);
-            return;
-        } catch {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
+        try { await access(filePath); return; } catch { await new Promise(resolve => setTimeout(resolve, 100)); }
     }
 };
 
@@ -95,25 +85,21 @@ const compileAndCacheCpp = async (code) => {
 
 export const executeCpp = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
     const execPath = await compileAndCacheCpp(code);
-
     let finalVerdict = 'Accepted';
-    let testCaseCounter = 1;
-    for (const tc of testCases) {
+    for (const [index, tc] of testCases.entries()) {
         try {
             const input = await fetchFileFromURL(tc.inputURL);
             const output = await fetchFileFromURL(tc.outputURL);
-
-            const userOutput = await execute(execPath, input, timeLimit * 1000);
+            const userOutput = await execute(execPath, sandboxDir, input, timeLimit * 1000);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
-                finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
+                finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
                 break;
             }
         } catch (error) {
-            finalVerdict = `${error.message} on test case #${testCaseCounter}`;
+            finalVerdict = `${error.message} on test case #${index + 1}`;
             break;
         }
-        testCaseCounter++;
     }
     return { verdict: finalVerdict };
 };
