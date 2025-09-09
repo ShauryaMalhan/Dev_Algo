@@ -25,6 +25,11 @@ const ProblemSchema = new mongoose.Schema({
         required: true,
         default: 2,
     },
+    memoryLimit: {
+        type: Number,
+        required: true,
+        default: 256
+    },
     legend: {
         type: String,
         required: true,

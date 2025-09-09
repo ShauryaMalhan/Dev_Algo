@@ -41,7 +41,7 @@ router.post('/forgot-password', [
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: user.email,
-            subject: 'Your Password Reset Link for Code Runner',
+            subject: 'Your Password Reset Link for PiCode',
             text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
                   `Please click on the following link, or paste this into your browser to complete the process within one hour:\n\n` +
                   `${resetUrl}\n\n` +
@@ -116,7 +116,7 @@ router.post('/send-otp', [
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: 'Your Verification Code for Code Runner',
+            subject: 'Your Verification Code for Picode',
             text: `Your one-time password is: ${otp}\nThis code is valid for 5 minutes.`,
         };
 
