@@ -30,8 +30,15 @@ const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
         process.stderr.on('data', (data) => stderr += data);
         process.on('close', (code) => {
             clearTimeout(timeoutId);
-            if (code !== 0) reject(new Error(`Runtime Error: ${stderr}`));
-            else resolve(stdout);
+            if (code !== 0) {
+                if (stderr.includes('Killed') || (code === 137 || code === 9)) {
+                    reject(new Error('Memory Limit Exceeded'));
+                } else {
+                    reject(new Error(`Runtime Error: ${stderr}`));
+                }
+            } else {
+                resolve(stdout);
+            }
         });
     });
 };
@@ -50,11 +57,11 @@ export const executePy = async (code, testCases, timeLimit, memoryLimit, checker
             const userOutput = await execute(sourcePath, input, timeLimit * 1000, memoryLimit);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
-                finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
+                finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
                 break;
             }
         } catch (error) {
-            finalVerdict = `${error.message} on test case #${testCaseCounter}`;
+            finalVerdict = `${error.message} on test case #${index + 1}`;
             break;
         }
     }
