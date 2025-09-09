@@ -20,7 +20,7 @@ const compile = (sourcePath, cacheDir) => {
         const process = spawn(command, { shell: true });
         let error = '';
         process.stderr.on('data', (data) => error += data);
-        process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Compilation Error: ${error}`)));
+        process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Compilation Error`)));
     });
 };
 
