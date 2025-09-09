@@ -7,7 +7,7 @@ dotenv.config();
 const runMigration = async () => {
     try {
         console.log('Connecting to database...');
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGODB_URL);
         console.log('Connection successful.');
 
         console.log('Updating problems that are missing a memoryLimit...');
