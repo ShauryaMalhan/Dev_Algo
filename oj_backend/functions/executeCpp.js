@@ -24,9 +24,11 @@ const compile = (sourcePath, execPath) => {
     });
 };
 
-const execute = (execPath, input, timeLimitMs) => {
+const execute = (execPath, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
-        const process = spawn(`"${execPath}"`, [], { shell: true, detached: true });
+        const memoryLimitKB = memoryLimitMB * 1024;
+        const command = `(ulimit -v ${memoryLimitKB}; "${execPath}")`;
+        const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
             if (process.pid) process.kill('SIGKILL');
@@ -62,14 +64,14 @@ const compileAndCacheCpp = async (code) => {
     }
 };
 
-export const executeCpp = async (code, testCases, timeLimit, checkerName) => {
+export const executeCpp = async (code, testCases, timeLimit, memoryLimit, checkerName) => {
     const execPath = await compileAndCacheCpp(code);
     let finalVerdict = 'Accepted';
     for (const [index, tc] of testCases.entries()) {
         try {
             const input = await fetchFileFromURL(tc.inputURL);
             const output = await fetchFileFromURL(tc.outputURL);
-            const userOutput = await execute(execPath, input, timeLimit * 1000);
+            const userOutput = await execute(execPath, input, timeLimit * 1000, memoryLimit);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
                 finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;

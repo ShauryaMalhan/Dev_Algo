@@ -14,9 +14,10 @@ const fetchFileFromURL = async (url) => {
     return response.data;
 };
 
-const execute = (sourcePath, input, timeLimitMs) => {
+const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
-        const command = `python "${sourcePath}"`;
+        const memoryLimitKB = memoryLimitMB * 1024;
+        const command = `(ulimit -v ${memoryLimitKB}; python "${sourcePath}")`;
         const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
@@ -35,7 +36,7 @@ const execute = (sourcePath, input, timeLimitMs) => {
     });
 };
 
-export const executePy = async (code, testCases, timeLimit, checkerName) => {
+export const executePy = async (code, testCases, timeLimit, memoryLimit, checkerName) => {
     const hash = createHash('sha256').update(code).digest('hex');
     const sourcePath = path.join(cachePath, `${hash}.py`);
     await writeFile(sourcePath, code);
@@ -46,7 +47,7 @@ export const executePy = async (code, testCases, timeLimit, checkerName) => {
         try {
             const input = await fetchFileFromURL(tc.inputURL);
             const output = await fetchFileFromURL(tc.outputURL);
-            const userOutput = await execute(sourcePath, input, timeLimit * 1000);
+            const userOutput = await execute(sourcePath, input, timeLimit * 1000, memoryLimit);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
                 finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;

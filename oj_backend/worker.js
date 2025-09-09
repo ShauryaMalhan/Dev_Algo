@@ -23,11 +23,11 @@ const judge = async (job) => {
         
         let result;
         if (language === 'cpp') {
-            result = await executeCpp(code, testCases, problem.timeLimit, problem.checker);
+            result = await executeCpp(code, testCases, problem.timeLimit, problem.memoryLimit, problem.checker);
         } else if (language === 'java') {
-            result = await executeJava(code, testCases, problem.timeLimit, problem.checker);
+            result = await executeJava(code, testCases, problem.timeLimit, problem.memoryLimit, problem.checker);
         } else if (language === 'python') {
-            result = await executePy(code, testCases, problem.timeLimit, problem.checker);
+            result = await executePy(code, testCases, problem.timeLimit, problem.memoryLimit, problem.checker);
         }
 
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: result.verdict });
@@ -47,3 +47,5 @@ const worker = new Worker('submissions', judge, {
     connection: { host: 'redis_queue', port: 6379 },
     concurrency: 1
 });
+
+console.log("Judge worker started with concurrency of 1...");
