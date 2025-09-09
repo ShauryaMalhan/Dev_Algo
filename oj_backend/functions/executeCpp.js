@@ -67,7 +67,7 @@ const execute = (execPath, input, timeLimitMs, memoryLimitMB) => {
             clearTimeout(timeoutId);
             clearInterval(memoryInterval);
             if (code !== 0) {
-                reject(new Error(`Runtime Error: ${stderr}`));
+                reject(new Error(`Runtime Error`));
             } else {
                 resolve(stdout);
             }
