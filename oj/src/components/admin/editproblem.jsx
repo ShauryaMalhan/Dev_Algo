@@ -106,7 +106,7 @@ const EditProblem = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="memoryLimit">Memory Limit (MB)</label>
-                        <input type="number" id="memoryLimit" name="memoryLimit" value={problem.memoryLimit || 256} onChange={handleInputChange} required />
+                        <input type="number" id="memoryLimit" name="memoryLimit" value={problem.memoryLimit} onChange={handleInputChange} required />
                     </div>
                     <div className="form-group full-width">
                         <label htmlFor="checker">Checker</label>
