@@ -29,25 +29,25 @@ const judge = async (job) => {
         if (!problem) throw new Error("Problem not found.");
 
         const testCases = await TestCase.find({ problemId: problem._id }).lean();
-        if (testCases.length === 0) throw new Error("No test cases found.");
+        if (testCases.length === 0) throw new Error("No test cases found for this problem.");
         
         const allTestCases = await Promise.all(testCases.map(async (tc) => ({
             input: await fetchFileFromURL(tc.inputURL),
             output: await fetchFileFromURL(tc.outputURL),
         })));
 
-        let userOutput;
+        let result;
         if (language === 'cpp') {
-            userOutput = await executeCpp(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executeCpp(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
         } else if (language === 'java') {
-            userOutput = await executeJava(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executeJava(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
         } else if (language === 'python') {
-            userOutput = await executePy(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executePy(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
         }
 
-        await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: userOutput.verdict });
+        await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: result.verdict });
 
-        if (userOutput.verdict === 'Accepted') {
+        if (result.verdict === 'Accepted') {
             await UserProgress.updateOne({ userId, problemId }, { $set: { status: 'Solved' } }, { upsert: true });
         } else {
             await UserProgress.updateOne({ userId, problemId }, { $setOnInsert: { status: 'Attempted' } }, { upsert: true });
