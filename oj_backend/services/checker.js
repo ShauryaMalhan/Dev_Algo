@@ -5,14 +5,10 @@ import path from 'path';
 import os from 'os';
 
 const execPromise = promisify(exec);
-const CACHE_DIR = path.join(process.cwd(), 'checkerCache');
+const CACHE_DIR = path.join(process.cwd(), '.cache/checkers');
 
 const ensureCacheDirExists = async () => {
-    try {
-        await access(CACHE_DIR);
-    } catch {
-        await mkdir(CACHE_DIR);
-    }
+    try { await access(CACHE_DIR); } catch { await mkdir(CACHE_DIR, { recursive: true }); }
 };
 
 const defaultChecker = (userOutput, expectedOutput) => {
@@ -27,18 +23,15 @@ const runCppChecker = async (checkerName, input, userOutput, expectedOutput) => 
     const checkerSrcPath = path.join(process.cwd(), 'checkers', checkerName);
     const checkerExecPath = path.join(CACHE_DIR, checkerBaseName);
     
-    try {
-        await access(checkerExecPath);
-    } catch {
+    try { await access(checkerExecPath); } catch {
         try {
             await execPromise(`g++ -std=c++17 -O2 -o "${checkerExecPath}" "${checkerSrcPath}" -I "./checkers"`);
         } catch (compileError) {
-            console.error("Checker compilation failed:", compileError);
             throw new Error("Checker compilation failed on the server.");
         }
     }
 
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'checker-run-'));
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'check-run-'));
     const inputPath = path.join(tempDir, 'input.txt');
     const userOutputPath = path.join(tempDir, 'userOutput.txt');
     const expectedOutputPath = path.join(tempDir, 'expectedOutput.txt');
@@ -47,10 +40,8 @@ const runCppChecker = async (checkerName, input, userOutput, expectedOutput) => 
         await writeFile(inputPath, input);
         await writeFile(userOutputPath, userOutput);
         await writeFile(expectedOutputPath, expectedOutput);
-        
         await execPromise(`"${checkerExecPath}" "${inputPath}" "${userOutputPath}" "${expectedOutputPath}"`);
-        
-        return { verdict: 'Accepted', message: 'Solution is correct.' };
+        return { verdict: 'Accepted' };
     } catch (executionError) {
         const stderr = executionError.stderr || 'Checker reported an error.';
         switch (executionError.code) {

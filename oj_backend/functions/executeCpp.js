@@ -1,98 +1,60 @@
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
 import { spawn } from 'child_process';
-import { createHash } from 'crypto';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { runChecker } from '../services/checker.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const cachePath = path.join(__dirname, '../.cache/cpp');
-if (!fs.existsSync(cachePath)) {
-    fs.mkdirSync(cachePath, { recursive: true });
-}
-
-const compileWithSpawn = (filepath, outPath) => {
+const compile = (sourcePath, execPath) => {
     return new Promise((resolve, reject) => {
-        const command = `g++ -std=c++17 -O2 "${filepath}" -o "${outPath}"`;
-        const compileProcess = spawn(command, [], { shell: true });
-        let compileError = '';
-        compileProcess.stderr.on('data', (data) => {
-            compileError += data.toString();
-        });
-        compileProcess.on('close', (code) => {
-            if (code !== 0) {
-                reject(new Error(`Compilation Error: ${compileError}`));
-            } else {
-                resolve();
-            }
-        });
+        const command = `g++ -std=c++17 -O2 "${sourcePath}" -o "${execPath}"`;
+        const process = spawn(command, [], { shell: true });
+        let error = '';
+        process.stderr.on('data', (data) => error += data);
+        process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Compilation Error: ${error}`)));
     });
 };
 
-const killProcessTree = (pid) => {
-    if (process.platform === 'win32') {
-        spawn('taskkill', ['/pid', pid, '/f', '/t']);
-    } else {
-        spawn('kill', ['-9', `-${pid}`]);
-    }
-};
-
-const executeWithSpawn = (executablePath, input, timeLimitMs) => {
+const execute = (execPath, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
-        const command = `"${executablePath}"`;
-        const executeProcess = spawn(command, [], { shell: true, detached: true });
-        let stdout = '';
-        let stderr = '';
-        let timeoutId;
-
-        timeoutId = setTimeout(() => {
-            killProcessTree(executeProcess.pid);
-            reject(new Error(`Time Limit Exceeded`));
+        const process = spawn(`"${execPath}"`, [], { shell: true, detached: true });
+        let stdout = '', stderr = '';
+        const timeoutId = setTimeout(() => {
+            process.kill('SIGKILL');
+            reject(new Error('Time Limit Exceeded'));
         }, timeLimitMs);
 
-        executeProcess.stdin.write(input);
-        executeProcess.stdin.end();
-
-        executeProcess.stdout.on('data', (data) => { stdout += data.toString(); });
-        executeProcess.stderr.on('data', (data) => { stderr += data.toString(); });
-        
-        executeProcess.on('close', (code) => {
+        process.stdin.write(input);
+        process.stdin.end();
+        process.stdout.on('data', (data) => stdout += data);
+        process.stderr.on('data', (data) => stderr += data);
+        process.on('close', (code) => {
             clearTimeout(timeoutId);
-            if (code !== 0) {
-                reject(new Error(`Runtime Error: ${stderr || 'Process exited with a non-zero code.'}`));
-            } else {
-                resolve(stdout);
-            }
+            if (code !== 0) reject(new Error(`Runtime Error: ${stderr}`));
+            else resolve(stdout);
         });
     });
 };
 
-export const compileAndCacheCpp = async (code) => {
-    const hash = createHash('sha256').update(code).digest('hex');
-    const cachedExecutablePath = path.join(cachePath, hash);
-    const tempSourcePath = path.join(cachePath, `${hash}.cpp`);
+export const executeCpp = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
+    const sourcePath = path.join(sandboxDir, 'main.cpp');
+    const execPath = path.join(sandboxDir, 'main.out');
+    await writeFile(sourcePath, code);
+    await compile(sourcePath, execPath);
 
-    try {
-        await fs.promises.access(cachedExecutablePath);
-        return cachedExecutablePath;
-    } catch {
-        await fs.promises.writeFile(tempSourcePath, code);
+    let finalVerdict = 'Accepted';
+    let testCaseCounter = 1;
+    for (const testcase of testCases) {
         try {
-            await compileWithSpawn(tempSourcePath, cachedExecutablePath);
-            return cachedExecutablePath;
-        } finally {
-            await fs.promises.unlink(tempSourcePath).catch(() => {});
+            const userOutput = await execute(execPath, testcase.input, timeLimit * 1000);
+            const checkResult = await runChecker(checkerName, testcase.input, userOutput, testcase.output);
+            if (checkResult.verdict !== 'Accepted') {
+                finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
+                break;
+            }
+        } catch (error) {
+            finalVerdict = `${error.message} on test case #${testCaseCounter}`;
+            break;
         }
+        testCaseCounter++;
     }
-};
-
-export const runCompiledCpp = async (executablePath, input, timeLimit) => {
-    const timeLimitMs = timeLimit * 1000;
-    try {
-        const output = await executeWithSpawn(executablePath, input, timeLimitMs);
-        return output;
-    } catch (error) {
-        throw error;
-    }
+    return { verdict: finalVerdict };
 };

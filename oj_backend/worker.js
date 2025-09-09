@@ -1,24 +1,18 @@
 import { Worker } from 'bullmq';
 import mongoose from 'mongoose';
 import axios from 'axios';
+import { mkdtemp, rm } from 'fs/promises';
+import path from 'path';
+import os from 'os';
 import Problem from './models/problem.js';
 import SubmissionHistory from './models/history.js';
 import TestCase from './models/testcase.js';
 import UserProgress from './models/userprogress.js';
-import { compileAndCacheCpp, runCompiledCpp } from './functions/executeCpp.js';
-import { compileAndCacheJava, runCompiledJava } from './functions/executeJava.js';
-import { runPython } from './functions/executePy.js';
-import { runChecker } from './services/checker.js';
+import { executeCpp } from './functions/executeCpp.js';
+import { executeJava } from './functions/executeJava.js';
+import { executePy } from './functions/executePy.js';
 
-import dotenv from 'dotenv';
-dotenv.config();
-
-mongoose.connect(process.env.MONGODB_URL).then(() => {
-    console.log("Judge worker connected to MongoDB.");
-}).catch(err => {
-    console.error("Judge worker MongoDB connection error:", err);
-    process.exit(1);
-});
+mongoose.connect(process.env.MONGODB_URL);
 
 const fetchFileFromURL = async (url) => {
     const response = await axios.get(url, { responseType: 'text' });
@@ -27,6 +21,7 @@ const fetchFileFromURL = async (url) => {
 
 const judge = async (job) => {
     const { submissionId, userId, problemId, code, language, problemName } = job.data;
+    const sandboxDir = await mkdtemp(path.join(os.tmpdir(), `judge-${submissionId}-`));
     
     try {
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: 'Judging' });
@@ -34,72 +29,40 @@ const judge = async (job) => {
         if (!problem) throw new Error("Problem not found.");
 
         const testCases = await TestCase.find({ problemId: problem._id }).lean();
-        if (testCases.length === 0) throw new Error("No test cases found for this problem.");
+        if (testCases.length === 0) throw new Error("No test cases found.");
+        
+        const allTestCases = await Promise.all(testCases.map(async (tc) => ({
+            input: await fetchFileFromURL(tc.inputURL),
+            output: await fetchFileFromURL(tc.outputURL),
+        })));
 
-        let executablePathOrDir;
+        let userOutput;
         if (language === 'cpp') {
-            executablePathOrDir = await compileAndCacheCpp(code);
+            userOutput = await executeCpp(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
         } else if (language === 'java') {
-            executablePathOrDir = await compileAndCacheJava(code);
+            userOutput = await executeJava(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+        } else if (language === 'python') {
+            userOutput = await executePy(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
         }
 
-        let finalVerdict = 'Accepted';
+        await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: userOutput.verdict });
 
-        for (const [index, tc] of testCases.entries()) {
-            try {
-                const input = await fetchFileFromURL(tc.inputURL);
-                const output = await fetchFileFromURL(tc.outputURL);
-
-                let userOutput;
-                if (language === 'cpp') {
-                    userOutput = await runCompiledCpp(executablePathOrDir, input, problem.timeLimit);
-                } else if (language === 'java') {
-                    userOutput = await runCompiledJava(executablePathOrDir, input, problem.timeLimit);
-                } else if (language === 'python') {
-                    userOutput = await runPython(code, input, problem.timeLimit);
-                }
-
-                const checkResult = await runChecker(problem.checker, input, userOutput, output);
-                if (checkResult.verdict !== 'Accepted') {
-                    finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
-                    break;
-                }
-
-            } catch (error) {
-                finalVerdict = `${error.message} on test case #${index + 1}`;
-                break;
-            }
-        }
-
-        await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: finalVerdict });
-
-        if (finalVerdict === 'Accepted') {
-            await UserProgress.updateOne(
-                { userId, problemId },
-                { $set: { status: 'Solved' } },
-                { upsert: true }
-            );
+        if (userOutput.verdict === 'Accepted') {
+            await UserProgress.updateOne({ userId, problemId }, { $set: { status: 'Solved' } }, { upsert: true });
         } else {
-            await UserProgress.updateOne(
-                { userId, problemId },
-                { $setOnInsert: { status: 'Attempted' } },
-                { upsert: true }
-            );
+            await UserProgress.updateOne({ userId, problemId }, { $setOnInsert: { status: 'Attempted' } }, { upsert: true });
         }
-
     } catch (err) {
         let errorVerdict = err.message === "Compilation Error" ? "Compilation Error" : "Internal Server Error";
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: errorVerdict });
+    } finally {
+        await rm(sandboxDir, { recursive: true, force: true }).catch(() => {});
     }
 };
 
-
 const worker = new Worker('submissions', judge, {
-    connection: {
-        host: 'redis_queue',
-        port: 6379
-    },
+    connection: { host: 'redis_queue', port: 6379 },
     concurrency: 2
 });
 
-console.log("Judge worker started...");
+console.log("Judge worker started with concurrency of 2...");
