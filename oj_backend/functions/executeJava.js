@@ -27,7 +27,7 @@ const compile = (sourcePath, cacheDir) => {
 const execute = (cacheDir, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
         const memoryLimitKB = memoryLimitMB * 1024;
-        const command = `(ulimit -v ${memoryLimitKB}; java -cp "${cacheDir}" Main)`;
+        const command = `(ulimit -v ${memoryLimitKB}; java -Xmx${memoryLimitMB}m -cp "${cacheDir}" Main)`;
         const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
@@ -41,7 +41,7 @@ const execute = (cacheDir, input, timeLimitMs, memoryLimitMB) => {
         process.on('close', (code) => {
             clearTimeout(timeoutId);
             if (code !== 0) {
-                if (stderr.includes('Killed') || (code === 137 || code === 9)) {
+                if (stderr.includes('OutOfMemoryError') || code === 137 || stderr.includes('Killed')) {
                     reject(new Error('Memory Limit Exceeded'));
                 } else {
                     reject(new Error(`Runtime Error: ${stderr}`));

@@ -41,7 +41,7 @@ const execute = (execPath, input, timeLimitMs, memoryLimitMB) => {
         process.on('close', (code) => {
             clearTimeout(timeoutId);
             if (code !== 0) {
-                if (stderr.includes('Killed') || (code === 137 || code === 9)) {
+                if (code === 137 || stderr.includes('Killed')) {
                     reject(new Error('Memory Limit Exceeded'));
                 } else {
                     reject(new Error(`Runtime Error: ${stderr}`));
