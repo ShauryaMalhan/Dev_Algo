@@ -15,7 +15,7 @@ const execute = (sourcePath, input, timeLimitMs) => {
         const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
-            process.kill('SIGKILL');
+            if (process.pid) process.kill('SIGKILL');
             reject(new Error('Time Limit Exceeded'));
         }, timeLimitMs);
 

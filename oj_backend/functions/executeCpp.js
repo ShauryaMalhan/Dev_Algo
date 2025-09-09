@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { writeFile } from 'fs/promises';
+import { writeFile, rm, access, mkdir } from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
 import { runChecker } from '../services/checker.js';
@@ -31,7 +31,7 @@ const execute = (execPath, input, timeLimitMs) => {
         const process = spawn(`"${execPath}"`, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
-            process.kill('SIGKILL');
+            if (process.pid) process.kill('SIGKILL');
             reject(new Error('Time Limit Exceeded'));
         }, timeLimitMs);
 
@@ -47,17 +47,54 @@ const execute = (execPath, input, timeLimitMs) => {
     });
 };
 
-export const executeCpp = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
+const acquireLock = async (lockPath) => {
+    try {
+        await writeFile(lockPath, '', { flag: 'wx' });
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+const waitForLock = async (filePath) => {
+    while (true) {
+        try {
+            await access(filePath);
+            return;
+        } catch {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+};
+
+const compileAndCacheCpp = async (code) => {
     const hash = createHash('sha256').update(code).digest('hex');
     const cachedExecPath = path.join(cachePath, hash);
-    const sourcePath = path.join(sandboxDir, 'main.cpp');
-    
+    const lockPath = `${cachedExecPath}.lock`;
+
     try {
-        await fs.promises.access(cachedExecPath);
+        await access(cachedExecPath);
+        return cachedExecPath;
     } catch {
-        await writeFile(sourcePath, code);
-        await compile(sourcePath, cachedExecPath);
+        if (await acquireLock(lockPath)) {
+            const tempSourcePath = path.join(cachePath, `${hash}.cpp`);
+            try {
+                await writeFile(tempSourcePath, code);
+                await compile(tempSourcePath, cachedExecPath);
+                return cachedExecPath;
+            } finally {
+                await rm(tempSourcePath, { force: true });
+                await rm(lockPath, { force: true });
+            }
+        } else {
+            await waitForLock(cachedExecPath);
+            return cachedExecPath;
+        }
     }
+};
+
+export const executeCpp = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
+    const execPath = await compileAndCacheCpp(code);
 
     let finalVerdict = 'Accepted';
     let testCaseCounter = 1;
@@ -66,7 +103,7 @@ export const executeCpp = async (sandboxDir, code, testCases, timeLimit, checker
             const input = await fetchFileFromURL(tc.inputURL);
             const output = await fetchFileFromURL(tc.outputURL);
 
-            const userOutput = await execute(cachedExecPath, input, timeLimit * 1000);
+            const userOutput = await execute(execPath, input, timeLimit * 1000);
             const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
                 finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;

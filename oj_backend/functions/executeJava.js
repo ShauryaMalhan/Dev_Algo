@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { writeFile, rm } from 'fs/promises';
+import { writeFile, rm, access, mkdir } from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
 import { runChecker } from '../services/checker.js';
@@ -32,7 +32,7 @@ const execute = (cacheDir, input, timeLimitMs) => {
         const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
         const timeoutId = setTimeout(() => {
-            process.kill('SIGKILL');
+            if (process.pid) process.kill('SIGKILL');
             reject(new Error('Time Limit Exceeded'));
         }, timeLimitMs);
 
@@ -48,23 +48,58 @@ const execute = (cacheDir, input, timeLimitMs) => {
     });
 };
 
-export const executeJava = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
-    const hash = createHash('sha256').update(code).digest('hex');
-    const cacheDir = path.join(cachePath, hash);
-    const sourcePath = path.join(cacheDir, 'Main.java');
-
+const acquireLock = async (lockPath) => {
     try {
-        await fs.promises.access(path.join(cacheDir, 'Main.class'));
-    } catch {
-        await fs.promises.mkdir(cacheDir, { recursive: true });
-        await writeFile(sourcePath, code);
+        await writeFile(lockPath, '', { flag: 'wx' });
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+const waitForLock = async (filePath) => {
+    while (true) {
         try {
-            await compile(sourcePath, cacheDir);
-        } catch (error) {
-            await rm(cacheDir, { recursive: true, force: true }).catch(() => {});
-            throw error;
+            await access(filePath);
+            return;
+        } catch {
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
+};
+
+const compileAndCacheJava = async (code) => {
+    const hash = createHash('sha256').update(code).digest('hex');
+    const cacheDir = path.join(cachePath, hash);
+    const lockPath = `${cacheDir}.lock`;
+    const classFilePath = path.join(cacheDir, 'Main.class');
+
+    try {
+        await access(classFilePath);
+        return cacheDir;
+    } catch {
+        if (await acquireLock(lockPath)) {
+            const sourcePath = path.join(cacheDir, 'Main.java');
+            try {
+                await mkdir(cacheDir, { recursive: true });
+                await writeFile(sourcePath, code);
+                await compile(sourcePath, cacheDir);
+                return cacheDir;
+            } catch (error) {
+                await rm(cacheDir, { recursive: true, force: true });
+                throw error;
+            } finally {
+                await rm(lockPath, { force: true });
+            }
+        } else {
+            await waitForLock(classFilePath);
+            return cacheDir;
+        }
+    }
+};
+
+export const executeJava = async (sandboxDir, code, testCases, timeLimit, checkerName) => {
+    const cacheDir = await compileAndCacheJava(code);
 
     let finalVerdict = 'Accepted';
     let testCaseCounter = 1;
