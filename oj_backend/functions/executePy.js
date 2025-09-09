@@ -14,24 +14,50 @@ const fetchFileFromURL = async (url) => {
     return response.data;
 };
 
+const getMemoryUsage = (pid) => {
+    try {
+        const status = fs.readFileSync(`/proc/${pid}/status`, 'utf8');
+        const match = status.match(/VmRSS:\s+(\d+)\s+kB/);
+        return match ? parseInt(match[1], 10) : 0;
+    } catch {
+        return 0;
+    }
+};
+
 const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
-        const memoryLimitKB = memoryLimitMB * 1024;
-        const command = `(ulimit -v ${memoryLimitKB}; python "${sourcePath}")`;
+        const command = `python "${sourcePath}"`;
         const process = spawn(command, [], { shell: true, detached: true });
         let stdout = '', stderr = '';
+        
+        const memoryLimitKB = memoryLimitMB * 1024;
+        const memoryInterval = setInterval(() => {
+            if (process.pid) {
+                const memUsage = getMemoryUsage(process.pid);
+                if (memUsage > memoryLimitKB) {
+                    clearInterval(memoryInterval);
+                    clearTimeout(timeoutId);
+                    process.kill('SIGKILL');
+                    reject(new Error('Memory Limit Exceeded'));
+                }
+            }
+        }, 50);
+
         const timeoutId = setTimeout(() => {
+            clearInterval(memoryInterval);
             if (process.pid) process.kill('SIGKILL');
             reject(new Error('Time Limit Exceeded'));
         }, timeLimitMs);
+        
         process.stdin.write(input);
         process.stdin.end();
         process.stdout.on('data', (data) => stdout += data);
         process.stderr.on('data', (data) => stderr += data);
         process.on('close', (code) => {
             clearTimeout(timeoutId);
+            clearInterval(memoryInterval);
             if (code !== 0) {
-                if (stderr.includes('MemoryError') || code === 137 || stderr.includes('Killed')) {
+                if (stderr.includes('MemoryError')) {
                     reject(new Error('Memory Limit Exceeded'));
                 } else {
                     reject(new Error(`Runtime Error: ${stderr}`));
