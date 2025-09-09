@@ -1,7 +1,13 @@
 import { spawn } from 'child_process';
 import { writeFile } from 'fs/promises';
 import path from 'path';
+import axios from 'axios';
 import { runChecker } from '../services/checker.js';
+
+const fetchFileFromURL = async (url) => {
+    const response = await axios.get(url, { responseType: 'text' });
+    return response.data;
+};
 
 const execute = (sourcePath, input, timeLimitMs) => {
     return new Promise((resolve, reject) => {
@@ -31,10 +37,13 @@ export const executePy = async (sandboxDir, code, testCases, timeLimit, checkerN
 
     let finalVerdict = 'Accepted';
     let testCaseCounter = 1;
-    for (const testcase of testCases) {
+    for (const tc of testCases) {
         try {
-            const userOutput = await execute(sourcePath, testcase.input, timeLimit * 1000);
-            const checkResult = await runChecker(checkerName, testcase.input, userOutput, testcase.output);
+            const input = await fetchFileFromURL(tc.inputURL);
+            const output = await fetchFileFromURL(tc.outputURL);
+
+            const userOutput = await execute(sourcePath, input, timeLimit * 1000);
+            const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
                 finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
                 break;

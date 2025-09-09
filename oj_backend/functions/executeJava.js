@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import { writeFile, rm } from 'fs/promises';
 import path from 'path';
+import axios from 'axios';
 import { runChecker } from '../services/checker.js';
 import { createHash } from 'crypto';
 import fs from 'fs';
@@ -9,6 +10,11 @@ const cachePath = path.join(process.cwd(), '.cache/java');
 if (!fs.existsSync(cachePath)) {
     fs.mkdirSync(cachePath, { recursive: true });
 }
+
+const fetchFileFromURL = async (url) => {
+    const response = await axios.get(url, { responseType: 'text' });
+    return response.data;
+};
 
 const compile = (sourcePath, cacheDir) => {
     return new Promise((resolve, reject) => {
@@ -62,10 +68,13 @@ export const executeJava = async (sandboxDir, code, testCases, timeLimit, checke
 
     let finalVerdict = 'Accepted';
     let testCaseCounter = 1;
-    for (const testcase of testCases) {
+    for (const tc of testCases) {
         try {
-            const userOutput = await execute(cacheDir, testcase.input, timeLimit * 1000);
-            const checkResult = await runChecker(checkerName, testcase.input, userOutput, testcase.output);
+            const input = await fetchFileFromURL(tc.inputURL);
+            const output = await fetchFileFromURL(tc.outputURL);
+            
+            const userOutput = await execute(cacheDir, input, timeLimit * 1000);
+            const checkResult = await runChecker(checkerName, input, userOutput, output);
             if (checkResult.verdict !== 'Accepted') {
                 finalVerdict = `${checkResult.verdict} on test case #${testCaseCounter}`;
                 break;

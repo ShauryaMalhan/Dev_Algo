@@ -31,18 +31,13 @@ const judge = async (job) => {
         const testCases = await TestCase.find({ problemId: problem._id }).lean();
         if (testCases.length === 0) throw new Error("No test cases found for this problem.");
         
-        const allTestCases = await Promise.all(testCases.map(async (tc) => ({
-            input: await fetchFileFromURL(tc.inputURL),
-            output: await fetchFileFromURL(tc.outputURL),
-        })));
-
         let result;
         if (language === 'cpp') {
-            result = await executeCpp(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executeCpp(sandboxDir, code, testCases, problem.timeLimit, problem.checker);
         } else if (language === 'java') {
-            result = await executeJava(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executeJava(sandboxDir, code, testCases, problem.timeLimit, problem.checker);
         } else if (language === 'python') {
-            result = await executePy(sandboxDir, code, allTestCases, problem.timeLimit, problem.checker);
+            result = await executePy(sandboxDir, code, testCases, problem.timeLimit, problem.checker);
         }
 
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: result.verdict });
@@ -64,3 +59,5 @@ const worker = new Worker('submissions', judge, {
     connection: { host: 'redis_queue', port: 6379 },
     concurrency: 2
 });
+
+console.log("Judge worker started with concurrency of 2...");
