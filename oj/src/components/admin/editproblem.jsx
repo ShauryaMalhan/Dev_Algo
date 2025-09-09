@@ -54,7 +54,6 @@ const EditProblem = () => {
         e.preventDefault();
         setError('');
         try {
-            // --- Construct the dynamic URL for updating ---
             await axios.put(`${EDIT_PROBLEMS}/${id}`, problem, {
                 headers: { 'auth-token': localStorage.getItem('adminToken') }
             });
@@ -79,7 +78,7 @@ const EditProblem = () => {
         }
     };
 
-    if (!problem) return <div>Loading problem...</div>;
+    if (!problem) return <div className="loading-container">Loading problem...</div>;
 
     return (
         <div className="create-problem-container">
@@ -106,6 +105,10 @@ const EditProblem = () => {
                         <input type="number" id="timeLimit" name="timeLimit" value={problem.timeLimit} onChange={handleInputChange} required />
                     </div>
                     <div className="form-group">
+                        <label htmlFor="memoryLimit">Memory Limit (MB)</label>
+                        <input type="number" id="memoryLimit" name="memoryLimit" value={problem.memoryLimit || 256} onChange={handleInputChange} required />
+                    </div>
+                    <div className="form-group full-width">
                         <label htmlFor="checker">Checker</label>
                         <select id="checker" name="checker" value={problem.checker} onChange={handleInputChange}>
                             {checkerOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -130,7 +133,7 @@ const EditProblem = () => {
                     <ReactQuill theme="snow" value={problem.notes} onChange={(val) => handleQuillChange('notes', val)} />
                 </div>
 
-                {error && <p className="error-message">{error}</p>}
+                {error && <p className="error-message-form">{error}</p>}
                 <button type="submit" className="submit-btn">Update Problem</button>
             </form>
         </div>
