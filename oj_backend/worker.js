@@ -38,7 +38,7 @@ const judge = async (job) => {
             await UserProgress.updateOne({ userId, problemId }, { $setOnInsert: { status: 'Attempted' } }, { upsert: true });
         }
     } catch (err) {
-        let errorVerdict = err.message === "Compilation Error" ? "Compilation Error" : "Internal Server Error";
+        let errorVerdict = "Compilation Error";
         await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: errorVerdict });
     }
 };
