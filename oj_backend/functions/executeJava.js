@@ -17,7 +17,7 @@ const fetchFileFromURL = async (url) => {
 const compile = (sourcePath, cacheDir) => {
     return new Promise((resolve, reject) => {
         const command = `javac -d "${cacheDir}" "${sourcePath}"`;
-        const process = spawn(command, [], { shell: true });
+        const process = spawn(command, { shell: true });
         let error = '';
         process.stderr.on('data', (data) => error += data);
         process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Compilation Error: ${error}`)));
@@ -37,7 +37,7 @@ const getMemoryUsage = (pid) => {
 const execute = (cacheDir, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
         const command = `java -Xmx${memoryLimitMB}m -cp "${cacheDir}" Main`;
-        const process = spawn(command, [], { shell: true, detached: true });
+        const process = spawn(command, { shell: true, detached: true });
         let stdout = '', stderr = '';
         
         const memoryLimitKB = memoryLimitMB * 1024;
@@ -99,23 +99,21 @@ const compileAndCacheJava = async (code) => {
     }
 };
 
-export const executeJava = async (code, testCases, timeLimit, memoryLimit, checkerName) => {
-    const cacheDir = await compileAndCacheJava(code);
-    let finalVerdict = 'Accepted';
-    for (const [index, tc] of testCases.entries()) {
-        try {
-            const input = await fetchFileFromURL(tc.inputURL);
-            const output = await fetchFileFromURL(tc.outputURL);
-            const userOutput = await execute(cacheDir, input, timeLimit * 1000, memoryLimit);
-            const checkResult = await runChecker(checkerName, input, userOutput, output);
-            if (checkResult.verdict !== 'Accepted') {
-                finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
-                break;
-            }
-        } catch (error) {
-            finalVerdict = `${error.message} on test case #${index + 1}`;
-            break;
-        }
+export const executeJava = async (code, inputURL, outputURL, timeLimit, memoryLimit, checkerName) => {
+    let cacheDir;
+    try {
+        cacheDir = await compileAndCacheJava(code);
+    } catch (error) {
+        return { verdict: error.message };
     }
-    return { verdict: finalVerdict };
+
+    try {
+        const input = await fetchFileFromURL(inputURL);
+        const output = await fetchFileFromURL(outputURL);
+        const userOutput = await execute(cacheDir, input, timeLimit * 1000, memoryLimit);
+        const checkResult = await runChecker(checkerName, input, userOutput, output);
+        return { verdict: checkResult.verdict };
+    } catch (error) {
+        return { verdict: error.message };
+    }
 };

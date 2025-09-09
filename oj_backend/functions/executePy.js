@@ -26,8 +26,8 @@ const getMemoryUsage = (pid) => {
 
 const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
     return new Promise((resolve, reject) => {
-        const command = `python "${sourcePath}"`;
-        const process = spawn(command, [], { shell: true, detached: true });
+        const command = `python3 "${sourcePath}"`;
+        const process = spawn(command, { shell: true, detached: true });
         let stdout = '', stderr = '';
         
         const memoryLimitKB = memoryLimitMB * 1024;
@@ -69,27 +69,18 @@ const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
     });
 };
 
-export const executePy = async (code, testCases, timeLimit, memoryLimit, checkerName) => {
+export const executePy = async (code, inputURL, outputURL, timeLimit, memoryLimit, checkerName) => {
     const hash = createHash('sha256').update(code).digest('hex');
     const sourcePath = path.join(cachePath, `${hash}.py`);
     await writeFile(sourcePath, code);
 
-    let finalVerdict = 'Accepted';
-    let testCaseCounter = 1;
-    for (const [index, tc] of testCases.entries()) {
-        try {
-            const input = await fetchFileFromURL(tc.inputURL);
-            const output = await fetchFileFromURL(tc.outputURL);
-            const userOutput = await execute(sourcePath, input, timeLimit * 1000, memoryLimit);
-            const checkResult = await runChecker(checkerName, input, userOutput, output);
-            if (checkResult.verdict !== 'Accepted') {
-                finalVerdict = `${checkResult.verdict} on test case #${index + 1}`;
-                break;
-            }
-        } catch (error) {
-            finalVerdict = `${error.message} on test case #${index + 1}`;
-            break;
-        }
+    try {
+        const input = await fetchFileFromURL(inputURL);
+        const output = await fetchFileFromURL(outputURL);
+        const userOutput = await execute(sourcePath, input, timeLimit * 1000, memoryLimit);
+        const checkResult = await runChecker(checkerName, input, userOutput, output);
+        return { verdict: checkResult.verdict };
+    } catch (error) {
+        return { verdict: error.message };
     }
-    return { verdict: finalVerdict };
 };
