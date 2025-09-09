@@ -64,5 +64,3 @@ const worker = new Worker('submissions', judge, {
     connection: { host: 'redis_queue', port: 6379 },
     concurrency: 2
 });
-
-console.log("Judge worker started with concurrency of 2...");

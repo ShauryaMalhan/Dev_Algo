@@ -3,7 +3,6 @@ import DBConnection from "./database/db.js";
 import authRoutes from './routes/auth.js';
 import cors from 'cors';
 import problemRoutes from './routes/problemsList.js'
-import authCompiler from './routes/compiler.js';
 import History from './routes/history.js';
 import Admin from './routes/admin.js';
 import User from './routes/user.js';
@@ -23,7 +22,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/problems', problemRoutes);
-app.use('/api/cppCompiler', authCompiler);
 app.use('/api/submissions', History);
 app.use('/api/admin', Admin);
 app.use('/api/user', User);
