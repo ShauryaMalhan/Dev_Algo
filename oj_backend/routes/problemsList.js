@@ -32,6 +32,7 @@ router.post('/newProblem', fetchAdmin, async (req, res) => {
             owner: admin.username,
             difficulty: req.body.difficulty,
             timeLimit: req.body.timeLimit,
+            memoryLimit: req.body.memoryLimit,
             legend: req.body.legend,
             input: req.body.input,
             output: req.body.output,
