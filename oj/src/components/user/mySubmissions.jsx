@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import authContext from "../../contexts/auth/authContext";
 import axios from "axios";
 import "../stylesheets/submissions.css";
-import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaExclamationTriangle, FaSync, FaArrowLeft, FaArrowRight, FaCog } from 'react-icons/fa';
 
 const MySubmissions = () => {
     const [submissions, setSubmissions] = useState([]);
@@ -28,7 +28,7 @@ const MySubmissions = () => {
                     setSubmissions(response.data.submissions);
                     setTotalPages(response.data.totalPages);
 
-                    const isPending = response.data.submissions.some(s => s.verdict === 'In Queue' || s.verdict === 'Judging');
+                    const isPending = response.data.submissions.some(s => s.verdict === 'In Queue' || s.verdict.startsWith('Judging') || s.verdict.startsWith('Running'));
                     if (!isPending && intervalId) {
                         clearInterval(intervalId);
                     }
@@ -41,7 +41,7 @@ const MySubmissions = () => {
             };
 
             fetchMyHistory();
-            intervalId = setInterval(fetchMyHistory, 3000);
+            intervalId = setInterval(fetchMyHistory, 4000); // Changed to 4 seconds
         } else {
             setLoading(false);
         }
@@ -57,6 +57,9 @@ const MySubmissions = () => {
     };
 
     const getVerdictIcon = (verdict) => {
+        if (verdict && verdict.startsWith('Running on Testcase')) {
+            return <FaCog className="verdict-icon pending spin" />;
+        }
         switch (verdict) {
             case 'Accepted':
                 return <FaCheckCircle className="verdict-icon accepted" />;
@@ -75,6 +78,9 @@ const MySubmissions = () => {
     
     const getVerdictClass = (verdict) => {
         if (!verdict) return 'other';
+        if (verdict.startsWith('Running on Testcase')) {
+            return 'judging';
+        }
         return verdict.toLowerCase().replace(/\s+/g, '-');
     };
 
