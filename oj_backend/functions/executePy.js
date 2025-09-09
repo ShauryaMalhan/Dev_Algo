@@ -60,7 +60,7 @@ const execute = (sourcePath, input, timeLimitMs, memoryLimitMB) => {
                 if (stderr.includes('MemoryError')) {
                     reject(new Error('Memory Limit Exceeded'));
                 } else {
-                    reject(new Error(`Runtime Error: ${stderr}`));
+                    reject(new Error(`Runtime Error`));
                 }
             } else {
                 resolve(stdout);
