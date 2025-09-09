@@ -33,6 +33,8 @@ const judge = async (job) => {
 
         let finalVerdict = 'Accepted';
         for (const [index, tc] of testCases.entries()) {
+            await SubmissionHistory.findByIdAndUpdate(submissionId, { verdict: `Running on Testcase ${index + 1}` });
+
             let result;
             if (language === 'cpp') {
                 result = await executeCpp(code, tc.inputURL, tc.outputURL, problem.timeLimit, problem.memoryLimit, problem.checker);
