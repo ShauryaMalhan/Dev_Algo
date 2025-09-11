@@ -1,8 +1,9 @@
 .auth-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding: 3rem 1.5rem;
+    min-height: calc(100vh - 150px);
 }
 
 .auth-card {
@@ -10,9 +11,9 @@
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
-    padding: 2.5rem;
+    padding: 2.5rem 3rem;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
 }
 
 .auth-header {
@@ -21,47 +22,52 @@
 }
 
 .auth-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
     color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .auth-header p {
     color: var(--text-secondary);
-    font-size: 1rem;
+    font-size: 1.05rem;
 }
 
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.25rem;
 }
 
 .form-name-row {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 1rem;
 }
 
 .input-group {
     position: relative;
-    width: 100%;
 }
 
 .input-icon {
     position: absolute;
     top: 50%;
-    left: 15px;
+    left: 16px;
     transform: translateY(-50%);
     color: var(--text-muted);
 }
 
 .form-control {
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    padding: 0.8rem 1rem 0.8rem 3rem;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-md);
     font-size: 1rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -70,18 +76,21 @@
 }
 
 .form-control.is-invalid {
-    border-color: var(--danger-color);
+    border-color: var(--danger-color) !important;
 }
 .form-control.is-invalid:focus {
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
 }
-.invalid-feedback {
-    display: block;
-    color: var(--danger-color);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+
+.error-message-container {
+    min-height: 1.25rem;
+    padding-top: 0.25rem;
 }
 
+.error-text {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+}
 
 .password-toggle-btn {
     position: absolute;
@@ -122,13 +131,14 @@
     color: var(--primary-color);
 }
 
-.error-message {
+.api-error-message {
     color: var(--danger-color);
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     padding: 1rem;
     border-radius: var(--border-radius-md);
     text-align: center;
+    margin-bottom: 1rem;
 }
 
 .success-message {
@@ -142,6 +152,6 @@
     }
     .form-name-row {
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 0;
     }
 }

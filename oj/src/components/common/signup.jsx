@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
@@ -57,6 +57,7 @@ const Signup = () => {
         const newErrors = {};
         const nameRegex = /^[a-zA-Z]+$/;
         const noSpaceRegex = /^\S*$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!formData.firstName) newErrors.firstName = "First name is required.";
         else if (formData.firstName.length > 10) newErrors.firstName = "Max 10 characters.";
@@ -66,6 +67,9 @@ const Signup = () => {
         else if (formData.lastName.length > 10) newErrors.lastName = "Max 10 characters.";
         else if (!nameRegex.test(formData.lastName)) newErrors.lastName = "Only letters are allowed.";
         
+        if (!formData.email) newErrors.email = "Email is required.";
+        else if (!emailRegex.test(formData.email)) newErrors.email = "Please enter a valid email.";
+
         if (!formData.username) newErrors.username = "Username is required.";
         else if (formData.username.length < 5 || formData.username.length > 10) newErrors.username = "Must be 5-10 characters.";
         else if (!noSpaceRegex.test(formData.username)) newErrors.username = "Spaces are not allowed.";
@@ -105,8 +109,11 @@ const Signup = () => {
         setApiError('');
         
         const registrationData = {
-            ...formData,
-            name: `${formData.firstName} ${formData.lastName}`.trim()
+            name: `${formData.firstName} ${formData.lastName}`.trim(),
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            otp: formData.otp,
         };
 
         try {
@@ -136,33 +143,54 @@ const Signup = () => {
                     </div>
                     <Form className="auth-form" onSubmit={handleSendOtp} noValidate>
                         <div className="form-name-row">
-                            <div className="input-group">
-                                <FaUser className="input-icon" />
-                                <Form.Control type="text" name="firstName" placeholder="First Name" onChange={handleInputChange} isInvalid={!!errors.firstName} maxLength="10" required />
-                                <Form.Control.Feedback type="invalid">{errors.firstName}</Form.Control.Feedback>
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <FaUser className="input-icon" />
+                                    <Form.Control type="text" name="firstName" placeholder="First Name" onChange={handleInputChange} isInvalid={!!errors.firstName} maxLength="10" required />
+                                </div>
+                                <div className="error-message-container">
+                                    {errors.firstName && <span className="error-text">{errors.firstName}</span>}
+                                </div>
                             </div>
-                            <div className="input-group">
-                                <FaUser className="input-icon" />
-                                <Form.Control type="text" name="lastName" placeholder="Last Name" onChange={handleInputChange} isInvalid={!!errors.lastName} maxLength="10" required />
-                                <Form.Control.Feedback type="invalid">{errors.lastName}</Form.Control.Feedback>
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <FaUser className="input-icon" />
+                                    <Form.Control type="text" name="lastName" placeholder="Last Name" onChange={handleInputChange} isInvalid={!!errors.lastName} maxLength="10" required />
+                                </div>
+                                <div className="error-message-container">
+                                    {errors.lastName && <span className="error-text">{errors.lastName}</span>}
+                                </div>
                             </div>
                         </div>
-                        <div className="input-group">
-                            <FaUserAstronaut className="input-icon" />
-                            <Form.Control type="text" name="username" placeholder="Username" onChange={handleInputChange} isInvalid={!!errors.username} minLength="5" maxLength="10" required />
-                             <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
+                        <div className="form-group">
+                            <div className="input-group">
+                                <FaUserAstronaut className="input-icon" />
+                                <Form.Control type="text" name="username" placeholder="Username" onChange={handleInputChange} isInvalid={!!errors.username} minLength="5" maxLength="10" required />
+                            </div>
+                            <div className="error-message-container">
+                                {errors.username && <span className="error-text">{errors.username}</span>}
+                            </div>
                         </div>
-                        <div className="input-group">
-                            <FaEnvelope className="input-icon" />
-                            <Form.Control type="email" name="email" placeholder="Email Address" onChange={handleInputChange} required />
+                        <div className="form-group">
+                            <div className="input-group">
+                                <FaEnvelope className="input-icon" />
+                                <Form.Control type="email" name="email" placeholder="Email Address" onChange={handleInputChange} isInvalid={!!errors.email} required />
+                            </div>
+                             <div className="error-message-container">
+                                {errors.email && <span className="error-text">{errors.email}</span>}
+                            </div>
                         </div>
-                        <div className="input-group">
-                            <FaLock className="input-icon" />
-                            <Form.Control type={showPassword ? "text" : "password"} name="password" placeholder="Password" onChange={handleInputChange} isInvalid={!!errors.password} minLength="6" maxLength="13" required />
-                            <button type="button" className="password-toggle-btn" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
-                            <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
+                        <div className="form-group">
+                            <div className="input-group">
+                                <FaLock className="input-icon" />
+                                <Form.Control type={showPassword ? "text" : "password"} name="password" placeholder="Password" onChange={handleInputChange} isInvalid={!!errors.password} minLength="6" maxLength="13" required />
+                                <button type="button" className="password-toggle-btn" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                            </div>
+                            <div className="error-message-container">
+                                {errors.password && <span className="error-text">{errors.password}</span>}
+                            </div>
                         </div>
-                        {apiError && <p className="error-message">{apiError}</p>}
+                        {apiError && <p className="api-error-message">{apiError}</p>}
                         <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Sending...' : 'Send Verification Code'}</button>
                     </Form>
                     <div className="auth-footer">Already have an account? <Link to="/login">Log In</Link></div>
@@ -181,7 +209,7 @@ const Signup = () => {
                             <FaKey className="input-icon" />
                             <Form.Control type="text" name="otp" placeholder="Enter OTP" onChange={handleInputChange} required minLength="6" maxLength="6" />
                         </div>
-                        {apiError && <p className="error-message">{apiError}</p>}
+                        {apiError && <p className="api-error-message">{apiError}</p>}
                         {successMessage && <p className="success-message">{successMessage}</p>}
                         <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Verifying...' : 'Create Account'}</button>
                     </Form>
