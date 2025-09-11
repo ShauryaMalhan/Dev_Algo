@@ -1,58 +1,42 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Form from 'react-bootstrap/Form';
-import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
-import '../stylesheets/signup.css';
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Form from "react-bootstrap/Form";
+import { FaUser, FaUserAstronaut, FaEnvelope, FaLock, FaKey, FaEye, FaEyeSlash } from "react-icons/fa";
+import "../stylesheets/signup.css";
 
 const Signup = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         username: '',
         email: '',
         password: '',
         otp: '',
     });
+    const [errors, setErrors] = useState({});
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [apiError, setApiError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [timer, setTimer] = useState(300);
     const [resendCooldown, setResendCooldown] = useState(0);
-
     const [showPassword, setShowPassword] = useState(false);
-    const passwordInputRef = useRef(null);
-
-    const SEND_OTP_PATH = import.meta.env.VITE_SEND_OTP_PATH; 
+    
+    const SEND_OTP_PATH = import.meta.env.VITE_SEND_OTP_PATH;  
     const REGISTER_PATH = import.meta.env.VITE_REGISTER_PATH;
 
     useEffect(() => {
         let interval;
         if (step === 2 && timer > 0) {
-            interval = setInterval(() => {
-                setTimer(prevTimer => prevTimer - 1);
-            }, 1000);
+            interval = setInterval(() => setTimer(prev => prev - 1), 1000);
         } else if (timer === 0 && step === 2) {
-            setError('OTP expired. Please try registering again.');
-            setTimeout(() => {
-                setStep(1);
-                setError('');
-                setTimer(300);
-            }, 3000);
+            setApiError('OTP expired. Please try registering again.');
+            setTimeout(() => { setStep(1); setApiError(''); setTimer(300); }, 3000);
         }
         return () => clearInterval(interval);
     }, [step, timer]);
-
-    useEffect(() => {
-        if (successMessage) {
-            const messageTimer = setTimeout(() => {
-                setSuccessMessage('');
-            }, 5000);
-
-            return () => clearTimeout(messageTimer);
-        }
-    }, [successMessage]);
 
     useEffect(() => {
         let interval;
@@ -62,67 +46,80 @@ const Signup = () => {
         return () => clearInterval(interval);
     }, [resendCooldown]);
 
-     const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-        passwordInputRef.current.focus();
-    };
-
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (errors[e.target.name]) {
+            setErrors({ ...errors, [e.target.name]: null });
+        }
+    };
+    
+    const validateStep1 = () => {
+        const newErrors = {};
+        const nameRegex = /^[a-zA-Z]+$/;
+        const noSpaceRegex = /^\S*$/;
+
+        if (!formData.firstName) newErrors.firstName = "First name is required.";
+        else if (formData.firstName.length > 10) newErrors.firstName = "Max 10 characters.";
+        else if (!nameRegex.test(formData.firstName)) newErrors.firstName = "Only letters are allowed.";
+        
+        if (!formData.lastName) newErrors.lastName = "Last name is required.";
+        else if (formData.lastName.length > 10) newErrors.lastName = "Max 10 characters.";
+        else if (!nameRegex.test(formData.lastName)) newErrors.lastName = "Only letters are allowed.";
+        
+        if (!formData.username) newErrors.username = "Username is required.";
+        else if (formData.username.length < 5 || formData.username.length > 10) newErrors.username = "Must be 5-10 characters.";
+        else if (!noSpaceRegex.test(formData.username)) newErrors.username = "Spaces are not allowed.";
+        
+        if (!formData.password) newErrors.password = "Password is required.";
+        else if (formData.password.length < 6 || formData.password.length > 13) newErrors.password = "Must be 6-13 characters.";
+        else if (!noSpaceRegex.test(formData.password)) newErrors.password = "Spaces are not allowed.";
+        
+        return newErrors;
     };
 
     const handleSendOtp = async (e) => {
         e.preventDefault();
+        const validationErrors = validateStep1();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        setErrors({});
         setLoading(true);
-        setError('');
-
+        setApiError('');
+        
         try {
             await axios.post(SEND_OTP_PATH, { email: formData.email });
             setStep(2);
             setTimer(300);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to send OTP. The email might already be registered.');
+            setApiError(err.response?.data?.message || 'Failed to send OTP.');
         } finally {
             setLoading(false);
         }
     };
     
-    const handleResendOtp = async () => {
-        if (resendCooldown > 0) return;
-        setLoading(true);
-        setError('');
-        setSuccessMessage('');
-        try {
-            await axios.post(SEND_OTP_PATH, { email: formData.email });
-            setSuccessMessage('A new OTP has been sent.');
-            setTimer(300);
-            setResendCooldown(60);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to resend OTP.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleRegister = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
+        setApiError('');
+        
+        const registrationData = {
+            ...formData,
+            name: `${formData.firstName} ${formData.lastName}`.trim()
+        };
 
         try {
-            await axios.post(REGISTER_PATH, formData);
+            await axios.post(REGISTER_PATH, registrationData);
             setSuccessMessage('Registration successful! Redirecting to login...');
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000);
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed. Please check the OTP.');
-            console.error(err);
+            setApiError(err.response?.data?.message || 'Registration failed.');
         } finally {
             setLoading(false);
         }
     };
-
+    
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -132,19 +129,28 @@ const Signup = () => {
     return (
         <div className="auth-container">
             {step === 1 && (
-                <div className="signup-card">
-                    <div className="signup-header">
+                <div className="auth-card">
+                    <div className="auth-header">
                         <h1>Create Your Account</h1>
                         <p>Join the community and start your coding journey</p>
                     </div>
-                    <Form className="auth-form" onSubmit={handleSendOtp}>
-                        <div className="input-group">
-                            <FaUser className="input-icon" />
-                            <Form.Control type="text" name="name" placeholder="Full Name" onChange={handleInputChange} required />
+                    <Form className="auth-form" onSubmit={handleSendOtp} noValidate>
+                        <div className="form-name-row">
+                            <div className="input-group">
+                                <FaUser className="input-icon" />
+                                <Form.Control type="text" name="firstName" placeholder="First Name" onChange={handleInputChange} isInvalid={!!errors.firstName} maxLength="10" required />
+                                <Form.Control.Feedback type="invalid">{errors.firstName}</Form.Control.Feedback>
+                            </div>
+                            <div className="input-group">
+                                <FaUser className="input-icon" />
+                                <Form.Control type="text" name="lastName" placeholder="Last Name" onChange={handleInputChange} isInvalid={!!errors.lastName} maxLength="10" required />
+                                <Form.Control.Feedback type="invalid">{errors.lastName}</Form.Control.Feedback>
+                            </div>
                         </div>
                         <div className="input-group">
                             <FaUserAstronaut className="input-icon" />
-                            <Form.Control type="text" name="username" placeholder="Username / Handle" onChange={handleInputChange} required />
+                            <Form.Control type="text" name="username" placeholder="Username" onChange={handleInputChange} isInvalid={!!errors.username} minLength="5" maxLength="10" required />
+                             <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
                         </div>
                         <div className="input-group">
                             <FaEnvelope className="input-icon" />
@@ -152,32 +158,20 @@ const Signup = () => {
                         </div>
                         <div className="input-group">
                             <FaLock className="input-icon" />
-                            <Form.Control
-                                ref={passwordInputRef}
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                placeholder="Password"
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <button type="button" className="password-toggle-btn" onClick={togglePasswordVisibility} >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </button>
+                            <Form.Control type={showPassword ? "text" : "password"} name="password" placeholder="Password" onChange={handleInputChange} isInvalid={!!errors.password} minLength="6" maxLength="13" required />
+                            <button type="button" className="password-toggle-btn" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                            <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
                         </div>
-                        {error && <p className="error-message">{error}</p>}
-                        <button type="submit" className="auth-button" disabled={loading}>
-                            {loading ? 'Sending...' : 'Send Verification Code'}
-                        </button>
+                        {apiError && <p className="error-message">{apiError}</p>}
+                        <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Sending...' : 'Send Verification Code'}</button>
                     </Form>
-                    <div className="auth-footer">
-                        Already have an account? <Link to="/login" className="auth-link">Log In</Link>
-                    </div>
+                    <div className="auth-footer">Already have an account? <Link to="/login">Log In</Link></div>
                 </div>
             )}
 
             {step === 2 && (
-                <div className="signup-card">
-                    <div className="signup-header">
+                <div className="auth-card">
+                    <div className="auth-header">
                         <h1>Verify Your Email</h1>
                         <p>A 6-digit code has been sent to {formData.email}.</p>
                         <p className="timer">Time remaining: {formatTime(timer)}</p>
@@ -187,17 +181,9 @@ const Signup = () => {
                             <FaKey className="input-icon" />
                             <Form.Control type="text" name="otp" placeholder="Enter OTP" onChange={handleInputChange} required minLength="6" maxLength="6" />
                         </div>
-                        {error && <p className="error-message">{error}</p>}
+                        {apiError && <p className="error-message">{apiError}</p>}
                         {successMessage && <p className="success-message">{successMessage}</p>}
-                        <button type="submit" className="auth-button" disabled={loading}>
-                            {loading ? 'Verifying...' : 'Create Account'}
-                        </button>
-                        <div className="resend-container">
-                            <button type="button" className="auth-link back-link" onClick={() => setStep(1)}>Back</button>
-                            <button type="button" className="auth-link resend-link" onClick={handleResendOtp} disabled={resendCooldown > 0}>
-                                {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend OTP'}
-                            </button>
-                        </div>
+                        <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Verifying...' : 'Create Account'}</button>
                     </Form>
                 </div>
             )}
@@ -206,4 +192,3 @@ const Signup = () => {
 };
 
 export default Signup;
-

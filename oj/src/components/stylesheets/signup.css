@@ -1,59 +1,51 @@
-/* Note: This file is very similar to login.css for design consistency */
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
-
 .auth-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 120px);
-    width: 100%;
-    padding: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    animation: fadeIn 1s ease-in-out;
+    align-items: flex-start;
+    padding: 3rem 1.5rem;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.signup-card {
+.auth-card {
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
     width: 100%;
     max-width: 450px;
-    padding: 2.5rem;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
-.signup-header {
+.auth-header {
     text-align: center;
     margin-bottom: 2rem;
-    color: #2a3b4c;
 }
 
-.signup-header h1 {
+.auth-header h1 {
     font-size: 2rem;
     font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
-.signup-header p {
+.auth-header p {
+    color: var(--text-secondary);
     font-size: 1rem;
 }
 
-/* --- Shared styles from login.css --- */
-.input-group, .form-control, .auth-button, .auth-footer, .auth-link {
-    /* These styles are identical to login.css to maintain consistency */
-    /* You could optionally put these shared styles in a separate `auth.css` file */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-name-row {
+    display: flex;
+    gap: 1.25rem;
 }
 
 .input-group {
     position: relative;
-    margin-bottom: 1.2rem; /* Slightly less margin for more fields */
+    width: 100%;
 }
 
 .input-icon {
@@ -61,65 +53,35 @@
     top: 50%;
     left: 15px;
     transform: translateY(-50%);
-    color: #495057;
+    color: var(--text-muted);
 }
 
 .form-control {
-    background-color: rgba(255, 255, 255, 0.5) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    border-radius: 8px !important;
-    color: #212529 !important;
-    padding: 0.9rem 0.9rem 0.9rem 2.5rem !important;
-    transition: all 0.3s ease;
-}
-
-.form-control::placeholder {
-    color: #6c757d !important;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    width: 100%;
 }
 
 .form-control:focus {
-    background-color: rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
-    border-color: #007bff !important;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
 }
 
-.auth-button {
-    width: 100%;
-    padding: 0.9rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #007bff;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+.invalid-feedback {
+    display: block;
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
-.auth-button:hover:not(:disabled) {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-}
-
-.auth-button:disabled {
-    background-color: rgba(0, 0, 0, 0.1);
-    color: rgba(0, 0, 0, 0.4);
-    cursor: not-allowed;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: #495057;
-}
-
-.auth-link {
-    color: #0056b3;
-    font-weight: 700;
-    text-decoration: none;
-}
 
 .password-toggle-btn {
     position: absolute;
@@ -128,95 +90,58 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #6c757d;
     cursor: pointer;
-    padding: 0;
-    font-size: 1.1rem;
+    color: var(--text-muted);
 }
 
-.password-toggle-btn:hover {
-    color: #212529;
+.auth-button {
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 .timer {
-    font-weight: 700;
-    color: #007bff;
-    margin-top: 0.5rem;
-}
-
-.resend-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1.5rem;
-}
-
-.back-link, .resend-link {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-}
-
-.back-link {
-    color: #fff;
-    background-color: #6c757d;
-    border: 1px solid #6c757d;
-}
-.back-link:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-    text-decoration: none;
-}
-
-.resend-link {
-    color: #0056b3;
-    background: none;
-    border: none;
-}
-.resend-link:hover {
-    text-decoration: underline;
-}
-
-.resend-link {
-    color: #fff;
-    background-color: #007bff;
-    border: 1px solid #007bff;
-}
-.resend-link:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    text-decoration: none;
-}
-
-.resend-link:disabled {
-    color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.6;
-    text-decoration: none;
-    background-color: #e9ecef;
-    border-color: #ced4da;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 .error-message {
-    color: #dc3545;
-    font-weight: 500;
+    color: var(--danger-color);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
     text-align: center;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background-color: rgba(220, 53, 69, 0.1);
-    border-radius: 6px;
 }
 
 .success-message {
-    color: #198754;
-    font-weight: 500;
+    color: var(--success-color);
     text-align: center;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background-color: rgba(25, 135, 84, 0.1);
-    border-radius: 6px;
 }
 
+@media (max-width: 576px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+    }
+    .form-name-row {
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}
