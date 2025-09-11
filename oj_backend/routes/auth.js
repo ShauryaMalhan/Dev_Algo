@@ -95,72 +95,81 @@ router.post('/reset-password/:token', [
 });
 
 router.post('/send-otp', [
-    body('email', 'Please enter a valid email').isEmail(),
+    body('email', 'Please enter a valid email.').isEmail(),
+    body('username', 'Username is required.').not().isEmpty(),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ message: errors.array()[0].msg });
     }
 
-    const { email } = req.body;
-
+    const { email, username } = req.body;
     try {
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
-            return res.status(400).json({ message: 'A user with this email already exists.' });
+            if (existingUser.email === email) {
+                return res.status(400).json({ message: 'An account with this email already exists.' });
+            }
+            if (existingUser.username === username) {
+                return res.status(400).json({ message: 'This username is already taken.' });
+            }
         }
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         await Otp.create({ email, otp });
 
-        const mailOptions = {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
-            subject: 'Your Verification Code for Picode',
-            text: `Your one-time password is: ${otp}\nThis code is valid for 5 minutes.`,
-        };
+            subject: 'Your PiCode Verification Code',
+            text: `Your verification code is: ${otp}. It will expire in 5 minutes.`,
+        });
 
-        await transporter.sendMail(mailOptions);
-
-        res.status(200).json({ message: 'OTP sent to your email successfully.' });
-
+        res.status(200).json({ message: 'OTP sent successfully.' });
     } catch (error) {
-        console.error("Error sending OTP:", error);
-        res.status(500).json({ message: 'Failed to send OTP.' });
+        console.error("Error in /send-otp:", error);
+        res.status(500).send("Internal Server Error");
     }
 });
 
 router.post('/register', [
-    body('name', 'Enter a Valid Name').isLength({min: 5}),
-    body('username', 'Enter a Valid Username').isLength({ min: 3 }),
-    body('email', 'Enter a Valid Email').isEmail(),
-    body('password', 'Password must be atleast 5 characters').isLength({min: 5}),
-    body('otp', 'OTP must be a 6-digit number').isLength({ min: 6, max: 6 }),
+    body('name', 'Name must be between 2 and 20 characters.').isLength({ min: 2, max: 21 }),
+    body('username', 'Username must be between 5 and 10 characters and contain no spaces.').isLength({ min: 5, max: 10 }).not().contains(' '),
+    body('email', 'Please enter a valid email.').isEmail(),
+    body('password', 'Password must be between 6 and 13 characters and contain no spaces.').isLength({ min: 6, max: 13 }).not().contains(' '),
+    body('otp', 'OTP must be a 6-digit number.').isLength({ min: 6, max: 6 }).isNumeric(),
 ], async (req, res) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
     }
 
     const { name, username, email, password, otp } = req.body;
     
-    try{
-
-        const otpRecord = await Otp.findOne({ email, otp }).sort({ createdAt: -1 });
+    try {
+        const otpRecord = await Otp.findOne({ email, otp });
 
         if (!otpRecord) {
-            return res.status(400).json({ message: 'Invalid or expired OTP.' });
+            return res.status(400).json({ message: 'Invalid OTP.' });
         }
 
-        let user = await User.findOne({ email });
-
-        if(user){
-            return res.status(400).json({ error: "Sorry a user with this email aready exist." });
+        const otpAge = Date.now() - otpRecord.createdAt;
+        if (otpAge > 5 * 60 * 1000) {
+            return res.status(400).json({ message: 'OTP has expired.' });
         }
+        
         const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash( password, salt);
+        const secPass = await bcrypt.hash(password, salt);
 
-        user = await User.create({
+        const newUser = await User.create({
             name,
             username,
             email,
@@ -170,20 +179,18 @@ router.post('/register', [
         await Otp.deleteOne({ _id: otpRecord._id });
 
         const data = {
-            user: {
-                id: user.id,
-            }
-        }
+            user: { id: newUser.id }
+        };
 
         const authtoken = jwt.sign(data, JWT_SECRET);
         
-        res.status(201).json({ authtoken: authtoken, username: user.username });
+        res.status(201).json({ authtoken, username: newUser.username });
         
-    }  catch (err) {
+    } catch (err) {
         console.error(err.message);
         res.status(500).send("Internal Server Error");
     }
-})
+});
 
 router.post('/login', [
     body('email', 'Enter a Valid Email').isEmail(),

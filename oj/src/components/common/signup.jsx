@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
@@ -93,7 +93,10 @@ const Signup = () => {
         setApiError('');
         
         try {
-            await axios.post(SEND_OTP_PATH, { email: formData.email });
+            await axios.post(SEND_OTP_PATH, { 
+                email: formData.email,
+                username: formData.username
+            });
             setStep(2);
             setTimer(300);
         } catch (err) {
