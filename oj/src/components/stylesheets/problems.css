@@ -105,6 +105,10 @@
 .title-col { width: 60%; }
 .difficulty-col { width: 30%; }
 
+.problems-table.public-view .title-col {
+    width: 70%;
+}
+
 .status-icon {
     font-size: 1.25rem;
 }

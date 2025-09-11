@@ -39,6 +39,7 @@ const Usernavbar = () => {
     }, [user.username, GET_PROFILE_PATH, isValid]);
     
     const handleLogout = () => {
+        localStorage.removeItem('username');
         localStorage.removeItem('authtoken');
         setUser({ username: "none" });
         setIsDropdownOpen(false);

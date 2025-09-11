@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProblems } from "../services/problems.jsx";
+import authContext from "../../contexts/auth/authContext";
 import '../stylesheets/problems.css';
 import { FaCheckCircle, FaRegCircle, FaTimesCircle } from 'react-icons/fa';
 
@@ -8,9 +9,11 @@ const Problem = () => {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-
+    const { user } = useContext(authContext);
     const [searchTerm, setSearchTerm] = useState("");
     const [difficultyFilter, setDifficultyFilter] = useState("All");
+
+    const isValidUser = user && user.username && user.username !== "none";
 
     useEffect(() => {
         const getData = async () => {
@@ -29,7 +32,7 @@ const Problem = () => {
 
     const handleRowMouseDown = (e, problem) => {
         const url = `/problems/${problem.slug}`;
-        if (e.button === 1) {
+        if (e.button === 1) { // Middle mouse button
             window.open(url, '_blank');
         }
     };
@@ -69,10 +72,10 @@ const Problem = () => {
                 <div className="loading-container">Loading problems...</div>
             ) : (
                 <div className="table-container">
-                    <table className="problems-table">
+                    <table className={`problems-table ${isValidUser ? '' : 'public-view'}`}>
                         <thead>
                             <tr>
-                                <th className="status-col">Status</th>
+                                {isValidUser && <th className="status-col">Status</th>}
                                 <th className="title-col">Title</th>
                                 <th className="difficulty-col">Difficulty</th>
                             </tr>
@@ -84,9 +87,11 @@ const Problem = () => {
                                     onClick={() => navigate(`/problems/${problem.slug}`)} 
                                     onMouseDown={(e) => handleRowMouseDown(e, problem)}
                                 >
-                                    <td data-label="Status" className="status-col">
-                                        <StatusIcon status={problem.status} />
-                                    </td>
+                                    {isValidUser && (
+                                        <td data-label="Status" className="status-col">
+                                            <StatusIcon status={problem.status} />
+                                        </td>
+                                    )}
                                     <td data-label="Title" className="title-col">{problem.title}</td>
                                     <td data-label="Difficulty" className="difficulty-col">
                                         <span className={`difficulty-tag difficulty-${(problem.difficulty || '').toLowerCase()}`}>
