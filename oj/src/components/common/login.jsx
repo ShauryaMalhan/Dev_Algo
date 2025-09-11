@@ -17,7 +17,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const passwordInputRef = useRef(null);
 
-    const isValid = email.length > 5 && password.length > 5;
+    const isValid = email.length >= 5 && password.length >= 5;
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
