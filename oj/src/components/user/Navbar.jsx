@@ -26,6 +26,8 @@ const Usernavbar = () => {
                     const response = await axios.get(`${GET_PROFILE_PATH}/${user.username}`);
                     if (response.data && response.data.profilePicture) {
                         setProfilePictureUrl(response.data.profilePicture);
+                    } else {
+                        setProfilePictureUrl('');
                     }
                 } catch (error) {
                     console.error("Could not fetch profile picture", error);
@@ -34,10 +36,10 @@ const Usernavbar = () => {
             }
         };
         fetchProfilePicture();
-    }, [user, GET_PROFILE_PATH, isValid]);
+    }, [user.username, GET_PROFILE_PATH, isValid]);
     
     const handleLogout = () => {
-        localStorage.removeItem('username');
+        localStorage.removeItem('authtoken');
         setUser({ username: "none" });
         setIsDropdownOpen(false);
         setProfilePictureUrl('');
@@ -86,10 +88,10 @@ const Usernavbar = () => {
                     <Nav className="ms-auto align-items-center">
                         {!isValid ? (
                             <div className="auth-buttons">
-                                <Button as={Link} to="/login" className="nav-btn nav-btn-outline">
+                                <Button as={Link} to="/login" className={location.pathname === '/login' ? 'nav-btn nav-btn-solid' : 'nav-btn nav-btn-outline'}>
                                     Login
                                 </Button>
-                                <Button as={Link} to="/signup" className="nav-btn nav-btn-solid">
+                                <Button as={Link} to="/signup" className={location.pathname === '/signup' ? 'nav-btn nav-btn-solid' : 'nav-btn nav-btn-outline'}>
                                     Signup
                                 </Button>
                             </div>

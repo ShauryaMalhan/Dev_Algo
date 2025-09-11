@@ -208,16 +208,17 @@
 
 @media (max-width: 991px) {
     .dark-theme .navbar-collapse {
-        padding-bottom: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #30363d;
+        margin-top: 1rem;
     }
     .dark-theme .profile-section {
         margin-top: 1rem;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .dark-theme .profile-dropdown {
-        left: 50%;
+        left: 0;
         right: auto;
-        transform: translateX(-50%);
     }
 }
