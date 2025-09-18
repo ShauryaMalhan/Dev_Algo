@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'katex/dist/katex.min.css';
+import renderMathInElement from 'katex/dist/contrib/auto-render';
 import '../stylesheets/problemdetails.css';
 import { parsePolygonLatex } from '../services/latexParser';
 import { FaCopy, FaCheck } from 'react-icons/fa';
@@ -13,6 +14,7 @@ const ProblemDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [copiedId, setCopiedId] = useState(null);
+    const contentRef = useRef(null);
 
     const GET_PROBLEM_BY_SLUG_PATH = import.meta.env.VITE_GET_ALL_PROBLEMS_PATH; 
 
@@ -29,6 +31,17 @@ const ProblemDetail = () => {
         };
         fetchProblem();
     }, [slug, GET_PROBLEM_BY_SLUG_PATH]);
+
+    useEffect(() => {
+        if (problem && contentRef.current) {
+            renderMathInElement(contentRef.current, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        }
+    }, [problem]);
 
     const handleNavigateToSubmit = () => {
         navigate(`/problems/${slug}/submit`);
@@ -60,11 +73,12 @@ const ProblemDetail = () => {
                     <h1>{problem.name}</h1>
                     <div className="header-meta">
                         <span>Time Limit: {problem.timeLimit}s</span>
+                        <span>Memory Limit: {problem.memoryLimit} MB</span>
                         <span>Owner: {problem.owner}</span>
                     </div>
                 </div>
 
-                <div className="problem-body">
+                <div className="problem-body" ref={contentRef}>
                     <div className="problem-section">
                         <h2>Legend</h2>
                         <div className="content-box" dangerouslySetInnerHTML={{ __html: parsePolygonLatex(problem.legend) }} />
