@@ -53,10 +53,10 @@ const Signup = () => {
         }
     };
     
-    const validateStep1 = () => {
+     const validateStep1 = () => {
         const newErrors = {};
         const nameRegex = /^[a-zA-Z]+$/;
-        const noSpaceRegex = /^\S*$/;
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!formData.firstName) newErrors.firstName = "First name is required.";
@@ -72,11 +72,10 @@ const Signup = () => {
 
         if (!formData.username) newErrors.username = "Username is required.";
         else if (formData.username.length < 5 || formData.username.length > 10) newErrors.username = "Must be 5-10 characters.";
-        else if (!noSpaceRegex.test(formData.username)) newErrors.username = "Spaces are not allowed.";
+        else if (!usernameRegex.test(formData.username)) newErrors.username = "Only letters and numbers are allowed.";
         
         if (!formData.password) newErrors.password = "Password is required.";
         else if (formData.password.length < 6 || formData.password.length > 13) newErrors.password = "Must be 6-13 characters.";
-        else if (!noSpaceRegex.test(formData.password)) newErrors.password = "Spaces are not allowed.";
         
         return newErrors;
     };
