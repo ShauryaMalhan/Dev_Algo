@@ -1,10 +1,10 @@
 # Dev_Algo
 
 ## Deployed Link
-[CodeRunner](https://dev-algo.vercel.app/)
+[PiCode](https://picode.polsage.in)
 
 ## Introduction <a name="introduction"></a>
-Welcome to CodeRunner! This application is designed to help you solve coding problems, practice competitive programming, and track your progress. This README file will guide you through using the app, its features, and how to get started.
+Welcome to PiCode! This application is designed to help you solve coding problems, practice competitive programming, and track your progress. This README file will guide you through using the app, its features, and how to get started.
 
 ## Table of Contents
 
