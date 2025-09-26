@@ -1,4 +1,4 @@
-# Dev_Algo
+# PiCode
 
 ## Deployed Link
 [PiCode](https://picode.polsage.in)
